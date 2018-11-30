@@ -12,7 +12,7 @@ namespace BlackHoleRaytracer
             string fileName = Path.Combine(".", String.Format("image{0}.png", n));
 
             new RayProcessor(300, 300,
-                        Scene.GetScene(65),
+                        new Scene(30, 75, 65),
                         fileName)
                         .Process();
 
