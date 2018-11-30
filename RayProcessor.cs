@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading;
 using BlackHoleRaytracer.Equation;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace BlackHoleRaytracer
@@ -14,9 +13,7 @@ namespace BlackHoleRaytracer
         int sizex; 
         int sizey; 
 
-        int frame;
-        Scene sceneDescription;
-        
+        Scene scene;
 
         private int[] outputBitmap;
 
@@ -25,17 +22,16 @@ namespace BlackHoleRaytracer
 
         private static Bitmap diskImage;
         private static int[] diskBitmap;
-        
-        public string OutputPath { get; private set; }
+
+        private string outputFileName;
         
 
-        public RayProcessor(int sizex, int sizey, Scene scene, int frame, string outputPath)
+        public RayProcessor(int sizex, int sizey, Scene scene, string outputFileName)
         {
-            this.sizex = sizex; 
-            this.sizey = sizey; 
-            this.frame = frame;
-            sceneDescription = scene;
-            this.OutputPath = outputPath;
+            this.sizex = sizex;
+            this.sizey = sizey;
+            this.scene = scene;
+            this.outputFileName = outputFileName;
         }
         
         public void Process()
@@ -85,9 +81,9 @@ namespace BlackHoleRaytracer
                 {
                     JobId = i,
                     RayTracer = new RayTracer(
-                            new KerrBlackHoleEquation(sceneDescription.CameraDistance, sceneDescription.CameraInclination, sceneDescription.CameraAngle, 20.0),
+                            new KerrBlackHoleEquation(scene.CameraDistance, scene.CameraInclination, scene.CameraAngle, 20.0),
                             sizex, sizey, diskBitmap, skyBitmap, diskImage, skyImage,
-                            sceneDescription.CameraTilt, sceneDescription.CameraYaw),
+                            scene.CameraTilt, scene.CameraYaw),
                     LinesList = lineList,
                     Thread = new Thread(new ParameterizedThreadStart(RayTraceThread)),
                 });
@@ -108,11 +104,11 @@ namespace BlackHoleRaytracer
             {
                 param.Thread.Join();
             }
-            
+
 
             GCHandle gcHandle = GCHandle.Alloc(outputBitmap, GCHandleType.Pinned);
             Bitmap resultBmp = new Bitmap(sizex, sizey, sizex * 4, PixelFormat.Format32bppArgb, gcHandle.AddrOfPinnedObject());
-            resultBmp.Save(Path.Combine(OutputPath, String.Format("render_{0:00000}.png", frame)), ImageFormat.Png);
+            resultBmp.Save(outputFileName, ImageFormat.Png);
             if (resultBmp != null) { resultBmp.Dispose(); resultBmp = null; }
             if (gcHandle.IsAllocated) { gcHandle.Free(); }
 
