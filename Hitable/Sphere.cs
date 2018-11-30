@@ -42,7 +42,7 @@ namespace BlackHoleRaytracer.Hitable
 
         public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop)
         {
-            double tempX = 0, tempY = 0, tempZ = 0; 
+            double tempX = 0, tempY = 0, tempZ = 0;
             ToCartesian(y[0], y[1], y[2], ref tempX, ref tempY, ref tempZ);
 
             double distance = Math.Sqrt((tempX - centerX) * (tempX - centerX)
@@ -50,7 +50,13 @@ namespace BlackHoleRaytracer.Hitable
                 + (tempZ - centerZ) * (tempZ - centerZ));
             if (distance < radius)
             {
+                // Restore Y to its previous values, and perform the binary intersection search.
+                MemHelper.memcpy((IntPtr)y, (IntPtr)prevY, equation.N * sizeof(double));
+
+                IntersectionSearch(y, dydx, hdid, equation);
+
                 // transform impact coordinates to spherical coordinates relative to center of sphere
+                ToCartesian(y[0], y[1], y[2], ref tempX, ref tempY, ref tempZ);
                 tempX = tempX - centerX;
                 tempY = tempY - centerY;
                 tempZ = tempZ - centerZ;
@@ -95,9 +101,10 @@ namespace BlackHoleRaytracer.Hitable
             unsafe
             {
                 double hlower = 0.0;
+                double tempX = 0, tempY = 0, tempZ = 0;
                 equation.Function(y, dydx);
 
-                while ((y[0] > equation.Rhor) && (y[0] < equation.R0 * 2))
+                while ((y[0] > equation.Rhor) && (y[0] < equation.R0))
                 {
                     double* yout = stackalloc double[equation.N];
                     double* yerr = stackalloc double[equation.N];
@@ -116,7 +123,12 @@ namespace BlackHoleRaytracer.Hitable
 
                     RungeKuttaEngine.RKIntegrateStep(equation, y, dydx, hmid, yout, yerr);
 
-                    if (yout[0] < equation.R0)
+                    ToCartesian(yout[0], yout[1], yout[2], ref tempX, ref tempY, ref tempZ);
+                    double distance = Math.Sqrt((tempX - centerX) * (tempX - centerX)
+                        + (tempY - centerY) * (tempY - centerY)
+                        + (tempZ - centerZ) * (tempZ - centerZ));
+
+                    if (distance > radius)
                     {
                         hlower = hmid;
                     }
