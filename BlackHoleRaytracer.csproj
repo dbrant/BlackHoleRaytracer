@@ -46,6 +46,7 @@
     <Compile Include="Equation\KerrBlackHoleEquation.cs" />
     <Compile Include="Hitable\Horizon.cs" />
     <Compile Include="Hitable\Sky.cs" />
+    <Compile Include="Hitable\Sphere.cs" />
     <Compile Include="Mappings\DiscMapping.cs" />
     <Compile Include="Mappings\IMapping.cs" />
     <Compile Include="Mappings\SphericalMapping.cs" />

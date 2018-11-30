@@ -51,6 +51,8 @@ namespace BlackHoleRaytracer
             hitables.Add(new Disk(equation.Rmstable, 16.0, new Bitmap("adisk.jpg"), true));
             hitables.Add(new Horizon(true));
             hitables.Add(new Sky(new Bitmap("sky_16k.jpg")));
+            hitables.Add(new Sphere(8, 8, 8, 1, new Bitmap("earthmap1k.jpg")));
+            hitables.Add(new Sphere(-10, -10, -10, 1, new Bitmap("earthmap1k.jpg")));
 
 
             for (int i = 0; i < numThreads; i++)
