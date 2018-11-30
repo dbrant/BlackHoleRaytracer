@@ -7,7 +7,7 @@ namespace BlackHoleRaytracer
     public class RungeKuttaEngine
     {
         /// <summary>
-        /// 
+        /// Perform the integration.
         /// </summary>
         /// <param name="equation"></param>
         /// <param name="y"></param>
@@ -20,10 +20,7 @@ namespace BlackHoleRaytracer
         unsafe public static double RKIntegrate(IODESystem equation, double* y, double* dydx, double htry, double escal, double* yscal, out double hdid)
         {
             int i;
-
-            double hnext;
-
-            double errmax, h = htry, htemp;
+            double errmax, h = htry, htemp, hnext;
             double* yerr = stackalloc double[equation.N];
             double* ytemp = stackalloc double[equation.N];
 
@@ -97,9 +94,7 @@ namespace BlackHoleRaytracer
         unsafe public static void RKIntegrateStep(IODESystem equation, double* y, double* dydx, double h, double* yout, double* yerr)
         {
             int i;
-
             double* ak = stackalloc double[equation.N];
-
             double* ytemp1 = stackalloc double[equation.N];
             double* ytemp2 = stackalloc double[equation.N];
             double* ytemp3 = stackalloc double[equation.N];

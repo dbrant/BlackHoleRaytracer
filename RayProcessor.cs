@@ -85,7 +85,7 @@ namespace BlackHoleRaytracer
                 {
                     JobId = i,
                     RayTracer = new RayTracer(
-                            new KerrBlackHoleEquation(sceneDescription.CameraDistance, sceneDescription.CameraInclination, sceneDescription.CameraAngle, 20.0, sceneDescription.CameraAperture),
+                            new KerrBlackHoleEquation(sceneDescription.CameraDistance, sceneDescription.CameraInclination, sceneDescription.CameraAngle, 20.0),
                             sizex, sizey, diskBitmap, skyBitmap, diskImage, skyImage,
                             sceneDescription.CameraTilt, sceneDescription.CameraYaw),
                     LinesList = lineList,

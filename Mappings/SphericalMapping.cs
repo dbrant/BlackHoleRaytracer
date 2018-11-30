@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlackHoleRaytracer.Mappings
 {
@@ -11,8 +7,8 @@ namespace BlackHoleRaytracer.Mappings
     /// </summary>
     class SphericalMapping : IMapping
     {
-        public int SizeX { get; set; }
-        public int SizeY { get; set; }
+        private int SizeX;
+        private int SizeY;
 
         public SphericalMapping(int sizex, int sizey)
         {
@@ -22,15 +18,13 @@ namespace BlackHoleRaytracer.Mappings
 
         public void Map(double r, double theta, double phi, out int x, out int y)
         {
-            // do mapping of texture image
             double textureScale = 1.0;
 
-            x = (int)(((phi * textureScale) / (2 * Math.PI)) * this.SizeX) % this.SizeX;
-            y = (int)((theta * textureScale / Math.PI) * this.SizeY) % this.SizeY;
+            x = (int)(((phi * textureScale) / (2 * Math.PI)) * SizeX) % SizeX;
+            y = (int)((theta * textureScale / Math.PI) * SizeY) % SizeY;
 
-            if (x < 0) x = this.SizeX + x;
-            if (y < 0) y = this.SizeY + y;
-
+            if (x < 0) { x = this.SizeX + x; }
+            if (y < 0) { y = this.SizeY + y; }
         }
     }
 }
