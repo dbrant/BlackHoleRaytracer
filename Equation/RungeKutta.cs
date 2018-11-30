@@ -4,10 +4,6 @@ using System;
 
 namespace BlackHoleRaytracer
 {
-    /// <summary>
-    /// Class that implements adaptive Runge-Kutta integration algorithm.
-    /// Actually the implemented method variation is known as Cash-Karp.
-    /// </summary>
     public class RungeKuttaEngine
     {
         /// <summary>
@@ -66,14 +62,7 @@ namespace BlackHoleRaytracer
 
             // Return next suggested step of integration.
             // If error was small, increase step 5 times (to save computing time).
-            if (errmax > 1.89e-4)
-            {
-                hnext = 0.9 * h * Math.Pow(errmax, -0.2);
-            }
-            else
-            {
-                hnext = 5.0 * h;
-            }
+            hnext = errmax > 1.89e-4 ? hnext = 0.9 * h * Math.Pow(errmax, -0.2) : hnext = 5.0 * h;
 
             hdid = h;
 
@@ -84,6 +73,20 @@ namespace BlackHoleRaytracer
 
         /// <summary>
         /// Calculate single step of integration algorithm.
+        /// https://en.wikipedia.org/wiki/Cash%E2%80%93Karp_method
+        /// 
+        /// The Cash-Karp method uses the following Butcher tableau:
+        /// 
+        /// 0    |
+        /// 1/5  | 1/5
+        /// 3/10 | 3/40       9/40
+        /// 3/5  | 3/10       −9/10   6/5
+        /// 1    | −11/54     5/2     −70/27      35/27
+        /// 7/8  | 1631/55296 175/512 575/13824   44275/110592 253/4096
+        /// --------------------------------------------------------------------
+        ///      | 37/378     0       250/621     125/594      0          512/1771
+        ///      | 2825/27648 0       18575/48384 13525/55296  277/14336  1/4
+        /// 
         /// </summary>
         /// <param name="equation"></param>
         /// <param name="y"></param>
@@ -168,7 +171,6 @@ namespace BlackHoleRaytracer
                 yerr[i] += ((512.0 / 1771.0) - 0.25) * yt;
             }
         }
-
 
     }
 }

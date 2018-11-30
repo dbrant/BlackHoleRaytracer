@@ -10,15 +10,13 @@ namespace BlackHoleRaytracer.Equation
         private double a; // angular momentum in theta direction
         private double a2; // a-squared
 
-        // Initial conditions :
+        // Initial conditions:
         // Ray starting location in Boyer-Lindquist coordinates
         public double R0 { get; private set; }
-
         private double theta0;
         private double phi0;
-        private double aperture;
 
-        // Dimensions of the "accretion disc"
+        // Dimensions of the accretion disk
         public double Rhor { get; private set; }
         public double Rmstable { get; private set; }
         public double Rdisk { get; private set; }
@@ -26,11 +24,11 @@ namespace BlackHoleRaytracer.Equation
         /// <summary>
         /// Public constructor.
         /// </summary>
-        /// <param name="r">Starting camera distance (typically 1000.0)</param>
+        /// <param name="r">Starting camera distance</param>
         /// <param name="theta">Starting camera theta (vertical angle) in degrees</param>
         /// <param name="phi">Starting camera phi (horizontal angle) in degrees</param>
-        /// <param name="rDisc">Radius of the accretion disc (default 20.0)</param>
-        public KerrBlackHoleEquation(double r, double theta, double phi, double rDisc, double aperture)
+        /// <param name="rDisc">Radius of the accretion disc</param>
+        public KerrBlackHoleEquation(double r, double theta, double phi, double rDisc)
         {
             a = 0; // angular momentum in theta direction
 
@@ -43,17 +41,12 @@ namespace BlackHoleRaytracer.Equation
             Rhor = 1.0 + Math.Sqrt(1.0 - a2) + 1e-5;
             Rdisk = 16.0;
             Rmstable = this.InnermostStableOrbit();
-
-            this.aperture = aperture;
         }
 
         /// <summary>
         /// Number of equations in the set
         /// </summary>
-        public int N
-        {
-            get { return 5; }
-        }
+        public int N { get { return 5; } }
         
         /// <summary>
         /// Function returning the equations that are included in the ODE system.
@@ -120,7 +113,6 @@ namespace BlackHoleRaytracer.Equation
             double sin2 = sintheta * sintheta;
 
             double rdot0 = Math.Cos(y) * Math.Cos(x);
-
             double thetadot0 = Math.Sin(y);
 
             double r2 = R0 * R0;
@@ -149,7 +141,7 @@ namespace BlackHoleRaytracer.Equation
 
             K = y0[4] * y0[4] + a2 * sin2 + L * L / sin2;
 
-            /* Call the ODE function to scale the starting point by energy factor */
+            // Call the ODE function to scale the starting point by energy factor
             this.Function(y0, ydot0);
         }
         
