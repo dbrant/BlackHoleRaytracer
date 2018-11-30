@@ -54,10 +54,7 @@
     <Compile Include="RayTracer.cs" />
     <Compile Include="RayProcessor.cs" />
     <Compile Include="Scene.cs" />
-    <Compile Include="RungeKutta.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Engine\" />
+    <Compile Include="Equation\RungeKutta.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
