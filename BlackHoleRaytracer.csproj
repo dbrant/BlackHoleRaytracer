@@ -44,6 +44,8 @@
     <Compile Include="Equation\IODESystem.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Equation\KerrBlackHoleEquation.cs" />
+    <Compile Include="Hitable\Horizon.cs" />
+    <Compile Include="Hitable\Sky.cs" />
     <Compile Include="Mappings\DiscMapping.cs" />
     <Compile Include="Mappings\IMapping.cs" />
     <Compile Include="Mappings\SphericalMapping.cs" />
@@ -58,9 +60,7 @@
     <Compile Include="Hitable\IHitable.cs" />
     <Compile Include="Hitable\Disk.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Hitable\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

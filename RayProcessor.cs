@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Threading;
 using BlackHoleRaytracer.Equation;
 using System.Runtime.InteropServices;
+using BlackHoleRaytracer.Hitable;
 
 namespace BlackHoleRaytracer
 {
@@ -16,13 +17,6 @@ namespace BlackHoleRaytracer
         Scene scene;
 
         private int[] outputBitmap;
-
-        private static Bitmap skyImage;
-        private static int[] skyBitmap;
-
-        private static Bitmap diskImage;
-        private static int[] diskBitmap;
-
         private string outputFileName;
         
 
@@ -40,30 +34,7 @@ namespace BlackHoleRaytracer
             // Create main bitmap for writing pixels
             int bufferLength = sizex * sizey;
             outputBitmap = new int[bufferLength];
-
-
-            // Load textures for sky and accretion disk
-
-            if (skyBitmap == null)
-            {
-                //Bitmap skyImage = new Bitmap("bgedit.jpg");
-                skyImage = new Bitmap("sky_16k.jpg");
-                skyBitmap = new int[skyImage.Width * skyImage.Height];
-                BitmapData bmpBits = skyImage.LockBits(new Rectangle(0, 0, skyImage.Width, skyImage.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                Marshal.Copy(bmpBits.Scan0, skyBitmap, 0, skyBitmap.Length);
-                skyImage.UnlockBits(bmpBits);
-            }
-
-            if (diskBitmap == null)
-            {
-                diskImage = new Bitmap("adisk.jpg");
-                diskBitmap = new int[diskImage.Width * diskImage.Height];
-                BitmapData diskBits = diskImage.LockBits(new Rectangle(0, 0, diskImage.Width, diskImage.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                Marshal.Copy(diskBits.Scan0, diskBitmap, 0, diskBitmap.Length);
-                diskImage.UnlockBits(diskBits);
-            }
-
-
+            
 
             int numThreads = Environment.ProcessorCount;
             DateTime startTime = DateTime.Now;
@@ -72,7 +43,16 @@ namespace BlackHoleRaytracer
 
             List<List<int>> lineLists = new List<List<int>>();
             List<RayTracerThreadParams> paramList = new List<RayTracerThreadParams>();
-            
+
+
+            var equation = new KerrBlackHoleEquation(scene.CameraDistance, scene.CameraInclination, scene.CameraAngle);
+
+            List<IHitable> hitables = new List<IHitable>();
+            hitables.Add(new Disk(equation.Rmstable, 16.0, new Bitmap("adisk.jpg"), true));
+            hitables.Add(new Horizon(true));
+            hitables.Add(new Sky(new Bitmap("sky_16k.jpg")));
+
+
             for (int i = 0; i < numThreads; i++)
             {
                 var lineList = new List<int>();
@@ -81,8 +61,8 @@ namespace BlackHoleRaytracer
                 {
                     JobId = i,
                     RayTracer = new RayTracer(
-                            new KerrBlackHoleEquation(scene.CameraDistance, scene.CameraInclination, scene.CameraAngle, 20.0),
-                            sizex, sizey, diskBitmap, skyBitmap, diskImage, skyImage,
+                            new KerrBlackHoleEquation(equation),
+                            sizex, sizey, hitables,
                             scene.CameraTilt, scene.CameraYaw),
                     LinesList = lineList,
                     Thread = new Thread(new ParameterizedThreadStart(RayTraceThread)),
