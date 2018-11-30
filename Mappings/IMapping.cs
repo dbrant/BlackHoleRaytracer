@@ -20,5 +20,7 @@ namespace BlackHoleRaytracer.Mappings
         /// <param name="x"></param>
         /// <param name="y"></param>
         void Map(double r, double theta, double phi, out int x, out int y);
+
+        void MapCartesian(double x, double y, double z, out int u, out int v);
     }
 }

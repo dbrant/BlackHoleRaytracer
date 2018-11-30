@@ -57,14 +57,12 @@ namespace BlackHoleRaytracer.Hitable
 
                 // transform impact coordinates to spherical coordinates relative to center of sphere
                 ToCartesian(y[0], y[1], y[2], ref tempX, ref tempY, ref tempZ);
-                tempX = tempX - centerX;
-                tempY = tempY - centerY;
-                tempZ = tempZ - centerZ;
-                double tempR = 0, tempTheta = 0, tempPhi = 0;
-                ToSpherical(tempX, tempY, tempZ, ref tempR, ref tempTheta, ref tempPhi);
+                tempX = centerX - tempX;
+                tempY = centerY - tempY;
+                tempZ = centerZ - tempZ;
 
                 int xPos, yPos;
-                textureMap.Map(tempR, tempTheta, tempPhi, out xPos, out yPos);
+                textureMap.MapCartesian(tempX, tempY, tempZ, out xPos, out yPos);
 
                 color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 

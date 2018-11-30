@@ -18,13 +18,19 @@ namespace BlackHoleRaytracer.Mappings
 
         public void Map(double r, double theta, double phi, out int x, out int y)
         {
-            double textureScale = 1.0;
+            x = (int)((phi / (2 * Math.PI)) * SizeX) % SizeX;
+            y = (int)((theta / Math.PI) * SizeY) % SizeY;
 
-            x = (int)(((phi * textureScale) / (2 * Math.PI)) * SizeX) % SizeX;
-            y = (int)((theta * textureScale / Math.PI) * SizeY) % SizeY;
+            if (x < 0) { x = SizeX + x; }
+            if (y < 0) { y = SizeY + y; }
+        }
 
-            if (x < 0) { x = this.SizeX + x; }
-            if (y < 0) { y = this.SizeY + y; }
+        public void MapCartesian(double x, double y, double z, out int u, out int v)
+        {
+            u = (int)((0.5 + Math.Atan2(z, x) / (2 * Math.PI)) * SizeX) % SizeX;
+            v = (int)((0.5 - (Math.Asin(y) / Math.PI)) * SizeY) % SizeY;
+            if (u < 0) { u = SizeX + u; }
+            if (v < 0) { v = SizeY + v; }
         }
     }
 }

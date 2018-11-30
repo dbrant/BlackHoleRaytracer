@@ -33,5 +33,11 @@ namespace BlackHoleRaytracer.Mappings
             y = (int)((r - rMin) / (rMax - rMin) * sizeY);
             if (y > sizeY - 1) { y = sizeY - 1; }
         }
+
+        public void MapCartesian(double x, double y, double z, out int u, out int v)
+        {
+            u = 0;
+            v = 0;
+        }
     }
 }
