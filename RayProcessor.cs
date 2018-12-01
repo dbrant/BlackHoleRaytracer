@@ -47,12 +47,14 @@ namespace BlackHoleRaytracer
 
             var equation = new KerrBlackHoleEquation(scene.CameraDistance, scene.CameraInclination, scene.CameraAngle);
 
-            List<IHitable> hitables = new List<IHitable>();
-            hitables.Add(new Disk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg"), true));
-            hitables.Add(new Horizon(true));
-            hitables.Add(new Sky(new Bitmap("sky_16k.jpg")));
-            hitables.Add(new Sphere(12, 7, 3, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true));
-            hitables.Add(new Sphere(-10, -10, -10, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true));
+            List<IHitable> hitables = new List<IHitable>
+            {
+                new Disk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg"), true),
+                new Horizon(true),
+                new Sky(new Bitmap("sky_16k.jpg")),
+                new Sphere(12, 7, 3, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true),
+                new Sphere(-10, -10, -10, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true)
+            };
 
 
             for (int i = 0; i < numThreads; i++)

@@ -64,7 +64,7 @@ namespace BlackHoleRaytracer.Hitable
                     {
                         var m1 = DoubleMod(y[2], 1.04719);
                         bool foo = (m1 < 0.52359);
-                        color = foo ? Color.BlueViolet : Color.MediumBlue;
+                        color = side == -1 ? (foo ? Color.BlueViolet : Color.MediumBlue) : (foo ? Color.ForestGreen : Color.LightSeaGreen);
                     }
                     else
                     {
