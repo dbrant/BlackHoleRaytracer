@@ -14,17 +14,20 @@ namespace BlackHoleRaytracer.Hitable
         private double centerY;
         private double centerZ;
         private double radius;
+
+        private bool checkered;
         
         private SphericalMapping textureMap;
         private int textureWidth;
         private int[] textureBitmap;
 
-        public Sphere(double centerX, double centerY, double centerZ, double radius, Bitmap texture)
+        public Sphere(double centerX, double centerY, double centerZ, double radius, Bitmap texture, bool checkered)
         {
             this.centerX = centerX;
             this.centerY = centerY;
             this.centerZ = centerZ;
             this.radius = radius;
+            this.checkered = checkered;
             if (texture != null)
             {
                 lock (texture)
@@ -61,12 +64,30 @@ namespace BlackHoleRaytracer.Hitable
                 tempY = centerY - tempY;
                 tempZ = centerZ - tempZ;
 
-                int xPos, yPos;
-                textureMap.MapCartesian(tempX, tempY, tempZ, out xPos, out yPos);
+                double tempR = 0, tempTheta = 0, tempPhi = 0;
+                ToSpherical(tempX, tempY, tempZ, ref tempR, ref tempTheta, ref tempPhi);
 
-                color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
-                
-                //color = Color.Pink;
+                if (checkered)
+                {
+                    var m1 = DoubleMod(tempPhi, 1.04719); // Pi / 3
+                    var m2 = DoubleMod(tempTheta, 1.04719); // Pi / 3
+                    bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
+                    if (foo)
+                    {
+                        color = Color.RoyalBlue;
+                    }
+                    else
+                    {
+                        color = Color.DarkBlue;
+                    }
+                }
+                else
+                {
+                    int xPos, yPos;
+                    textureMap.MapCartesian(tempX, tempY, tempZ, out xPos, out yPos);
+
+                    color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
+                }
 
                 stop = true;
                 return true;
