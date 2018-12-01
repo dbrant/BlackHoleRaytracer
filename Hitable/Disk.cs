@@ -45,9 +45,14 @@ namespace BlackHoleRaytracer.Hitable
             int side = prevY[1] > Math.PI / 2 ? 1 : prevY[1] < Math.PI / 2 ? -1 : 0;
 
             // Did we cross the theta (horizontal) plane?
+            bool success = false;
             if ((y[1] - Math.PI / 2) * side <= 0)
             {
-                // Restore Y to its previous values, and perform the binary intersection search.
+                // remember the current values of Y, so that we can restore them after the intersection search.
+                double* yCurrent = stackalloc double[equation.N];
+                MemHelper.memcpy((IntPtr)yCurrent, (IntPtr)y, equation.N * sizeof(double));
+
+                //  Overwrite Y with its previous values, and perform the binary intersection search.
                 MemHelper.memcpy((IntPtr)y, (IntPtr)prevY, equation.N * sizeof(double));
 
                 IntersectionSearch(y, dydx, hdid, equation);
@@ -69,10 +74,13 @@ namespace BlackHoleRaytracer.Hitable
                         color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                     }
                     stop = false;
-                    return true;
+                    success = true;
                 }
+
+                // ...and reset Y to its original current values.
+                MemHelper.memcpy((IntPtr)y, (IntPtr)yCurrent, equation.N * sizeof(double));
             }
-            return false;
+            return success;
         }
 
         private static double DoubleMod(double n, double m)
