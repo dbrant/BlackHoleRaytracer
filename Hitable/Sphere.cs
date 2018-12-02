@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using BlackHoleRaytracer.Equation;
 using BlackHoleRaytracer.Helpers;
 using BlackHoleRaytracer.Mappings;
@@ -32,11 +30,7 @@ namespace BlackHoleRaytracer.Hitable
             {
                 textureMap = new SphericalMapping(texture.Width, texture.Height);
                 textureWidth = texture.Width;
-
-                textureBitmap = new int[texture.Width * texture.Height];
-                BitmapData diskBits = texture.LockBits(new Rectangle(0, 0, texture.Width, texture.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                Marshal.Copy(diskBits.Scan0, textureBitmap, 0, textureBitmap.Length);
-                texture.UnlockBits(diskBits);
+                textureBitmap = MemHelper.getNativeTextureBitmap(texture);
             }
         }
 
