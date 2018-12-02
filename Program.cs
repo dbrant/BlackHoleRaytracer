@@ -13,8 +13,9 @@ namespace BlackHoleRaytracer
 
             // Set up some default parameters, which can be overridden by command line args.
             double r = 30; // distance from center
-            double theta = 80; // vertical angle
-            double phi = 75; // horizontal angle
+            double theta = 87; // vertical angle
+            double phi = 45; // horizontal angle
+            double angularMomentum = 0;
             string fileName = "image.png";
 
             for (int i = 0; i < args.Length; i++)
@@ -31,13 +32,17 @@ namespace BlackHoleRaytracer
                 {
                     phi = Double.Parse(args[i + 1]);
                 }
+                else if (args[i].Equals("-a") && i < args.Length - 1)
+                {
+                    angularMomentum = Double.Parse(args[i + 1]);
+                }
                 else if (args[i].Equals("-o") && i < args.Length - 1)
                 {
                     fileName = args[i + 1];
                 }
             }
 
-            var equation = new KerrBlackHoleEquation(r, theta, phi);
+            var equation = new KerrBlackHoleEquation(r, theta, phi, angularMomentum);
 
             var scene = new Scene(r, theta, phi, equation, new List<IHitable>
             {

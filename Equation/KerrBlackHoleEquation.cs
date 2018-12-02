@@ -7,7 +7,7 @@ namespace BlackHoleRaytracer.Equation
         // Motion constants
         private double L; // angular momentum in phi direction
         private double K; // Carter's constant's element
-        private double a; // angular momentum in theta direction
+        private double angularMomentum;
         private double a2; // a-squared
 
         // Initial conditions:
@@ -22,32 +22,26 @@ namespace BlackHoleRaytracer.Equation
         // Dimensions of the accretion disk
         public double Rhor { get; }
         public double Rmstable { get; }
-
-        /// <summary>
-        /// Public constructor.
-        /// </summary>
-        /// <param name="r">Starting camera distance</param>
-        /// <param name="theta">Starting camera theta (vertical angle) in degrees</param>
-        /// <param name="phi">Starting camera phi (horizontal angle) in degrees</param>
-        public KerrBlackHoleEquation(double r, double theta, double phi)
+        
+        public KerrBlackHoleEquation(double rDistance, double thetaDegrees, double phiDegrees, double angularMomentum)
         {
-            thetaDegrees = theta;
-            phiDegrees = phi;
+            this.thetaDegrees = thetaDegrees;
+            this.phiDegrees = phiDegrees;
 
-            a = 0; // angular momentum in theta direction
+            this.angularMomentum = angularMomentum;
 
-            R0 = r;
-            theta0 = (Math.PI / 180.0) * theta;
-            phi0 = (Math.PI / 180.0) * phi;
+            R0 = rDistance;
+            theta0 = (Math.PI / 180.0) * thetaDegrees;
+            phi0 = (Math.PI / 180.0) * phiDegrees;
 
-            a2 = a * a;
+            a2 = angularMomentum * angularMomentum;
 
             Rhor = 1.0 + Math.Sqrt(1.0 - a2) + 1e-5;
             Rmstable = InnermostStableOrbit();
         }
 
         public KerrBlackHoleEquation(KerrBlackHoleEquation other)
-            : this(other.R0, other.thetaDegrees, other.phiDegrees)
+            : this(other.R0, other.thetaDegrees, other.phiDegrees, other.angularMomentum)
         {
         }
 
@@ -85,8 +79,7 @@ namespace BlackHoleRaytracer.Equation
             double sd = sigma * delta;
             double siginv = 1.0 / sigma;
             double sigdelinv = 1.0 / sd;
-
-            /* Prevent problems with the axis */
+            
             if (sintheta < 1e-8)
             {
                 sintheta = 1e-8;
@@ -95,9 +88,9 @@ namespace BlackHoleRaytracer.Equation
 
             dydx[0] = -pr * delta * siginv;
             dydx[1] = -ptheta * siginv;
-            dydx[2] = -(twor * a + (sigma - twor) * L / sin2) * sigdelinv;
+            dydx[2] = -(twor * angularMomentum + (sigma - twor) * L / sin2) * sigdelinv;
             //dydx[3] = -(1.0 + (twor * (r2 + a2) - twor * a * L) * sigdelinv); // this coef is not used anywhere!
-            dydx[3] = -(((r - 1.0) * (-K) + twor * (r2 + a2) - 2.0 * a * L) * sigdelinv - 2.0 * pr * pr * (r - 1.0) * siginv);
+            dydx[3] = -(((r - 1.0) * (-K) + twor * (r2 + a2) - 2.0 * angularMomentum * L) * sigdelinv - 2.0 * pr * pr * (r - 1.0) * siginv);
             dydx[4] = -sintheta * costheta * (L * L / (sin2 * sin2) - a2) * siginv;
         }
 
@@ -145,17 +138,17 @@ namespace BlackHoleRaytracer.Equation
             y0[3] = y0[3] / energy;
             y0[4] = y0[4] / energy;
 
-            L = ((sigma * delta * phidot0 - 2.0 * a * R0 * energy) * sin2 / s1) / energy;
+            L = ((sigma * delta * phidot0 - 2.0 * angularMomentum * R0 * energy) * sin2 / s1) / energy;
 
             K = y0[4] * y0[4] + a2 * sin2 + L * L / sin2;
 
             // Call the ODE function to scale the starting point by energy factor
-            this.Function(y0, ydot0);
+            Function(y0, ydot0);
         }
         
         private double InnermostStableOrbit()
         {
-            double z1 = 1 + Math.Pow(1 - a2, 1.0 / 3.0) * (Math.Pow(1 + a, 1.0 / 3.0) + Math.Pow(1 - a, 1.0 / 3.0));
+            double z1 = 1 + Math.Pow(1 - a2, 1.0 / 3.0) * (Math.Pow(1 + angularMomentum, 1.0 / 3.0) + Math.Pow(1 - angularMomentum, 1.0 / 3.0));
             double z2 = Math.Sqrt(3 * a2 + z1 * z1);
             return 3 + z2 - Math.Sqrt((3 - z1) * (3 + z1 + 2 * z2));
         }
