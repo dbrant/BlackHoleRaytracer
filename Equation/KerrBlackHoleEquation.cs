@@ -13,36 +13,36 @@ namespace BlackHoleRaytracer.Equation
         // Initial conditions:
         // Ray starting location in Boyer-Lindquist coordinates
         public double R0 { get; private set; }
-        private double thetaDegrees;
-        private double phiDegrees;
-
         private double theta0;
         private double phi0;
 
         // Dimensions of the accretion disk
-        public double Rhor { get; }
-        public double Rmstable { get; }
+        public double Rhor { get; private set; }
+        public double Rmstable { get; private set; }
         
         public KerrBlackHoleEquation(double rDistance, double thetaDegrees, double phiDegrees, double angularMomentum)
         {
-            this.thetaDegrees = thetaDegrees;
-            this.phiDegrees = phiDegrees;
-
-            this.angularMomentum = angularMomentum;
-
             R0 = rDistance;
             theta0 = (Math.PI / 180.0) * thetaDegrees;
             phi0 = (Math.PI / 180.0) * phiDegrees;
-
-            a2 = angularMomentum * angularMomentum;
-
-            Rhor = 1.0 + Math.Sqrt(1.0 - a2) + 1e-5;
-            Rmstable = InnermostStableOrbit();
+            this.angularMomentum = angularMomentum;
+            Init();
         }
 
         public KerrBlackHoleEquation(KerrBlackHoleEquation other)
-            : this(other.R0, other.thetaDegrees, other.phiDegrees, other.angularMomentum)
         {
+            R0 = other.R0;
+            theta0 = other.theta0;
+            phi0 = other.phi0;
+            angularMomentum = other.angularMomentum;
+            Init();
+        }
+
+        private void Init()
+        {
+            a2 = angularMomentum * angularMomentum;
+            Rhor = 1.0 + Math.Sqrt(1.0 - a2) + 1e-5;
+            Rmstable = InnermostStableOrbit();
         }
 
         /// <summary>
