@@ -3,7 +3,6 @@ using BlackHoleRaytracer.Hitable;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 
 namespace BlackHoleRaytracer
 {
@@ -11,13 +10,32 @@ namespace BlackHoleRaytracer
     {
         static void Main(string[] args)
         {
-            int n = 1;
 
+            // Set up some default parameters, which can be overridden by command line args.
             double r = 30; // distance from center
             double theta = 80; // vertical angle
             double phi = 75; // horizontal angle
+            string fileName = "image.png";
 
-            string fileName = Path.Combine(".", String.Format("image{0}.png", n));
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Equals("-r") && i < args.Length - 1)
+                {
+                    r = Double.Parse(args[i + 1]);
+                }
+                else if (args[i].Equals("-theta") && i < args.Length - 1)
+                {
+                    theta = Double.Parse(args[i + 1]);
+                }
+                else if (args[i].Equals("-phi") && i < args.Length - 1)
+                {
+                    phi = Double.Parse(args[i + 1]);
+                }
+                else if (args[i].Equals("-o") && i < args.Length - 1)
+                {
+                    fileName = args[i + 1];
+                }
+            }
 
             var equation = new KerrBlackHoleEquation(r, theta, phi);
 
@@ -31,8 +49,6 @@ namespace BlackHoleRaytracer
             });
 
             new RayProcessor(1000, 1000, scene, fileName).Process();
-
-            n++;
         }
     }
 }
