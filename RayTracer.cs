@@ -18,7 +18,7 @@ namespace BlackHoleRaytracer
         private List<IHitable> hitables;
 
         private bool trace;
-        public List<Tuple<double,double,double>> RayPoints { get; private set; }
+        public List<Tuple<double,double,double>> RayPoints { get; }
 
 
         public RayTracer(KerrBlackHoleEquation equation, int sizex, int sizey, List<IHitable> hitables,
@@ -28,10 +28,10 @@ namespace BlackHoleRaytracer
             this.sizex = sizex;
             this.sizey = sizey;
             this.cameraTilt = cameraTilt;
-            this.trace = trace;
             this.cameraYaw = cameraYaw;
             this.hitables = hitables;
-            
+
+            this.trace = trace;
             if (trace)
             {
                 RayPoints = new List<Tuple<double, double, double>>();
@@ -40,6 +40,10 @@ namespace BlackHoleRaytracer
 
         /// <summary>
         /// Shoot the ray through pixel (x1, y1).
+        /// 
+        /// Adapted from algorithms found at:
+        /// http://locklessinc.com/articles/raytracing/
+        /// https://github.com/stranger80/GraviRayTraceSharp
         /// </summary>
         /// <returns>Color of the pixel at the requested coordinates.</returns>
         public unsafe Color Calculate(double x1, double y1)
@@ -70,8 +74,6 @@ namespace BlackHoleRaytracer
                 (int)(yRot * tiltCos + xRot * tiltSin) * range
             );
             
-
-            // if tracing on, store the initial point
             if (trace)
             {
                 RayPoints.Clear();
@@ -126,8 +128,6 @@ namespace BlackHoleRaytracer
                     break;
                 }
                 
-
-                // if tracing on, store the calculated point
                 if (trace)
                 {
                     RayPoints.Add(new Tuple<double, double, double>(y[0], y[1], y[2]));

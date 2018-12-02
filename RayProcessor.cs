@@ -10,19 +10,19 @@ namespace BlackHoleRaytracer
 {
     class RayProcessor
     {
-        int sizex; 
-        int sizey; 
+        private int width;
+        private int height;
 
-        Scene scene;
+        private Scene scene;
 
         private int[] outputBitmap;
         private string outputFileName;
         
 
-        public RayProcessor(int sizex, int sizey, Scene scene, string outputFileName)
+        public RayProcessor(int width, int height, Scene scene, string outputFileName)
         {
-            this.sizex = sizex;
-            this.sizey = sizey;
+            this.width = width;
+            this.height = height;
             this.scene = scene;
             this.outputFileName = outputFileName;
         }
@@ -31,7 +31,7 @@ namespace BlackHoleRaytracer
         {
 
             // Create main bitmap for writing pixels
-            int bufferLength = sizex * sizey;
+            int bufferLength = width * height;
             outputBitmap = new int[bufferLength];
             
 
@@ -52,7 +52,7 @@ namespace BlackHoleRaytracer
                     JobId = i,
                     RayTracer = new RayTracer(
                             new KerrBlackHoleEquation(scene.equation),
-                            sizex, sizey, scene.hitables,
+                            width, height, scene.hitables,
                             scene.CameraTilt, scene.CameraYaw),
                     LinesList = lineList,
                     Thread = new Thread(new ParameterizedThreadStart(RayTraceThread)),
@@ -61,7 +61,7 @@ namespace BlackHoleRaytracer
             }
             
 
-            for (int j = 0; j < sizey; j++)
+            for (int j = 0; j < height; j++)
             {
                 lineLists[j % numThreads].Add(j);
             }
@@ -77,7 +77,7 @@ namespace BlackHoleRaytracer
 
 
             GCHandle gcHandle = GCHandle.Alloc(outputBitmap, GCHandleType.Pinned);
-            Bitmap resultBmp = new Bitmap(sizex, sizey, sizex * 4, PixelFormat.Format32bppArgb, gcHandle.AddrOfPinnedObject());
+            Bitmap resultBmp = new Bitmap(width, height, width * 4, PixelFormat.Format32bppArgb, gcHandle.AddrOfPinnedObject());
             resultBmp.Save(outputFileName, ImageFormat.Png);
             if (resultBmp != null) { resultBmp.Dispose(); resultBmp = null; }
             if (gcHandle.IsAllocated) { gcHandle.Free(); }
@@ -101,8 +101,8 @@ namespace BlackHoleRaytracer
             try
             {
                 foreach (int y in param.LinesList) {
-                    yOffset = (sizey - y - 1) * sizex;
-                    for (x = 0; x < sizex; x++)
+                    yOffset = (height - y - 1) * width;
+                    for (x = 0; x < width; x++)
                     {
                         
 
