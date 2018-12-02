@@ -40,11 +40,8 @@ namespace BlackHoleRaytracer
 
         /// <summary>
         /// Shoot the ray through pixel (x1, y1).
-        /// Returns color of the pixel.
         /// </summary>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        /// <returns></returns>
+        /// <returns>Color of the pixel at the requested coordinates.</returns>
         public unsafe Color Calculate(double x1, double y1)
         {
             Color? color = null;

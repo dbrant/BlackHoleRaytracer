@@ -8,18 +8,10 @@ namespace BlackHoleRaytracer
         /// <summary>
         /// Perform the integration.
         /// </summary>
-        /// <param name="equation"></param>
-        /// <param name="y"></param>
-        /// <param name="dydx"></param>
-        /// <param name="htry">Initial step of integration calculation</param>
-        /// <param name="escal">Error scale factor</param>
-        /// <param name="yscal"></param>
-        /// <param name="hdid">Adjusted integration step after the calculation</param>
-        /// <returns></returns>
-        unsafe public static double Integrate(IODESystem equation, double* y, double* dydx, double htry, double escal, double* yscal, out double hdid)
+        unsafe public static double Integrate(IODESystem equation, double* y, double* dydx, double hTry, double escal, double* yscal, out double hActual)
         {
             int i;
-            double errmax, h = htry, htemp, hnext;
+            double errmax, h = hTry, htemp, hnext;
             double* yerr = stackalloc double[equation.N];
             double* ytemp = stackalloc double[equation.N];
 
@@ -35,15 +27,11 @@ namespace BlackHoleRaytracer
                     double temp = Math.Abs(yerr[i] / yscal[i]);
                     if (temp > errmax) errmax = temp;
                 }
-
-                // Multiply by error scale factor and check if within accepted limits. 
-                // If yes - exit loop.
+                
                 errmax *= escal;
-                if (errmax <= 1.0) break;
-
-                // Adjust the step to be 0.9*h / (quartic root of adjusted error), but not less than 0.1*h
+                if (errmax <= 1.0) { break; }
+                
                 htemp = 0.9 * h / Math.Sqrt(Math.Sqrt(errmax));
-
                 h *= 0.1;
 
                 if (h >= 0.0)
@@ -60,7 +48,7 @@ namespace BlackHoleRaytracer
             // If error was small, increase step 5 times (to save computing time).
             hnext = errmax > 1.89e-4 ? hnext = 0.9 * h * Math.Pow(errmax, -0.2) : hnext = 5.0 * h;
 
-            hdid = h;
+            hActual = h;
 
             Util.memcpy((IntPtr)y, (IntPtr)ytemp, equation.N * sizeof(double));
 
@@ -84,12 +72,6 @@ namespace BlackHoleRaytracer
         ///      | 2825/27648 0       18575/48384 13525/55296  277/14336  1/4
         /// 
         /// </summary>
-        /// <param name="equation"></param>
-        /// <param name="y"></param>
-        /// <param name="dydx"></param>
-        /// <param name="h"></param>
-        /// <param name="yout"></param>
-        /// <param name="yerr"></param>
         unsafe public static void IntegrateStep(IODESystem equation, double* y, double* dydx, double h, double* yout, double* yerr)
         {
             int i;

@@ -61,7 +61,7 @@ namespace BlackHoleRaytracer.Equation
         /// <summary>
         /// Number of equations in the set
         /// </summary>
-        public int N { get { return 5; } }
+        public int N { get { return 6; } }
 
         /// <summary>
         /// Perform the actual function (geodesic) on the vector Y, and output the results to dYdX.
@@ -79,8 +79,8 @@ namespace BlackHoleRaytracer.Equation
 
             r = y[0];
             theta = y[1];
-            pr = y[3];
-            ptheta = y[4];
+            pr = y[4];
+            ptheta = y[5];
 
             double r2 = r * r;
             double twor = 2.0 * r;
@@ -89,33 +89,28 @@ namespace BlackHoleRaytracer.Equation
             sintheta = Math.Sin(theta);
             costheta = Math.Cos(theta);
             double cos2 = costheta * costheta;
-            double sin2 = sintheta * sintheta;
-
             double sigma = r2 + a2 * cos2;
             double delta = r2 - twor + a2;
             double sd = sigma * delta;
             double siginv = 1.0 / sigma;
-            double sigdelinv = 1.0 / sd;
+            double bot = 1.0 / sd;
             
-            if (sintheta < 1e-8)
-            {
-                sintheta = 1e-8;
-                sin2 = 1e-16;
-            }
+            if (sintheta < 1e-8) { sintheta = 1e-8; }
+            double sin2 = sintheta * sintheta;
 
             dydx[0] = -pr * delta * siginv;
             dydx[1] = -ptheta * siginv;
-            dydx[2] = -(twor * angularMomentum + (sigma - twor) * L / sin2) * sigdelinv;
+            dydx[2] = -(twor * angularMomentum + (sigma - twor) * L / sin2) * bot;
             //dydx[3] = -(1.0 + (twor * (r2 + a2) - twor * a * L) * sigdelinv); // this coef is not used anywhere!
-            dydx[3] = -(((r - 1.0) * (-kappa) + twor * (r2 + a2) - 2.0 * angularMomentum * L) * sigdelinv - 2.0 * pr * pr * (r - 1.0) * siginv);
-            dydx[4] = -sintheta * costheta * (L * L / (sin2 * sin2) - a2) * siginv;
+            dydx[4] = -(((r - 1.0) * (-kappa) + twor * (r2 + a2) - 2.0 * angularMomentum * L) * bot - 2.0 * pr * pr * (r - 1.0) * siginv);
+            dydx[5] = -sintheta * costheta * (L * L / (sin2 * sin2) - a2) * siginv;
         }
 
         /// <summary>
-        /// Set initial conditions for a starting point of the ray that is being simulated.
+        /// Set initial conditions for a starting point of the ray.
         /// </summary>
-        /// <param name="y0">Vector of coefficients describing state of the system.</param>
-        /// <param name="ydot0">Vector of ODE coefficients that is initialized by this funciton call</param>
+        /// <param name="y0">Vector of coefficients to be initialized.</param>
+        /// <param name="ydot0">Vector of coefficients that will receive the initial call to the geodesic.</param>
         /// <param name="x">x-coordinate of the ray</param>
         /// <param name="y">y-coordinate of the ray</param>
         public unsafe void SetInitialConditions(double* y0, double* ydot0, double x, double y)
@@ -138,8 +133,8 @@ namespace BlackHoleRaytracer.Equation
             double delta = r2 - 2.0 * R0 + a2;
             double s1 = sigma - 2.0 * R0;
 
-            y0[3] = rdot0 * sigma / delta;
-            y0[4] = thetadot0 * sigma;
+            y0[4] = rdot0 * sigma / delta;
+            y0[5] = thetadot0 * sigma;
 
             double sinx = Math.Sin(x);
             if (sinx < 1e-8 && sinx > -1e-8) { sinx = 1e-8; }
@@ -149,13 +144,13 @@ namespace BlackHoleRaytracer.Equation
             double energy = Math.Sqrt(energy2);
 
             // rescale
-            y0[3] = y0[3] / energy;
             y0[4] = y0[4] / energy;
+            y0[5] = y0[5] / energy;
 
             // Angular Momentum with E = 1
             L = ((sigma * delta * phidot0 - 2.0 * angularMomentum * R0 * energy) * sin2 / s1) / energy;
 
-            kappa = y0[4] * y0[4] + a2 * sin2 + L * L / sin2;
+            kappa = y0[5] * y0[5] + a2 * sin2 + L * L / sin2;
 
             // Hack - make sure everything is normalized correctly by a call to geodesic
             Function(y0, ydot0);
