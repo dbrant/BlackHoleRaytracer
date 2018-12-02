@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using BlackHoleRaytracer.Equation;
-using BlackHoleRaytracer.Helpers;
 using BlackHoleRaytracer.Mappings;
 
 namespace BlackHoleRaytracer.Hitable
@@ -21,7 +20,7 @@ namespace BlackHoleRaytracer.Hitable
             {
                 textureMap = new SphericalMapping(texture.Width, texture.Height);
                 textureWidth = texture.Width;
-                textureBitmap = MemHelper.getNativeTextureBitmap(texture);
+                textureBitmap = Util.getNativeTextureBitmap(texture);
             }
         }
 

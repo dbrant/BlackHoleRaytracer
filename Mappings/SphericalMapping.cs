@@ -5,7 +5,7 @@ namespace BlackHoleRaytracer.Mappings
     /// <summary>
     /// Maps flat texture onto a spherical surface expressed in spherical coordinates.
     /// </summary>
-    class SphericalMapping : IMapping
+    class SphericalMapping
     {
         private int SizeX;
         private int SizeY;

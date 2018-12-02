@@ -5,7 +5,7 @@ namespace BlackHoleRaytracer.Mappings
     /// <summary>
     /// Mapping of spherical coordinates of a disc onto a flat texture.
     /// </summary>
-    class DiscMapping : IMapping
+    class DiscMapping
     {
         private double rMin;
         private double rMax;
@@ -32,12 +32,6 @@ namespace BlackHoleRaytracer.Mappings
             if (x < 0) { x = sizeX + x; }
             y = (int)((r - rMin) / (rMax - rMin) * sizeY);
             if (y > sizeY - 1) { y = sizeY - 1; }
-        }
-
-        public void MapCartesian(double x, double y, double z, out int u, out int v)
-        {
-            u = 0;
-            v = 0;
         }
     }
 }

@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
-namespace BlackHoleRaytracer.Helpers
+namespace BlackHoleRaytracer
 {
-    /// <summary>
-    /// Rudimentary RGB color operations.
-    /// </summary>
-    public class ColorHelper
+    public class Util
     {
-        /// <summary>
-        /// Method to add/sum two colors.
-        /// </summary>
-        /// <param name="hitColor"></param>
-        /// <param name="tintColor"></param>
-        /// <returns></returns>
+        public static int[] getNativeTextureBitmap(Bitmap texture)
+        {
+            int[] textureBitmap = new int[texture.Width * texture.Height];
+            BitmapData bmpData = texture.LockBits(new Rectangle(0, 0, texture.Width, texture.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            Marshal.Copy(bmpData.Scan0, textureBitmap, 0, textureBitmap.Length);
+            texture.UnlockBits(bmpData);
+            return textureBitmap;
+        }
+
+        [DllImport("msvcrt.dll", SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr memcpy(IntPtr dest, IntPtr src, int count);
+
         public static Color AddColor(Color hitColor, Color tintColor)
         {
             float brightness = tintColor.GetBrightness();
@@ -24,18 +29,7 @@ namespace BlackHoleRaytracer.Helpers
                 );
             return result;
         }
-
-        /// <summary>
-        /// Colour distance metric
-        /// </summary>
-        /// <param name="c1"></param>
-        /// <param name="c2"></param>
-        /// <returns></returns>
-        public static double ColorDifference(Color c1, Color c2)
-        {
-            return Math.Sqrt(Math.Pow(c1.R - c2.R, 2) + Math.Pow(c1.G - c2.G, 2) + Math.Pow(c1.B - c2.B, 2));
-        }
-
+        
         private static int Cap(int x, int max)
         {
             return x > max ? max : x;
@@ -45,8 +39,5 @@ namespace BlackHoleRaytracer.Helpers
         {
             return x < min ? min : x;
         }
-
-
-
     }
 }

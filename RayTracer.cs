@@ -1,5 +1,4 @@
 ﻿using BlackHoleRaytracer.Equation;
-using BlackHoleRaytracer.Helpers;
 using BlackHoleRaytracer.Hitable;
 using System;
 using System.Collections.Generic;
@@ -97,12 +96,12 @@ namespace BlackHoleRaytracer
                 {
                     yscal[i] = Math.Abs(y[i]) + Math.Abs(dydx[i] * htry) + 1.0e-3;
                 }
-                
+
                 // Preserve the current Y, in case we need to converge on an intersection.
-                MemHelper.memcpy((IntPtr)yPrev, (IntPtr)y, equation.N * sizeof(double));
+                Util.memcpy((IntPtr)yPrev, (IntPtr)y, equation.N * sizeof(double));
                 
                 // Take the actual next step for the ray...
-                hnext = RungeKuttaEngine.RKIntegrate(equation, y, dydx, htry, escal, yscal, out hdid);
+                hnext = RungeKutta.Integrate(equation, y, dydx, htry, escal, yscal, out hdid);
 
                 // Check if the ray hits anything
                 foreach (var hitable in hitables)
@@ -112,7 +111,7 @@ namespace BlackHoleRaytracer
                     {
                         if (color != null)
                         {
-                            color = ColorHelper.AddColor(tempColor, color.Value);
+                            color = Util.AddColor(tempColor, color.Value);
                         }
                         else
                         {

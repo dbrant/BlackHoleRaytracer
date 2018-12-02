@@ -1,10 +1,9 @@
 ﻿using BlackHoleRaytracer.Equation;
-using BlackHoleRaytracer.Helpers;
 using System;
 
 namespace BlackHoleRaytracer
 {
-    public class RungeKuttaEngine
+    public class RungeKutta
     {
         /// <summary>
         /// Perform the integration.
@@ -17,7 +16,7 @@ namespace BlackHoleRaytracer
         /// <param name="yscal"></param>
         /// <param name="hdid">Adjusted integration step after the calculation</param>
         /// <returns></returns>
-        unsafe public static double RKIntegrate(IODESystem equation, double* y, double* dydx, double htry, double escal, double* yscal, out double hdid)
+        unsafe public static double Integrate(IODESystem equation, double* y, double* dydx, double htry, double escal, double* yscal, out double hdid)
         {
             int i;
             double errmax, h = htry, htemp, hnext;
@@ -27,7 +26,7 @@ namespace BlackHoleRaytracer
             while (true)
             {
                 // Run a single step of integration using step h 
-                RKIntegrateStep(equation, y, dydx, h, ytemp, yerr);
+                IntegrateStep(equation, y, dydx, h, ytemp, yerr);
 
                 // Find the maximum calculation error of all equations after the calculation step
                 errmax = 0.0;
@@ -63,7 +62,7 @@ namespace BlackHoleRaytracer
 
             hdid = h;
 
-            MemHelper.memcpy((IntPtr)y, (IntPtr)ytemp, equation.N * sizeof(double));
+            Util.memcpy((IntPtr)y, (IntPtr)ytemp, equation.N * sizeof(double));
 
             return hnext;
         }
@@ -91,7 +90,7 @@ namespace BlackHoleRaytracer
         /// <param name="h"></param>
         /// <param name="yout"></param>
         /// <param name="yerr"></param>
-        unsafe public static void RKIntegrateStep(IODESystem equation, double* y, double* dydx, double h, double* yout, double* yerr)
+        unsafe public static void IntegrateStep(IODESystem equation, double* y, double* dydx, double h, double* yout, double* yerr)
         {
             int i;
             double* ak = stackalloc double[equation.N];

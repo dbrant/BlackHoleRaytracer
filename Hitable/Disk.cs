@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using BlackHoleRaytracer.Equation;
-using BlackHoleRaytracer.Helpers;
 using BlackHoleRaytracer.Mappings;
 
 namespace BlackHoleRaytracer.Hitable
@@ -25,7 +24,7 @@ namespace BlackHoleRaytracer.Hitable
             {
                 textureMap = new DiscMapping(radiusInner, radiusOuter, texture.Width, texture.Height);
                 textureWidth = texture.Width;
-                textureBitmap = MemHelper.getNativeTextureBitmap(texture);
+                textureBitmap = Util.getNativeTextureBitmap(texture);
             }
         }
 
@@ -41,10 +40,10 @@ namespace BlackHoleRaytracer.Hitable
             {
                 // remember the current values of Y, so that we can restore them after the intersection search.
                 double* yCurrent = stackalloc double[equation.N];
-                MemHelper.memcpy((IntPtr)yCurrent, (IntPtr)y, equation.N * sizeof(double));
+                Util.memcpy((IntPtr)yCurrent, (IntPtr)y, equation.N * sizeof(double));
 
                 //  Overwrite Y with its previous values, and perform the binary intersection search.
-                MemHelper.memcpy((IntPtr)y, (IntPtr)prevY, equation.N * sizeof(double));
+                Util.memcpy((IntPtr)y, (IntPtr)prevY, equation.N * sizeof(double));
 
                 IntersectionSearch(y, dydx, hdid, equation);
 
@@ -69,7 +68,7 @@ namespace BlackHoleRaytracer.Hitable
                 }
 
                 // ...and reset Y to its original current values.
-                MemHelper.memcpy((IntPtr)y, (IntPtr)yCurrent, equation.N * sizeof(double));
+                Util.memcpy((IntPtr)y, (IntPtr)yCurrent, equation.N * sizeof(double));
             }
             return success;
         }
@@ -119,16 +118,16 @@ namespace BlackHoleRaytracer.Hitable
 
                     if (Math.Abs(hdiff) < 1e-7)
                     {
-                        RungeKuttaEngine.RKIntegrateStep(equation, y, dydx, hupper, yout, yerr);
+                        RungeKutta.IntegrateStep(equation, y, dydx, hupper, yout, yerr);
 
-                        MemHelper.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
+                        Util.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
 
                         return;
                     }
 
                     double hmid = (hupper + hlower) / 2;
 
-                    RungeKuttaEngine.RKIntegrateStep(equation, y, dydx, hmid, yout, yerr);
+                    RungeKutta.IntegrateStep(equation, y, dydx, hmid, yout, yerr);
 
                     if (side * (yout[1] - Math.PI / 2) > 0)
                     {

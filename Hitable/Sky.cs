@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using BlackHoleRaytracer.Equation;
-using BlackHoleRaytracer.Helpers;
 using BlackHoleRaytracer.Mappings;
 
 namespace BlackHoleRaytracer.Hitable
@@ -18,7 +17,7 @@ namespace BlackHoleRaytracer.Hitable
             {
                 textureMap = new SphericalMapping(texture.Width, texture.Height);
                 textureWidth = texture.Width;
-                textureBitmap = MemHelper.getNativeTextureBitmap(texture);
+                textureBitmap = Util.getNativeTextureBitmap(texture);
             }
         }
 
@@ -28,7 +27,7 @@ namespace BlackHoleRaytracer.Hitable
             if (y[0] > equation.R0)
             {
                 // Restore Y to its previous values, and perform the binary intersection search.
-                MemHelper.memcpy((IntPtr)y, (IntPtr)prevY, equation.N * sizeof(double));
+                Util.memcpy((IntPtr)y, (IntPtr)prevY, equation.N * sizeof(double));
 
                 IntersectionSearch(y, dydx, hdid, equation);
 
@@ -64,15 +63,15 @@ namespace BlackHoleRaytracer.Hitable
 
                     if (Math.Abs(hdiff) < 1e-7)
                     {
-                        RungeKuttaEngine.RKIntegrateStep(equation, y, dydx, hupper, yout, yerr);
+                        RungeKutta.IntegrateStep(equation, y, dydx, hupper, yout, yerr);
 
-                        MemHelper.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
+                        Util.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
                         return;
                     }
 
                     double hmid = (hupper + hlower) / 2;
 
-                    RungeKuttaEngine.RKIntegrateStep(equation, y, dydx, hmid, yout, yerr);
+                    RungeKutta.IntegrateStep(equation, y, dydx, hmid, yout, yerr);
 
                     if (yout[0] < equation.R0)
                     {
