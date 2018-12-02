@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using BlackHoleRaytracer.Equation;
+using BlackHoleRaytracer.Mappings;
 
 namespace BlackHoleRaytracer.Hitable
 {
@@ -8,9 +11,23 @@ namespace BlackHoleRaytracer.Hitable
     {
         private bool checkered;
 
-        public Horizon(bool checkered)
+        private SphericalMapping textureMap;
+        private int textureWidth;
+        private int[] textureBitmap;
+
+        public Horizon(Bitmap texture, bool checkered)
         {
             this.checkered = checkered;
+            if (texture != null)
+            {
+                textureMap = new SphericalMapping(texture.Width, texture.Height);
+                textureWidth = texture.Width;
+
+                textureBitmap = new int[texture.Width * texture.Height];
+                BitmapData diskBits = texture.LockBits(new Rectangle(0, 0, texture.Width, texture.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                Marshal.Copy(diskBits.Scan0, textureBitmap, 0, textureBitmap.Length);
+                texture.UnlockBits(diskBits);
+            }
         }
 
         public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop)
@@ -31,6 +48,13 @@ namespace BlackHoleRaytracer.Hitable
                     {
                         color = Color.Green;
                     }
+                }
+                else if (textureBitmap != null)
+                {
+                    int xPos, yPos;
+                    textureMap.Map(y[0], y[1], -y[2], out xPos, out yPos);
+
+                    color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 }
                 else
                 {
