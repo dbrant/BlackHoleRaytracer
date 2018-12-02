@@ -25,16 +25,13 @@ namespace BlackHoleRaytracer.Hitable
             this.checkered = checkered;
             if (texture != null)
             {
-                lock (texture)
-                {
-                    textureMap = new DiscMapping(radiusInner, radiusOuter, texture.Width, texture.Height);
-                    textureWidth = texture.Width;
-                    
-                    textureBitmap = new int[texture.Width * texture.Height];
-                    BitmapData diskBits = texture.LockBits(new Rectangle(0, 0, texture.Width, texture.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                    Marshal.Copy(diskBits.Scan0, textureBitmap, 0, textureBitmap.Length);
-                    texture.UnlockBits(diskBits);
-                }
+                textureMap = new DiscMapping(radiusInner, radiusOuter, texture.Width, texture.Height);
+                textureWidth = texture.Width;
+
+                textureBitmap = new int[texture.Width * texture.Height];
+                BitmapData diskBits = texture.LockBits(new Rectangle(0, 0, texture.Width, texture.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                Marshal.Copy(diskBits.Scan0, textureBitmap, 0, textureBitmap.Length);
+                texture.UnlockBits(diskBits);
             }
         }
 
