@@ -1,4 +1,7 @@
-﻿
+﻿using BlackHoleRaytracer.Equation;
+using BlackHoleRaytracer.Hitable;
+using System.Collections.Generic;
+
 namespace BlackHoleRaytracer
 {
     public class Scene
@@ -29,17 +32,23 @@ namespace BlackHoleRaytracer
         /// </summary>
         public double CameraYaw { get; }
 
-        public Scene(double r, double phi, double theta)
+        public List<IHitable> hitables { get; }
+
+        public KerrBlackHoleEquation equation { get; }
+
+        public Scene(double r, double theta, double phi, KerrBlackHoleEquation equation, List<IHitable> hitables)
         {
-            CameraAngle = phi;
             CameraDistance = r;
+            CameraAngle = phi;
             CameraInclination = theta;
             CameraTilt = 0;
             CameraYaw = 0;
+            this.equation = equation;
+            this.hitables = hitables;
         }
 
-        public Scene(double r, double phi, double theta, double tilt, double yaw)
-            : this(r, phi, theta)
+        public Scene(double r, double theta, double phi, double tilt, double yaw, KerrBlackHoleEquation equation, List<IHitable> hitables)
+            : this(r, phi, theta, equation, hitables)
         {
             CameraTilt = tilt;
             CameraYaw = yaw;

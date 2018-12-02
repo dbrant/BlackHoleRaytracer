@@ -5,7 +5,6 @@ using System.Drawing.Imaging;
 using System.Threading;
 using BlackHoleRaytracer.Equation;
 using System.Runtime.InteropServices;
-using BlackHoleRaytracer.Hitable;
 
 namespace BlackHoleRaytracer
 {
@@ -43,20 +42,7 @@ namespace BlackHoleRaytracer
 
             List<List<int>> lineLists = new List<List<int>>();
             List<RayTracerThreadParams> paramList = new List<RayTracerThreadParams>();
-
-
-            var equation = new KerrBlackHoleEquation(scene.CameraDistance, scene.CameraInclination, scene.CameraAngle);
-
-            List<IHitable> hitables = new List<IHitable>
-            {
-                new Disk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg"), true),
-                new Horizon(null, false),
-                new Sky(new Bitmap("sky_16k.jpg")),
-                //new Sphere(12, 7, 3, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true),
-                //new Sphere(-10, -10, -10, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true)
-            };
-
-
+            
             for (int i = 0; i < numThreads; i++)
             {
                 var lineList = new List<int>();
@@ -65,8 +51,8 @@ namespace BlackHoleRaytracer
                 {
                     JobId = i,
                     RayTracer = new RayTracer(
-                            new KerrBlackHoleEquation(equation),
-                            sizex, sizey, hitables,
+                            new KerrBlackHoleEquation(scene.equation),
+                            sizex, sizey, scene.hitables,
                             scene.CameraTilt, scene.CameraYaw),
                     LinesList = lineList,
                     Thread = new Thread(new ParameterizedThreadStart(RayTraceThread)),
