@@ -2,11 +2,18 @@
 
 namespace BlackHoleRaytracer.Equation
 {
+    /// <summary>
+    /// Encapsulation of the Kerr model, borrowed from:
+    /// http://locklessinc.com/articles/raytracing/
+    /// 
+    /// Note: this class is not thread-safe - setting initial conditions
+    /// will overwrite certain private variables.
+    /// </summary>
     public class KerrBlackHoleEquation : IODESystem
     {
         // Motion constants
         private double L; // angular momentum in phi direction
-        private double K; // Carter's constant's element
+        private double kappa; // Carter's constant's element
         private double angularMomentum;
         private double a2; // a-squared
 
@@ -15,9 +22,15 @@ namespace BlackHoleRaytracer.Equation
         public double R0 { get; private set; }
         private double theta0;
         private double phi0;
-
-        // Dimensions of the accretion disk
+        
+        /// <summary>
+        /// Radius of event horizon.
+        /// </summary>
         public double Rhor { get; private set; }
+        
+        /// <summary>
+        /// Radius of innermost stable orbit.
+        /// </summary>
         public double Rmstable { get; private set; }
         
         public KerrBlackHoleEquation(double rDistance, double thetaDegrees, double phiDegrees, double angularMomentum)
@@ -49,13 +62,17 @@ namespace BlackHoleRaytracer.Equation
         /// Number of equations in the set
         /// </summary>
         public int N { get { return 5; } }
-        
+
         /// <summary>
-        /// Function returning the equations that are included in the ODE system.
-        /// Coupled differential equations describing motion of photon.
+        /// Perform the actual function (geodesic) on the vector Y, and output the results to dYdX.
+        /// 
+        /// y[0] = r
+        /// y[1] = theta
+        /// y[2] = phi
+        /// y[3] = momentum in r direction
+        /// y[4] = momentum in theta direction
+        /// y[5] = momentum in phi direction
         /// </summary>
-        /// <param name="y">Vector describing current state of the ODE system</param>
-        /// <param name="dydx">Coefficient vector of the differential equations</param>
         public unsafe void Function(double* y, double* dydx)
         {
             double r, theta, pr, ptheta;
@@ -90,7 +107,7 @@ namespace BlackHoleRaytracer.Equation
             dydx[1] = -ptheta * siginv;
             dydx[2] = -(twor * angularMomentum + (sigma - twor) * L / sin2) * sigdelinv;
             //dydx[3] = -(1.0 + (twor * (r2 + a2) - twor * a * L) * sigdelinv); // this coef is not used anywhere!
-            dydx[3] = -(((r - 1.0) * (-K) + twor * (r2 + a2) - 2.0 * angularMomentum * L) * sigdelinv - 2.0 * pr * pr * (r - 1.0) * siginv);
+            dydx[3] = -(((r - 1.0) * (-kappa) + twor * (r2 + a2) - 2.0 * angularMomentum * L) * sigdelinv - 2.0 * pr * pr * (r - 1.0) * siginv);
             dydx[4] = -sintheta * costheta * (L * L / (sin2 * sin2) - a2) * siginv;
         }
 
@@ -125,24 +142,22 @@ namespace BlackHoleRaytracer.Equation
             y0[4] = thetadot0 * sigma;
 
             double sinx = Math.Sin(x);
-            if (sinx < 1e-8 && sinx > -1e-8)
-            {
-                sinx = 1e-8;
-            }
-            double phidot0 = Math.Cos(y) * sinx / Math.Sin(theta0);
-            double energy2 = s1 * (rdot0 * rdot0 / delta + thetadot0 * thetadot0)
-                            + delta * sin2 * phidot0 * phidot0;
+            if (sinx < 1e-8 && sinx > -1e-8) { sinx = 1e-8; }
 
+            double phidot0 = Math.Cos(y) * sinx / Math.Sin(theta0);
+            double energy2 = s1 * (rdot0 * rdot0 / delta + thetadot0 * thetadot0) + delta * sin2 * phidot0 * phidot0;
             double energy = Math.Sqrt(energy2);
 
+            // rescale
             y0[3] = y0[3] / energy;
             y0[4] = y0[4] / energy;
 
+            // Angular Momentum with E = 1
             L = ((sigma * delta * phidot0 - 2.0 * angularMomentum * R0 * energy) * sin2 / s1) / energy;
 
-            K = y0[4] * y0[4] + a2 * sin2 + L * L / sin2;
+            kappa = y0[4] * y0[4] + a2 * sin2 + L * L / sin2;
 
-            // Call the ODE function to scale the starting point by energy factor
+            // Hack - make sure everything is normalized correctly by a call to geodesic
             Function(y0, ydot0);
         }
         
