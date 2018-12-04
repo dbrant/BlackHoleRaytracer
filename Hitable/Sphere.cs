@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Numerics;
 using BlackHoleRaytracer.Equation;
 using BlackHoleRaytracer.Mappings;
 
@@ -7,10 +8,11 @@ namespace BlackHoleRaytracer.Hitable
 {
     public class Sphere : IHitable
     {
-        private double centerX;
-        private double centerY;
-        private double centerZ;
-        private double radius;
+        protected double centerX;
+        protected double centerY;
+        protected double centerZ;
+        protected double radius;
+        protected Vector3 center;
 
         private bool checkered;
         
@@ -25,6 +27,7 @@ namespace BlackHoleRaytracer.Hitable
             this.centerZ = centerZ;
             this.radius = radius;
             this.checkered = checkered;
+            center = new Vector3((float)centerX, (float)centerY, (float)centerZ);
             if (texture != null)
             {
                 textureMap = new SphericalMapping(texture.Width, texture.Height);
@@ -33,7 +36,7 @@ namespace BlackHoleRaytracer.Hitable
             }
         }
 
-        public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop)
+        public override unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
         {
             double tempX = 0, tempY = 0, tempZ = 0;
             ToCartesian(y[0], y[1], y[2], ref tempX, ref tempY, ref tempZ);
@@ -48,15 +51,16 @@ namespace BlackHoleRaytracer.Hitable
 
                 IntersectionSearch(y, dydx, hdid, equation);
 
-                // transform impact coordinates to spherical coordinates relative to center of sphere
+                // transform impact coordinates to cartesian coordinates relative to center of sphere.
                 ToCartesian(y[0], y[1], y[2], ref tempX, ref tempY, ref tempZ);
-                tempX = centerX - tempX;
-                tempY = centerY - tempY;
-                tempZ = centerZ - tempZ;
 
+                var impact = new Vector3((float)tempX, (float)tempY, (float)tempZ);
+                var impactFromCenter = Vector3.Normalize(impact - center);
+                
+                // and now transform to spherical coordinates relative to center of sphere.
                 double tempR = 0, tempTheta = 0, tempPhi = 0;
-                ToSpherical(tempX, tempY, tempZ, ref tempR, ref tempTheta, ref tempPhi);
-
+                ToSpherical(impactFromCenter.X, impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
+                                
                 if (checkered)
                 {
                     var m1 = DoubleMod(tempPhi, 1.04719); // Pi / 3
@@ -73,8 +77,15 @@ namespace BlackHoleRaytracer.Hitable
                 }
                 else
                 {
+                    // rotate by 180 degrees
+                    tempPhi += Math.PI;
+
+                    // and retransform into cartesian coordinates
+                    ToCartesian(tempR, tempTheta, tempPhi, ref tempX, ref tempY, ref tempZ);
+                    impactFromCenter = new Vector3((float)tempX, (float)tempY, (float)tempZ);
+
                     int xPos, yPos;
-                    textureMap.MapCartesian(tempX, tempY, tempZ, out xPos, out yPos);
+                    textureMap.MapCartesian(-impactFromCenter.X, impactFromCenter.Z, impactFromCenter.Y, out xPos, out yPos);
 
                     color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 }
@@ -85,27 +96,27 @@ namespace BlackHoleRaytracer.Hitable
             return false;
         }
         
-        private static void ToCartesian(double r, double theta, double phi, ref double x, ref double y, ref double z)
+        public static void ToCartesian(double r, double theta, double phi, ref double x, ref double y, ref double z)
         {
             x = r * Math.Cos(phi) * Math.Sin(theta);
             y = r * Math.Sin(phi) * Math.Sin(theta);
             z = r * Math.Cos(theta);
         }
 
-        private static void ToSpherical(double x, double y, double z, ref double r, ref double theta, ref double phi)
+        public static void ToSpherical(double x, double y, double z, ref double r, ref double theta, ref double phi)
         {
             r = Math.Sqrt(x*x + y*y + z*z);
-            theta = Math.Atan(y / x);
-            phi = Math.Atan(Math.Sqrt(x*x + y*y) / z);
+            phi = Math.Atan(y / x);
+            theta = Math.Acos(z / r);
         }
 
-        private static double DoubleMod(double n, double m)
+        protected static double DoubleMod(double n, double m)
         {
             double x = Math.Floor(n / m);
             return n - (m * x);
         }
 
-        private unsafe void IntersectionSearch(double* y, double* dydx, double hupper, KerrBlackHoleEquation equation)
+        protected unsafe void IntersectionSearch(double* y, double* dydx, double hupper, KerrBlackHoleEquation equation)
         {
             unsafe
             {

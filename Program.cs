@@ -14,7 +14,7 @@ namespace BlackHoleRaytracer
             // Set up some default parameters, which can be overridden by command line args.
             double r = 30; // distance from center
             double theta = 87; // vertical angle
-            double phi = 45; // horizontal angle
+            double phi = 0; // horizontal angle
             double angularMomentum = 0;
             string fileName = "image.png";
 
@@ -48,12 +48,13 @@ namespace BlackHoleRaytracer
             {
                 new Disk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg"), true),
                 new Horizon(null, false),
-                new Sky(new Bitmap("sky_16k.jpg")),
-                //new Sphere(12, 7, 3, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true),
-                //new Sphere(-10, -10, -10, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true)
+                new Sky(new Bitmap("skymap_8k.jpg")),
+                //new ReflectiveSphere(12, 0, 3, 1),
+                new Sphere(24, 0, 2, 1, new Bitmap("gstar.jpg"), false),
+                new Sphere(-10, -10, -10, 1, new Bitmap("gstar.jpg"), false)
             });
 
-            new RayProcessor(1000, 1000, scene, fileName).Process();
+            new RayProcessor(500, 500, scene, fileName).Process();
         }
     }
 }

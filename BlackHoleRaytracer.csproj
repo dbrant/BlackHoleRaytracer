@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Equation\IODESystem.cs" />
+    <Compile Include="Hitable\IHitable.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Equation\KerrBlackHoleEquation.cs" />
     <Compile Include="Hitable\Horizon.cs" />
@@ -53,7 +54,6 @@
     <Compile Include="RayProcessor.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="RungeKutta.cs" />
-    <Compile Include="Hitable\IHitable.cs" />
     <Compile Include="Hitable\Disk.cs" />
   </ItemGroup>
   <ItemGroup>

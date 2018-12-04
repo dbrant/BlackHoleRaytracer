@@ -106,7 +106,7 @@ namespace BlackHoleRaytracer
                 foreach (var hitable in hitables)
                 {
                     stop = false;
-                    if (hitable.Hit(y, yPrev, dydx, hdid, equation, ref tempColor, ref stop))
+                    if (hitable.Hit(y, yPrev, dydx, hdid, equation, ref tempColor, ref stop, trace))
                     {
                         if (color != null)
                         {

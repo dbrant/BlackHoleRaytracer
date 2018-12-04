@@ -24,7 +24,7 @@ namespace BlackHoleRaytracer.Hitable
             }
         }
 
-        public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop)
+        public override unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
         {
             // Has the ray fallen past the horizon?
             if (y[0] < equation.Rhor)
