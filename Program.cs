@@ -50,8 +50,8 @@ namespace BlackHoleRaytracer
                 new Horizon(null, false),
                 new Sky(new Bitmap("skymap_8k.jpg")),
                 //new ReflectiveSphere(12, 0, 3, 1),
-                new Sphere(24, 0, 2, 1, new Bitmap("gstar.jpg"), false),
-                new Sphere(-10, -10, -10, 1, new Bitmap("gstar.jpg"), false)
+                new TexturedSphere(24, 0, 2, 1, new Bitmap("gstar.jpg")),
+                new CheckeredSphere(-10, -10, -10, 1, Color.RoyalBlue, Color.DarkBlue)
             });
 
             new RayProcessor(500, 500, scene, fileName).Process();

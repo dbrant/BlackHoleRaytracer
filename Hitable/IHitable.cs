@@ -3,8 +3,8 @@ using BlackHoleRaytracer.Equation;
 
 namespace BlackHoleRaytracer.Hitable
 {
-    public abstract class IHitable
+    public interface IHitable
     {
-        public abstract unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug);
+        unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug);
     }
 }
