@@ -3,6 +3,7 @@ using BlackHoleRaytracer.Hitable;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace BlackHoleRaytracer
 {
@@ -18,7 +19,7 @@ namespace BlackHoleRaytracer
         private List<IHitable> hitables;
 
         private bool trace;
-        public List<Tuple<double,double,double>> RayPoints { get; }
+        public List<Tuple<double,double,double>> RayPoints { get; private set; }
 
 
         public RayTracer(KerrBlackHoleEquation equation, int sizex, int sizey, List<IHitable> hitables,
@@ -48,6 +49,19 @@ namespace BlackHoleRaytracer
         /// <returns>Color of the pixel at the requested coordinates.</returns>
         public unsafe Color Calculate(double x1, double y1)
         {
+
+
+            if (x1 == 100 && y1 == 141)
+            {
+                trace = true;
+                RayPoints = new List<Tuple<double, double, double>>();
+            } else
+            {
+                trace = false;
+            }
+
+
+
             Color? color = null;
             Color tempColor = Color.Black;
 
@@ -106,7 +120,7 @@ namespace BlackHoleRaytracer
                 foreach (var hitable in hitables)
                 {
                     stop = false;
-                    if (hitable.Hit(y, yPrev, dydx, hdid, equation, ref tempColor, ref stop))
+                    if (hitable.Hit(y, yPrev, dydx, hdid, equation, ref tempColor, ref stop, trace))
                     {
                         if (color != null)
                         {
@@ -135,7 +149,7 @@ namespace BlackHoleRaytracer
 
                 htry = hnext;
 
-                if (rCount++ > 1000000) // failsafe...
+                if (rCount++ > 10000) // failsafe...
                 {
                     Console.WriteLine("Error - solution not converging!");
                     color = Color.Fuchsia;
@@ -143,8 +157,43 @@ namespace BlackHoleRaytracer
                 }
             }
 
+
+
+
+            if (trace)
+            {
+                using (var file = File.CreateText("ray.txt"))
+                {
+                    foreach (var point in RayPoints)
+                    {
+                        var cartPoint = SphericalToCartesian(point);
+                        file.WriteLine(String.Format("{0:0.000000}\t{1:0.000000}", cartPoint.Item1, cartPoint.Item3));
+                    }
+                    file.Close();
+                }
+            }
+
+
+
+
+
             return (Color)color;
         }
-        
+
+
+
+
+        public static Tuple<double, double, double> SphericalToCartesian(Tuple<double, double, double> point)
+        {
+            return new Tuple<double, double, double>(
+                point.Item1 * Math.Cos(point.Item3) * Math.Sin(point.Item2),
+                point.Item1 * Math.Sin(point.Item3) * Math.Sin(point.Item2),
+                point.Item1 * Math.Cos(point.Item2)
+                );
+        }
+
+
+
+
     }
 }

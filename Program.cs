@@ -46,10 +46,11 @@ namespace BlackHoleRaytracer
 
             var scene = new Scene(r, theta, phi, equation, new List<IHitable>
             {
-                new Disk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg"), true),
+                new Disk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg"), false),
                 new Horizon(null, false),
                 new Sky(new Bitmap("sky_16k.jpg")),
-                //new Sphere(12, 7, 3, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true),
+                //new ReflectiveSphere(0, 6, 3, 1),
+                //new Sphere(0, 6, 6, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true),
                 //new Sphere(-10, -10, -10, 1, /*new Bitmap("earthmap1k.jpg")*/ null, true)
             });
 

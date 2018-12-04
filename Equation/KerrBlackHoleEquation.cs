@@ -101,7 +101,7 @@ namespace BlackHoleRaytracer.Equation
             dydx[0] = -pr * delta * siginv;
             dydx[1] = -ptheta * siginv;
             dydx[2] = -(twor * angularMomentum + (sigma - twor) * L / sin2) * bot;
-            //dydx[3] = -(1.0 + (twor * (r2 + a2) - twor * a * L) * sigdelinv); // this coef is not used anywhere!
+            //dydx[3] = -(1.0 + (twor * (r2 + a2) - twor * angularMomentum * L) * bot);
             dydx[4] = -(((r - 1.0) * (-kappa) + twor * (r2 + a2) - 2.0 * angularMomentum * L) * bot - 2.0 * pr * pr * (r - 1.0) * siginv);
             dydx[5] = -sintheta * costheta * (L * L / (sin2 * sin2) - a2) * siginv;
         }

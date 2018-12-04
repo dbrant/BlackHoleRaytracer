@@ -28,7 +28,7 @@ namespace BlackHoleRaytracer.Hitable
             }
         }
 
-        public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop)
+        public override unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool trace)
         {
             // Remember what side of the theta-plane we're currently on, so that we can detect
             // whether we've crossed the plane after stepping.
