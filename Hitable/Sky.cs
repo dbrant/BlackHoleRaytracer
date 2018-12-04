@@ -10,6 +10,7 @@ namespace BlackHoleRaytracer.Hitable
         private SphericalMapping textureMap;
         private int textureWidth;
         private int[] textureBitmap;
+        private double textureOffset = 0;
 
         public Sky(Bitmap texture)
         {
@@ -19,6 +20,12 @@ namespace BlackHoleRaytracer.Hitable
                 textureWidth = texture.Width;
                 textureBitmap = Util.getNativeTextureBitmap(texture);
             }
+        }
+
+        public Sky SetTextureOffset(double offset)
+        {
+            textureOffset = offset;
+            return this;
         }
 
         public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
@@ -32,7 +39,7 @@ namespace BlackHoleRaytracer.Hitable
                 IntersectionSearch(y, dydx, hdid, equation);
 
                 int xPos, yPos;
-                textureMap.Map(y[0], y[1], y[2], out xPos, out yPos);
+                textureMap.Map(y[0], y[1], y[2] + textureOffset, out xPos, out yPos);
 
                 color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 stop = true;
