@@ -40,8 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Equation\IODESystem.cs" />
+    <Compile Include="Hitable\CheckeredDisk.cs" />
     <Compile Include="Hitable\CheckeredSphere.cs" />
     <Compile Include="Hitable\IHitable.cs" />
+    <Compile Include="Hitable\TexturedDisk.cs" />
     <Compile Include="Hitable\TexturedSphere.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Equation\KerrBlackHoleEquation.cs" />

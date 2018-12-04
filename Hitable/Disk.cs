@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using BlackHoleRaytracer.Equation;
-using BlackHoleRaytracer.Mappings;
 
 namespace BlackHoleRaytracer.Hitable
 {
@@ -9,23 +8,16 @@ namespace BlackHoleRaytracer.Hitable
     {
         double radiusInner;
         double radiusOuter;
-
-        private bool checkered;
-        private DiscMapping textureMap;
-        private int textureWidth;
-        private int[] textureBitmap;
-
-        public Disk(double radiusInner, double radiusOuter, Bitmap texture, bool checkered)
+        
+        public Disk(double radiusInner, double radiusOuter)
         {
             this.radiusInner = radiusInner;
             this.radiusOuter = radiusOuter;
-            this.checkered = checkered;
-            if (texture != null)
-            {
-                textureMap = new DiscMapping(radiusInner, radiusOuter, texture.Width, texture.Height);
-                textureWidth = texture.Width;
-                textureBitmap = Util.getNativeTextureBitmap(texture);
-            }
+        }
+
+        protected virtual Color GetColor(int side, double r, double theta, double phi)
+        {
+            return Color.White;
         }
 
         public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
@@ -50,19 +42,8 @@ namespace BlackHoleRaytracer.Hitable
                 // Is the ray within the accretion disk?
                 if ((y[0] >= radiusInner) && (y[0] <= radiusOuter))
                 {
-                    if (checkered)
-                    {
-                        var m1 = Util.DoubleMod(y[2], 1.04719);
-                        bool foo = (m1 < 0.52359);
-                        color = side == -1 ? (foo ? Color.BlueViolet : Color.MediumBlue) : (foo ? Color.ForestGreen : Color.LightSeaGreen);
-                    }
-                    else
-                    {
-                        int xPos, yPos;
-                        // do mapping of texture image
-                        textureMap.Map(y[0], y[1], y[2], out xPos, out yPos);
-                        color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
-                    }
+                    color = GetColor(side, y[0], y[1], y[2]);
+
                     stop = false;
                     success = true;
                 }
