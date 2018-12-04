@@ -31,8 +31,8 @@ namespace BlackHoleRaytracer.Hitable
             {
                 if (checkered)
                 {
-                    var m1 = DoubleMod(y[2], 1.04719); // Pi / 3
-                    var m2 = DoubleMod(y[1], 1.04719); // Pi / 3
+                    var m1 = Util.DoubleMod(y[2], 1.04719); // Pi / 3
+                    var m2 = Util.DoubleMod(y[1], 1.04719); // Pi / 3
                     bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
                     if (foo)
                     {
@@ -58,12 +58,6 @@ namespace BlackHoleRaytracer.Hitable
                 return true;
             }
             return false;
-        }
-
-        private static double DoubleMod(double n, double m)
-        {
-            double x = Math.Floor(n / m);
-            return n - (m * x);
         }
     }
 }

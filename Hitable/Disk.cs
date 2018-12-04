@@ -52,7 +52,7 @@ namespace BlackHoleRaytracer.Hitable
                 {
                     if (checkered)
                     {
-                        var m1 = DoubleMod(y[2], 1.04719);
+                        var m1 = Util.DoubleMod(y[2], 1.04719);
                         bool foo = (m1 < 0.52359);
                         color = side == -1 ? (foo ? Color.BlueViolet : Color.MediumBlue) : (foo ? Color.ForestGreen : Color.LightSeaGreen);
                     }
@@ -73,70 +73,58 @@ namespace BlackHoleRaytracer.Hitable
             return success;
         }
 
-        private static double DoubleMod(double n, double m)
-        {
-            double x = Math.Floor(n / m);
-            return n - (m * x);
-        }
-
         /// <summary>
         /// Use Runge-Kutta steps to find intersection with horizontal plane of the scene.
         /// This is necessary to stop integrating when the ray hits the accretion disc.
         /// </summary>
-        /// <param name="y"></param>
-        /// <param name="dydx"></param>
-        /// <param name="hupper"></param>
         private unsafe void IntersectionSearch(double* y, double* dydx, double hupper, KerrBlackHoleEquation equation)
         {
-            unsafe
-            {
-                double hlower = 0.0;
+            double hlower = 0.0;
 
-                int side;
-                if (y[1] > Math.PI / 2)
+            int side;
+            if (y[1] > Math.PI / 2)
+            {
+                side = 1;
+            }
+            else if (y[1] < Math.PI / 2)
+            {
+                side = -1;
+            }
+            else
+            {
+                // unlikely, but needs to handle a situation when ray hits the plane EXACTLY
+                return;
+            }
+
+            equation.Function(y, dydx);
+
+            while ((y[0] > equation.Rhor) && (y[0] < equation.R0) && (side != 0))
+            {
+                double* yout = stackalloc double[equation.N];
+                double* yerr = stackalloc double[equation.N];
+
+                double hdiff = hupper - hlower;
+
+                if (Math.Abs(hdiff) < 1e-7)
                 {
-                    side = 1;
-                }
-                else if (y[1] < Math.PI / 2)
-                {
-                    side = -1;
-                }
-                else
-                {
-                    // unlikely, but needs to handle a situation when ray hits the plane EXACTLY
+                    RungeKutta.IntegrateStep(equation, y, dydx, hupper, yout, yerr);
+
+                    Util.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
+
                     return;
                 }
 
-                equation.Function(y, dydx);
+                double hmid = (hupper + hlower) / 2;
 
-                while ((y[0] > equation.Rhor) && (y[0] < equation.R0) && (side != 0))
+                RungeKutta.IntegrateStep(equation, y, dydx, hmid, yout, yerr);
+
+                if (side * (yout[1] - Math.PI / 2) > 0)
                 {
-                    double* yout = stackalloc double[equation.N];
-                    double* yerr = stackalloc double[equation.N];
-
-                    double hdiff = hupper - hlower;
-
-                    if (Math.Abs(hdiff) < 1e-7)
-                    {
-                        RungeKutta.IntegrateStep(equation, y, dydx, hupper, yout, yerr);
-
-                        Util.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
-
-                        return;
-                    }
-
-                    double hmid = (hupper + hlower) / 2;
-
-                    RungeKutta.IntegrateStep(equation, y, dydx, hmid, yout, yerr);
-
-                    if (side * (yout[1] - Math.PI / 2) > 0)
-                    {
-                        hlower = hmid;
-                    }
-                    else
-                    {
-                        hupper = hmid;
-                    }
+                    hlower = hmid;
+                }
+                else
+                {
+                    hupper = hmid;
                 }
             }
         }

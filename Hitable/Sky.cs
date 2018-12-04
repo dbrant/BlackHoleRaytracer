@@ -41,46 +41,37 @@ namespace BlackHoleRaytracer.Hitable
             return false;
         }
 
-        private static double DoubleMod(double n, double m)
-        {
-            double x = Math.Floor(n / m);
-            return n - (m * x);
-        }
-
         private unsafe void IntersectionSearch(double* y, double* dydx, double hupper, KerrBlackHoleEquation equation)
         {
-            unsafe
+            double hlower = 0.0;
+            equation.Function(y, dydx);
+
+            while ((y[0] > equation.Rhor) && (y[0] < equation.R0 * 2))
             {
-                double hlower = 0.0;
-                equation.Function(y, dydx);
+                double* yout = stackalloc double[equation.N];
+                double* yerr = stackalloc double[equation.N];
 
-                while ((y[0] > equation.Rhor) && (y[0] < equation.R0 * 2))
+                double hdiff = hupper - hlower;
+
+                if (Math.Abs(hdiff) < 1e-7)
                 {
-                    double* yout = stackalloc double[equation.N];
-                    double* yerr = stackalloc double[equation.N];
+                    RungeKutta.IntegrateStep(equation, y, dydx, hupper, yout, yerr);
 
-                    double hdiff = hupper - hlower;
+                    Util.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
+                    return;
+                }
 
-                    if (Math.Abs(hdiff) < 1e-7)
-                    {
-                        RungeKutta.IntegrateStep(equation, y, dydx, hupper, yout, yerr);
+                double hmid = (hupper + hlower) / 2;
 
-                        Util.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
-                        return;
-                    }
+                RungeKutta.IntegrateStep(equation, y, dydx, hmid, yout, yerr);
 
-                    double hmid = (hupper + hlower) / 2;
-
-                    RungeKutta.IntegrateStep(equation, y, dydx, hmid, yout, yerr);
-
-                    if (yout[0] < equation.R0)
-                    {
-                        hlower = hmid;
-                    }
-                    else
-                    {
-                        hupper = hmid;
-                    }
+                if (yout[0] < equation.R0)
+                {
+                    hlower = hmid;
+                }
+                else
+                {
+                    hupper = hmid;
                 }
             }
         }

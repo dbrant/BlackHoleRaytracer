@@ -16,8 +16,8 @@ namespace BlackHoleRaytracer.Hitable
 
         protected override Color GetColor(double r, double theta, double phi)
         {
-            var m1 = DoubleMod(phi, 1.04719); // Pi / 3
-            var m2 = DoubleMod(theta, 1.04719); // Pi / 3
+            var m1 = Util.DoubleMod(phi, 1.04719); // Pi / 3
+            var m2 = Util.DoubleMod(theta, 1.04719); // Pi / 3
             // Pi / 6
             return (m1 < 0.52359) ^ (m2 < 0.52359) ? color1 : color2;
         }

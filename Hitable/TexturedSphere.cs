@@ -26,7 +26,7 @@ namespace BlackHoleRaytracer.Hitable
 
             // and retransform into cartesian coordinates
             double tempX = 0, tempY = 0, tempZ = 0;
-            ToCartesian(r, theta, phi, ref tempX, ref tempY, ref tempZ);
+            Util.ToCartesian(r, theta, phi, ref tempX, ref tempY, ref tempZ);
             var impactFromCenter = new Vector3((float)tempX, (float)tempY, (float)tempZ);
 
             int xPos, yPos;
