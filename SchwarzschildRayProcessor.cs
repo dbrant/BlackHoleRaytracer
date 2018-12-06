@@ -93,7 +93,7 @@ namespace BlackHoleRaytracer
 
 
             float tanFov = 1.5f;
-            int numIterations = 250;
+            int numIterations = 2500;
             float stepSize = 0.16f;
 
             double[] Y = new double[6];
@@ -138,8 +138,10 @@ namespace BlackHoleRaytracer
                     yOffset = (height - yCoord - 1) * width;
                     for (x = 0; x < width; x++)
                     {
+                        pixel = Color.Black;
+
                         var view = new Vector3(((float)x / width - 0.5f) * tanFov,
-                            (((float)y / height + 0.5f) * height / width) * tanFov,
+                            ((-(float)y / height + 0.5f) * height / width) * tanFov,
                             1f);
                         view = MatrixMul(viewMatrix, view);
 
@@ -159,7 +161,10 @@ namespace BlackHoleRaytracer
 
 
 
-
+                            if (iter == 20)
+                            {
+                                //Console.WriteLine("[ " + point.X + "\t" + point.Y + "\t" + point.Z + "]");
+                            }
 
 
 
@@ -234,7 +239,6 @@ namespace BlackHoleRaytracer
 
                             if (pointSqr < 1)
                             {
-                                /*
                                 var m1 = Util.DoubleMod(tempPhi, 1.04719); // Pi / 3
                                 var m2 = Util.DoubleMod(tempTheta, 1.04719); // Pi / 3
                                 bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
@@ -246,15 +250,11 @@ namespace BlackHoleRaytracer
                                 {
                                     pixel = Color.Red;
                                 }
-                                */
-                                pixel = Color.Red;
 
                                 break;
                             }
                             else if (tempR > 30)
                             {
-
-                                /*
                                 var m1 = Util.DoubleMod(tempPhi, 1.04719); // Pi / 3
                                 var m2 = Util.DoubleMod(tempTheta, 1.04719); // Pi / 3
                                 bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
@@ -266,10 +266,6 @@ namespace BlackHoleRaytracer
                                 {
                                     pixel = Color.Green;
                                 }
-                                */
-                                
-
-
                                 break;
                             }
                             
@@ -279,18 +275,18 @@ namespace BlackHoleRaytracer
                         }
 
 
-                        
 
+                        y += yIncrement;
 
 
 
                         outputBitmap[yOffset + x] = pixel.ToArgb();
 
                     }
-                    Console.WriteLine("Thread {0}: Line {1} rendered.", param.JobId, y);
+                    //Console.WriteLine("Thread {0}: Line {1} rendered.", param.JobId, y);
 
 
-                    y += yIncrement;
+                    
                 }
             }
             catch (Exception e)
