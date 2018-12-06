@@ -46,10 +46,12 @@ namespace BlackHoleRaytracer
 
             var scene = new Scene(r, theta, phi, equation, new List<IHitable>
             {
+                new CheckeredDisk(2.6, 14.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
                 //new CheckeredDisk(equation.Rmstable, 20.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
                 //new TexturedDisk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg")),
-                new Horizon(null, false),
-                //new Sky(new Bitmap("skymap_8k.jpg")).SetTextureOffset(Math.PI / 2),
+                new Horizon(null, true),
+                new Sky(new Bitmap("skymap_8k.jpg"), 30).SetTextureOffset(Math.PI / 2),
+                new TexturedSphere(2, 2, -14, 1, new Bitmap("earthmap1k.jpg")),
                 //new ReflectiveSphere(12, 0, 3, 1),
                 //new TexturedSphere(16, 0, 4, 1, new Bitmap("gstar.jpg")),
                 //new TexturedSphere(-10, -10, -10, 1, new Bitmap("gstar.jpg")),

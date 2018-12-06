@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Numerics;
 using BlackHoleRaytracer.Equation;
 using BlackHoleRaytracer.Mappings;
 
@@ -11,9 +12,13 @@ namespace BlackHoleRaytracer.Hitable
         private int textureWidth;
         private int[] textureBitmap;
         private double textureOffset = 0;
+        private double radius;
+        private double radiusSqr;
 
-        public Sky(Bitmap texture)
+        public Sky(Bitmap texture, double radius)
         {
+            this.radius = radius;
+            radiusSqr = radius * radius;
             if (texture != null)
             {
                 textureMap = new SphericalMapping(texture.Width, texture.Height);
@@ -26,6 +31,21 @@ namespace BlackHoleRaytracer.Hitable
         {
             textureOffset = offset;
             return this;
+        }
+
+        public bool Hit(Vector3 point, Vector3 prevPoint, double pointSqrNorm, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        {
+            // Has the ray escaped to infinity?
+            if (pointSqrNorm > radiusSqr)
+            {
+                int xPos, yPos;
+                textureMap.Map(r, theta, phi, out xPos, out yPos);
+
+                color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
+                stop = true;
+                return true;
+            }
+            return false;
         }
 
         public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)

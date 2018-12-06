@@ -35,7 +35,7 @@ namespace BlackHoleRaytracer
             outputBitmap = new int[bufferLength];
 
 
-            int numThreads = 1;// Environment.ProcessorCount;
+            int numThreads = Environment.ProcessorCount;
             DateTime startTime = DateTime.Now;
 
             Console.WriteLine("Launching {0} threads...", numThreads);
@@ -126,19 +126,19 @@ namespace BlackHoleRaytracer
             
             
 
-            Color pixel = Color.Black;
+            Color color = Color.Black, tempColor = Color.Black;
             int x, yOffset;
-            float y = 0, yIncrement = (float)1 / (float)width;
             double tempR = 0, tempTheta = 0, tempPhi = 0;
+            bool stop = false;
 
             try
             {
-                foreach (int yCoord in param.LinesList)
+                foreach (int y in param.LinesList)
                 {
-                    yOffset = (height - yCoord - 1) * width;
+                    yOffset = y * width;
                     for (x = 0; x < width; x++)
                     {
-                        pixel = Color.Black;
+                        color = Color.Black;
 
                         var view = new Vector3(((float)x / width - 0.5f) * tanFov,
                             ((-(float)y / height + 0.5f) * height / width) * tanFov,
@@ -228,7 +228,8 @@ namespace BlackHoleRaytracer
 
 
 
-                            var pointSqr = SqrNorm(point);
+                            var pointSqrNorm = SqrNorm(point);
+
 
 
 
@@ -236,57 +237,39 @@ namespace BlackHoleRaytracer
                             Util.ToSpherical(point.X, point.Y, point.Z, ref tempR, ref tempTheta, ref tempPhi);
 
 
-
-                            if (pointSqr < 1)
+                            // Check if the ray hits anything
+                            foreach (var hitable in scene.hitables)
                             {
-                                var m1 = Util.DoubleMod(tempPhi, 1.04719); // Pi / 3
-                                var m2 = Util.DoubleMod(tempTheta, 1.04719); // Pi / 3
-                                bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
-                                if (foo)
+                                stop = false;
+                                if (hitable.Hit(point, oldPoint, pointSqrNorm, tempR, tempTheta, tempPhi, ref tempColor, ref stop, false))
                                 {
-                                    pixel = Color.Black;
+                                    if (color != null)
+                                    {
+                                        color = Util.AddColor(tempColor, color);
+                                    }
+                                    else
+                                    {
+                                        color = tempColor;
+                                    }
+                                    if (stop)
+                                    {
+                                        // The ray has found its stopping point (or rather its starting point).
+                                        break;
+                                    }
                                 }
-                                else
-                                {
-                                    pixel = Color.Red;
-                                }
-
-                                break;
                             }
-                            else if (tempR > 30)
+                            if (stop)
                             {
-                                var m1 = Util.DoubleMod(tempPhi, 1.04719); // Pi / 3
-                                var m2 = Util.DoubleMod(tempTheta, 1.04719); // Pi / 3
-                                bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
-                                if (foo)
-                                {
-                                    pixel = Color.Black;
-                                }
-                                else
-                                {
-                                    pixel = Color.Green;
-                                }
                                 break;
                             }
                             
 
-
-
                         }
-
-
-
-                        y += yIncrement;
-
-
-
-                        outputBitmap[yOffset + x] = pixel.ToArgb();
+                        
+                        outputBitmap[yOffset + x] = color.ToArgb();
 
                     }
-                    //Console.WriteLine("Thread {0}: Line {1} rendered.", param.JobId, y);
-
-
-                    
+                    Console.WriteLine("Thread {0}: Line {1} rendered.", param.JobId, y);
                 }
             }
             catch (Exception e)

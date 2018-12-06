@@ -27,6 +27,27 @@ namespace BlackHoleRaytracer.Hitable
             return Color.White;
         }
 
+        public bool Hit(Vector3 point, Vector3 prevPoint, double pointSqrNorm, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        {
+            double distance = Math.Sqrt((point.X - centerX) * (point.X - centerX)
+                + (point.Y - centerY) * (point.Y - centerY)
+                + (point.Z - centerZ) * (point.Z - centerZ));
+            if (distance < radius)
+            {
+                var impactFromCenter = Vector3.Normalize(point - center);
+
+                // and now transform to spherical coordinates relative to center of sphere.
+                double tempR = 0, tempTheta = 0, tempPhi = 0;
+                Util.ToSpherical(impactFromCenter.X, impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
+
+                color = GetColor(tempR, tempTheta, tempPhi);
+
+                stop = true;
+                return true;
+            }
+            return false;
+        }
+
         public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
         {
             double tempX = 0, tempY = 0, tempZ = 0;

@@ -1,23 +1,49 @@
 ﻿using System;
 using System.Drawing;
+using System.Numerics;
 using BlackHoleRaytracer.Equation;
 
 namespace BlackHoleRaytracer.Hitable
 {
     public class Disk : IHitable
     {
-        double radiusInner;
-        double radiusOuter;
+        private double radiusInner;
+        private double radiusOuter;
+        private double radiusInnerSqr;
+        private double radiusOuterSqr;
         
         public Disk(double radiusInner, double radiusOuter)
         {
             this.radiusInner = radiusInner;
             this.radiusOuter = radiusOuter;
+            radiusInnerSqr = radiusInner * radiusInner;
+            radiusOuterSqr = radiusOuter * radiusOuter;
         }
 
         protected virtual Color GetColor(int side, double r, double theta, double phi)
         {
             return Color.White;
+        }
+
+        public bool Hit(Vector3 point, Vector3 prevPoint, double pointSqrNorm, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        {
+            // Remember what side of the plane we're currently on, so that we can detect
+            // whether we've crossed the plane after stepping.
+            int side = prevPoint.Y > 0 ? -1 : prevPoint.Y < 0 ? 1 : 0;
+
+            // Did we cross the horizontal plane?
+            bool success = false;
+            if (point.Y * side >= 0)
+            {
+                if ((pointSqrNorm >= radiusInnerSqr) && (pointSqrNorm <= radiusOuterSqr))
+                {
+                    color = GetColor(side, r, phi, theta);
+
+                    stop = false;
+                    success = true;
+                }
+            }
+            return success;
         }
 
         public unsafe bool Hit(double* y, double* prevY, double* dydx, double hdid, KerrBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
