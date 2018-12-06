@@ -17,7 +17,7 @@ namespace BlackHoleRaytracer
         public static void ToSpherical(double x, double y, double z, ref double r, ref double theta, ref double phi)
         {
             r = Math.Sqrt(x * x + y * y + z * z);
-            phi = Math.Atan(y / x);
+            phi = Math.Atan2(y, x);
             theta = Math.Acos(z / r);
         }
 

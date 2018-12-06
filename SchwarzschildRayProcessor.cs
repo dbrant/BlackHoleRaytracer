@@ -106,7 +106,7 @@ namespace BlackHoleRaytracer
 
 
             var lookAt = new Vector3(0, 0, 0);
-            var up = new Vector3(0.2f, 1, 0);
+            var up = new Vector3(0, 1, 0);
             var cameraPos = new Vector3(0, 1, -20);
 
 
@@ -123,9 +123,10 @@ namespace BlackHoleRaytracer
                 nUp.X, nUp.Y, nUp.Z, 0,
                 front.X, front.Y, front.Z, 0,
                 0, 0, 0, 0);
-            
-            
 
+
+
+            bool debug = false;
             Color color = Color.Black, tempColor = Color.Black;
             int x, yOffset;
             double tempR = 0, tempTheta = 0, tempPhi = 0;
@@ -226,13 +227,13 @@ namespace BlackHoleRaytracer
 
 
 
+                            debug = y == 440 && (x == 319 || x == 320);
+
+
 
 
                             var pointSqrNorm = SqrNorm(point);
-
-
-
-
+                            
 
                             Util.ToSpherical(point.X, point.Y, point.Z, ref tempR, ref tempTheta, ref tempPhi);
 
@@ -241,7 +242,7 @@ namespace BlackHoleRaytracer
                             foreach (var hitable in scene.hitables)
                             {
                                 stop = false;
-                                if (hitable.Hit(point, oldPoint, pointSqrNorm, tempR, tempTheta, tempPhi, ref tempColor, ref stop, false))
+                                if (hitable.Hit(point, oldPoint, pointSqrNorm, tempR, tempTheta, tempPhi, ref tempColor, ref stop, debug))
                                 {
                                     if (color != null)
                                     {

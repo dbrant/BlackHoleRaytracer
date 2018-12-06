@@ -40,7 +40,7 @@ namespace BlackHoleRaytracer.Hitable
             {
                 int xPos, yPos;
                 textureMap.Map(r, theta, phi, out xPos, out yPos);
-
+                
                 color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 stop = true;
                 return true;
