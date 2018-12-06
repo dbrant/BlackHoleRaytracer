@@ -33,10 +33,10 @@ namespace BlackHoleRaytracer.Hitable
             return this;
         }
 
-        public bool Hit(Vector3 point, Vector3 prevPoint, double pointSqrNorm, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
             // Has the ray escaped to infinity?
-            if (pointSqrNorm > radiusSqr)
+            if (sqrNorm > radiusSqr)
             {
                 int xPos, yPos;
                 textureMap.Map(r, theta, phi, out xPos, out yPos);
@@ -101,6 +101,35 @@ namespace BlackHoleRaytracer.Hitable
                     hupper = hmid;
                 }
             }
+        }
+
+        protected Vector3 IntersectionSearch(Vector3 prevPoint, Vector3 velocity, SchwarzschildBlackHoleEquation equation)
+        {
+            float stepLow = 0, stepHigh = equation.stepSize;
+            Vector3 newPoint = prevPoint;
+            Vector3 tempVelocity;
+            while (true)
+            {
+                float stepMid = (stepLow + stepHigh) / 2;
+                newPoint = prevPoint;
+                tempVelocity = velocity;
+                equation.Function(ref newPoint, ref tempVelocity, stepMid);
+
+                double distance = Util.SqrNorm(newPoint);
+                if (Math.Abs(distance - radius) < 0.001)
+                {
+                    break;
+                }
+                if (distance > radius)
+                {
+                    stepHigh = stepMid;
+                }
+                else
+                {
+                    stepLow = stepMid;
+                }
+            }
+            return newPoint;
         }
     }
 }

@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Equation\IODESystem.cs" />
+    <Compile Include="Equation\SchwarzschildBlackHoleEquation.cs" />
     <Compile Include="Hitable\CheckeredDisk.cs" />
     <Compile Include="Hitable\CheckeredSphere.cs" />
     <Compile Include="Hitable\IHitable.cs" />

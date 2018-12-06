@@ -25,7 +25,7 @@ namespace BlackHoleRaytracer.Hitable
             return Color.White;
         }
 
-        public bool Hit(Vector3 point, Vector3 prevPoint, double pointSqrNorm, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
             // Remember what side of the plane we're currently on, so that we can detect
             // whether we've crossed the plane after stepping.
@@ -35,9 +35,15 @@ namespace BlackHoleRaytracer.Hitable
             bool success = false;
             if (point.Y * side >= 0)
             {
-                if ((pointSqrNorm >= radiusInnerSqr) && (pointSqrNorm <= radiusOuterSqr))
+                var colpoint = IntersectionSearch(side, prevPoint, velocity, equation);
+                var colpointsqr = Util.SqrNorm(colpoint);
+
+                if ((colpointsqr >= radiusInnerSqr) && (colpointsqr <= radiusOuterSqr))
                 {
-                    color = GetColor(side, r, phi, theta);
+                    double tempR = 0, tempTheta = 0, tempPhi = 0;
+                    Util.ToSpherical(colpoint.X, colpoint.Y, colpoint.Z, ref tempR, ref tempTheta, ref tempPhi);
+                    
+                    color = GetColor(side, tempR, tempTheta, tempPhi);
 
                     stop = false;
                     success = true;
@@ -136,5 +142,32 @@ namespace BlackHoleRaytracer.Hitable
             }
         }
 
+        protected Vector3 IntersectionSearch(int side, Vector3 prevPoint, Vector3 velocity, SchwarzschildBlackHoleEquation equation)
+        {
+            float stepLow = 0, stepHigh = equation.stepSize;
+            Vector3 newPoint = prevPoint;
+            Vector3 tempVelocity;
+            while (true)
+            {
+                float stepMid = (stepLow + stepHigh) / 2;
+                newPoint = prevPoint;
+                tempVelocity = velocity;
+                equation.Function(ref newPoint, ref tempVelocity, stepMid);
+                
+                if (Math.Abs(newPoint.Y) < 0.001)
+                {
+                    break;
+                }
+                if (side * newPoint.Y > 0)
+                {
+                    stepHigh = stepMid;
+                }
+                else
+                {
+                    stepLow = stepMid;
+                }
+            }
+            return newPoint;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace BlackHoleRaytracer
@@ -25,6 +26,18 @@ namespace BlackHoleRaytracer
         {
             double x = Math.Floor(n / m);
             return n - (m * x);
+        }
+
+        public static float SqrNorm(Vector3 v)
+        {
+            return v.X * v.X + v.Y * v.Y + v.Z * v.Z;
+        }
+
+        public static Vector3 MatrixMul(Matrix4x4 m, Vector3 v)
+        {
+            return new Vector3(m.M11 * v.X + m.M21 * v.Y + m.M31 * v.Z,
+                m.M12 * v.X + m.M22 * v.Y + m.M32 * v.Z,
+                m.M13 * v.X + m.M23 * v.Y + m.M33 * v.Z);
         }
 
         public static int[] getNativeTextureBitmap(Bitmap texture)

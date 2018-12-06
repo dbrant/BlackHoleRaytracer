@@ -27,21 +27,21 @@ namespace BlackHoleRaytracer.Hitable
             return Color.White;
         }
 
-        public bool Hit(Vector3 point, Vector3 prevPoint, double pointSqrNorm, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
             double distance = Math.Sqrt((point.X - centerX) * (point.X - centerX)
                 + (point.Y - centerY) * (point.Y - centerY)
                 + (point.Z - centerZ) * (point.Z - centerZ));
             if (distance < radius)
             {
-                var impactFromCenter = Vector3.Normalize(point - center);
+                var colpoint = IntersectionSearch(prevPoint, velocity, equation);
+                var impactFromCenter = Vector3.Normalize(colpoint - center);
 
                 // and now transform to spherical coordinates relative to center of sphere.
                 double tempR = 0, tempTheta = 0, tempPhi = 0;
                 Util.ToSpherical(impactFromCenter.X, impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
 
                 color = GetColor(tempR, tempTheta, tempPhi);
-
                 stop = true;
                 return true;
             }
@@ -120,6 +120,37 @@ namespace BlackHoleRaytracer.Hitable
                     hupper = hmid;
                 }
             }
+        }
+
+        protected Vector3 IntersectionSearch(Vector3 prevPoint, Vector3 velocity, SchwarzschildBlackHoleEquation equation)
+        {
+            float stepLow = 0, stepHigh = equation.stepSize;
+            Vector3 newPoint = prevPoint;
+            Vector3 tempVelocity;
+            while (true)
+            {
+                float stepMid = (stepLow + stepHigh) / 2;
+                newPoint = prevPoint;
+                tempVelocity = velocity;
+                equation.Function(ref newPoint, ref tempVelocity, stepMid);
+
+                double distance = Math.Sqrt((newPoint.X - centerX) * (newPoint.X - centerX)
+                    + (newPoint.Y - centerY) * (newPoint.Y - centerY)
+                    + (newPoint.Z - centerZ) * (newPoint.Z - centerZ));
+                if (Math.Abs(distance - radius) < 0.0001)
+                {
+                    break;
+                }
+                if (distance < radius)
+                {
+                    stepHigh = stepMid;
+                }
+                else
+                {
+                    stepLow = stepMid;
+                }
+            }
+            return newPoint;
         }
     }
 }
