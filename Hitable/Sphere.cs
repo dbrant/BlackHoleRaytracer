@@ -11,6 +11,7 @@ namespace BlackHoleRaytracer.Hitable
         protected double centerY;
         protected double centerZ;
         protected double radius;
+        protected double radiusSqr;
         protected Vector3 center;
         
         public Sphere(double centerX, double centerY, double centerZ, double radius)
@@ -19,6 +20,7 @@ namespace BlackHoleRaytracer.Hitable
             this.centerY = centerY;
             this.centerZ = centerZ;
             this.radius = radius;
+            radiusSqr = radius * radius;
             center = new Vector3((float)centerX, (float)centerY, (float)centerZ);
         }
 
@@ -29,10 +31,8 @@ namespace BlackHoleRaytracer.Hitable
 
         public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
-            double distance = Math.Sqrt((point.X - centerX) * (point.X - centerX)
-                + (point.Y - centerY) * (point.Y - centerY)
-                + (point.Z - centerZ) * (point.Z - centerZ));
-            if (distance < radius)
+            double distanceSqr = Util.SqrNorm(point - center);
+            if (distanceSqr < radiusSqr)
             {
                 var colpoint = IntersectionSearch(prevPoint, velocity, equation);
                 var impactFromCenter = Vector3.Normalize(colpoint - center);
@@ -134,14 +134,12 @@ namespace BlackHoleRaytracer.Hitable
                 tempVelocity = velocity;
                 equation.Function(ref newPoint, ref tempVelocity, stepMid);
 
-                double distance = Math.Sqrt((newPoint.X - centerX) * (newPoint.X - centerX)
-                    + (newPoint.Y - centerY) * (newPoint.Y - centerY)
-                    + (newPoint.Z - centerZ) * (newPoint.Z - centerZ));
+                double distanceSqr = Util.SqrNorm(newPoint - center);
                 if (Math.Abs(stepHigh - stepLow) < 0.00001)
                 {
                     break;
                 }
-                if (distance < radius)
+                if (distanceSqr < radiusSqr)
                 {
                     stepHigh = stepMid;
                 }
