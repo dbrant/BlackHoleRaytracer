@@ -27,7 +27,7 @@ namespace BlackHoleRaytracer.Hitable
             return Color.White;
         }
 
-        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
             double distance = Math.Sqrt((point.X - centerX) * (point.X - centerX)
                 + (point.Y - centerY) * (point.Y - centerY)
@@ -137,7 +137,7 @@ namespace BlackHoleRaytracer.Hitable
                 double distance = Math.Sqrt((newPoint.X - centerX) * (newPoint.X - centerX)
                     + (newPoint.Y - centerY) * (newPoint.Y - centerY)
                     + (newPoint.Z - centerZ) * (newPoint.Z - centerZ));
-                if (Math.Abs(distance - radius) < 0.0001)
+                if (Math.Abs(stepHigh - stepLow) < 0.00001)
                 {
                     break;
                 }

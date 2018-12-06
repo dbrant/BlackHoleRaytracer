@@ -33,7 +33,7 @@ namespace BlackHoleRaytracer.Hitable
             return this;
         }
 
-        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
             // Has the ray escaped to infinity?
             if (sqrNorm > radiusSqr)
@@ -116,7 +116,7 @@ namespace BlackHoleRaytracer.Hitable
                 equation.Function(ref newPoint, ref tempVelocity, stepMid);
 
                 double distance = Util.SqrNorm(newPoint);
-                if (Math.Abs(distance - radius) < 0.001)
+                if (Math.Abs(stepHigh - stepLow) < 0.00001)
                 {
                     break;
                 }

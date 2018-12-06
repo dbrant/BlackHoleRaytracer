@@ -52,6 +52,7 @@ namespace BlackHoleRaytracer
                 new Horizon(null, true),
                 new Sky(new Bitmap("skymap_8k.jpg"), 30).SetTextureOffset(Math.PI / 2),
                 new TexturedSphere(2, 2, -14, 1, new Bitmap("earthmap1k.jpg")),
+                new ReflectiveSphere(-1, 2, -14, 1),
                 //new ReflectiveSphere(12, 0, 3, 1),
                 //new TexturedSphere(16, 0, 4, 1, new Bitmap("gstar.jpg")),
                 //new TexturedSphere(-10, -10, -10, 1, new Bitmap("gstar.jpg")),

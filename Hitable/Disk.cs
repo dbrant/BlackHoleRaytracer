@@ -25,7 +25,7 @@ namespace BlackHoleRaytracer.Hitable
             return Color.White;
         }
 
-        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
             // Remember what side of the plane we're currently on, so that we can detect
             // whether we've crossed the plane after stepping.
@@ -43,9 +43,9 @@ namespace BlackHoleRaytracer.Hitable
                     double tempR = 0, tempTheta = 0, tempPhi = 0;
                     Util.ToSpherical(colpoint.X, colpoint.Y, colpoint.Z, ref tempR, ref tempTheta, ref tempPhi);
                     
-                    color = GetColor(side, tempR, tempTheta, tempPhi);
+                    color = GetColor(side, tempR, tempPhi, tempTheta);
 
-                    stop = false;
+                    stop = true;
                     success = true;
                 }
             }
@@ -154,7 +154,7 @@ namespace BlackHoleRaytracer.Hitable
                 tempVelocity = velocity;
                 equation.Function(ref newPoint, ref tempVelocity, stepMid);
                 
-                if (Math.Abs(newPoint.Y) < 0.001)
+                if (Math.Abs(stepHigh - stepLow) < 0.00001)
                 {
                     break;
                 }

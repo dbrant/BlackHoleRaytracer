@@ -158,11 +158,11 @@ namespace BlackHoleRaytracer
                             foreach (var hitable in scene.hitables)
                             {
                                 stop = false;
-                                if (hitable.Hit(point, sqrNorm, prevPoint, prevSqrNorm, velocity, param.Equation, tempR, tempTheta, tempPhi, ref tempColor, ref stop, false))
+                                if (hitable.Hit(point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, tempR, tempTheta, tempPhi, ref tempColor, ref stop, false))
                                 {
                                     if (color != null)
                                     {
-                                        color = Util.AddColor(tempColor, color);
+                                        color = tempColor; // Util.AddColor(tempColor, color);
                                     }
                                     else
                                     {
