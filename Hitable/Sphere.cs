@@ -35,11 +35,12 @@ namespace BlackHoleRaytracer.Hitable
             if (distanceSqr < radiusSqr)
             {
                 var colpoint = IntersectionSearch(prevPoint, velocity, equation);
-                var impactFromCenter = Vector3.Normalize(colpoint - center);
+                var impactFromCenter = Vector3.Normalize(center - colpoint);
 
                 // and now transform to spherical coordinates relative to center of sphere.
                 double tempR = 0, tempTheta = 0, tempPhi = 0;
-                Util.ToSpherical(impactFromCenter.X, impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
+                // hack: rejigger axes to make textures appear right side up.
+                Util.ToSpherical(impactFromCenter.X, -impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
 
                 color = GetColor(tempR, tempTheta, tempPhi);
                 stop = true;
@@ -71,7 +72,8 @@ namespace BlackHoleRaytracer.Hitable
                 
                 // and now transform to spherical coordinates relative to center of sphere.
                 double tempR = 0, tempTheta = 0, tempPhi = 0;
-                Util.ToSpherical(impactFromCenter.X, impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
+                // hack: rejigger axes to make textures appear right side up.
+                Util.ToSpherical(-impactFromCenter.X, impactFromCenter.Z, impactFromCenter.Y, ref tempR, ref tempTheta, ref tempPhi);
 
                 color = GetColor(tempR, tempTheta, tempPhi);
                 

@@ -10,6 +10,7 @@ namespace BlackHoleRaytracer.Hitable
         private SphericalMapping textureMap;
         private int textureWidth;
         private int[] textureBitmap;
+        private double textureOffset = 0;
 
         public TexturedSphere(double centerX, double centerY, double centerZ, double radius, Bitmap texture)
             : base(centerX, centerY, centerZ, radius)
@@ -19,19 +20,21 @@ namespace BlackHoleRaytracer.Hitable
             textureBitmap = Util.getNativeTextureBitmap(texture);
         }
 
+        public TexturedSphere SetTextureOffset(double offset)
+        {
+            textureOffset = offset;
+            return this;
+        }
+
         protected override Color GetColor(double r, double theta, double phi)
         {
-            // rotate by 180 degrees
-            phi += Math.PI;
-
             // and retransform into cartesian coordinates
             double tempX = 0, tempY = 0, tempZ = 0;
-            Util.ToCartesian(r, theta, phi, ref tempX, ref tempY, ref tempZ);
+            Util.ToCartesian(r, theta, phi + textureOffset, ref tempX, ref tempY, ref tempZ);
             var impactFromCenter = new Vector3((float)tempX, (float)tempY, (float)tempZ);
 
             int xPos, yPos;
-            // hack: rejigger axes to that the texture appears right-side-up.
-            textureMap.MapCartesian(-impactFromCenter.X, impactFromCenter.Z, impactFromCenter.Y, out xPos, out yPos);
+            textureMap.MapCartesian(impactFromCenter.X, impactFromCenter.Y, impactFromCenter.Z, out xPos, out yPos);
 
             return Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
         }
