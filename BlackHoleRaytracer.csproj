@@ -59,6 +59,7 @@
     <Compile Include="Scene.cs" />
     <Compile Include="RungeKutta.cs" />
     <Compile Include="Hitable\Disk.cs" />
+    <Compile Include="SchwarzschildRayProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
