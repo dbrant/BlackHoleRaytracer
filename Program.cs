@@ -61,8 +61,8 @@ namespace BlackHoleRaytracer
                 //new CheckeredSphere(-10, -10, -10, 1, Color.RoyalBlue, Color.DarkBlue)
             });
 
-            new RayProcessor(640, 480, scene, fileName).Process();
-            //new SchwarzschildRayProcessor(640, 480, scene, fileName).Process();
+            //new RayProcessor(640, 480, scene, fileName).Process();
+            new SchwarzschildRayProcessor(640, 480, scene, fileName).Process();
 
             //Console.ReadKey();
         }

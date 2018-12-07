@@ -31,7 +31,8 @@ namespace BlackHoleRaytracer.Hitable
             {
                 var colpoint = IntersectionSearch(prevPoint, velocity, equation);
                 velocity = Vector3.Reflect(velocity, Vector3.Normalize(colpoint - center));
-                
+
+                color = Util.AddColor(color, Color.FromArgb(16, 16, 16));
                 stop = false;
                 return true;
             }
