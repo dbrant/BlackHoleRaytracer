@@ -100,7 +100,7 @@ namespace BlackHoleRaytracer
             
             var lookAt = new Vector3(0, 0, 0);
             var up = new Vector3(0, 1, 0);
-            var cameraPos = new Vector3(0, 3, -18);
+            var cameraPos = new Vector3(0, 1, -20);
 
 
             var front = Vector3.Normalize(lookAt - cameraPos);
@@ -158,7 +158,7 @@ namespace BlackHoleRaytracer
                             foreach (var hitable in scene.hitables)
                             {
                                 stop = false;
-                                if (hitable.Hit(point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, tempR, tempTheta, tempPhi, ref color, ref stop, false))
+                                if (hitable.Hit(point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, tempR, tempTheta, tempPhi, ref color, ref stop, debug))
                                 {
                                     if (stop)
                                     {

@@ -43,7 +43,7 @@ namespace BlackHoleRaytracer.Hitable
                     double tempR = 0, tempTheta = 0, tempPhi = 0;
                     Util.ToSpherical(colpoint.X, colpoint.Y, colpoint.Z, ref tempR, ref tempTheta, ref tempPhi);
                     
-                    color = Util.AddColor(color, GetColor(side, tempR, tempPhi, tempTheta));
+                    color = Util.AddColor(color, GetColor(side, tempR, tempPhi, tempTheta + Math.PI / 12));
                     stop = false;
                     success = true;
                 }
