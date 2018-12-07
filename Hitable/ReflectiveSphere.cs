@@ -29,8 +29,8 @@ namespace BlackHoleRaytracer.Hitable
             double distanceSqr = Util.SqrNorm(point - center);
             if (distanceSqr < radiusSqr)
             {
-                var colpoint = IntersectionSearch(prevPoint, velocity, equation);
-                velocity = Vector3.Reflect(velocity, Vector3.Normalize(colpoint - center));
+                point = IntersectionSearch(prevPoint, velocity, equation);
+                velocity = Vector3.Reflect(velocity, Vector3.Normalize(point - center));
 
                 color = Util.AddColor(Color.FromArgb(8, 8, 8), color);
                 stop = false;
