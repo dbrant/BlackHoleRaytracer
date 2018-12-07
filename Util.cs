@@ -51,13 +51,16 @@ namespace BlackHoleRaytracer
 
         public static Color AddColor(Color hitColor, Color tintColor)
         {
+            if (hitColor == Color.Transparent)
+            {
+                return tintColor;
+            }
             float brightness = tintColor.GetBrightness();
-            var result = Color.FromArgb(
+            return Color.FromArgb(
                     Cap((int)((1 - brightness) * hitColor.R) + CapMin(tintColor.R - 20, 0) * 255 / 205, 255),
                     Cap((int)((1 - brightness) * hitColor.G) + CapMin(tintColor.G - 20, 0) * 255 / 205, 255),
                     Cap((int)((1 - brightness) * hitColor.B) + CapMin(tintColor.B - 20, 0) * 255 / 205, 255)
                 );
-            return result;
         }
         
         private static int Cap(int x, int max)

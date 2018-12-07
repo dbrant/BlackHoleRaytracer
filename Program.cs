@@ -55,14 +55,14 @@ namespace BlackHoleRaytracer
                 new TexturedSphere(2, 2, -14, 1, new Bitmap("earthmap1k.jpg")),
                 new ReflectiveSphere(-1, 2, -14, 1),
                 //new ReflectiveSphere(12, 0, 3, 1),
-                //new TexturedSphere(24, 0, 2, 1, new Bitmap("earthmap1k.jpg")),
+                new TexturedSphere(24, 0, 2, 1, new Bitmap("earthmap1k.jpg")),
                 //new TexturedSphere(16, 0, 4, 1, new Bitmap("gstar.jpg")),
                 //new TexturedSphere(-10, -10, -10, 1, new Bitmap("gstar.jpg")),
                 //new CheckeredSphere(-10, -10, -10, 1, Color.RoyalBlue, Color.DarkBlue)
             });
 
-            //new RayProcessor(640, 480, scene, fileName).Process();
-            new SchwarzschildRayProcessor(640, 480, scene, fileName).Process();
+            new RayProcessor(640, 480, scene, fileName).Process();
+            //new SchwarzschildRayProcessor(640, 480, scene, fileName).Process();
 
             //Console.ReadKey();
         }

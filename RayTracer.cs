@@ -48,8 +48,7 @@ namespace BlackHoleRaytracer
         /// <returns>Color of the pixel at the requested coordinates.</returns>
         public unsafe Color Calculate(double x1, double y1)
         {
-            Color? color = null;
-            Color tempColor = Color.Black;
+            Color color = Color.Transparent;
 
             double htry = 0.5, escal = 1e11, hdid = 0.0, hnext = 0.0;
 
@@ -106,16 +105,8 @@ namespace BlackHoleRaytracer
                 foreach (var hitable in hitables)
                 {
                     stop = false;
-                    if (hitable.Hit(y, yPrev, dydx, hdid, equation, ref tempColor, ref stop, trace))
+                    if (hitable.Hit(y, yPrev, dydx, hdid, equation, ref color, ref stop, trace))
                     {
-                        if (color != null)
-                        {
-                            color = Util.AddColor(tempColor, color.Value);
-                        }
-                        else
-                        {
-                            color = tempColor;
-                        }
                         if (stop)
                         {
                             // The ray has found its stopping point (or rather its starting point).

@@ -43,9 +43,8 @@ namespace BlackHoleRaytracer.Hitable
                     double tempR = 0, tempTheta = 0, tempPhi = 0;
                     Util.ToSpherical(colpoint.X, colpoint.Y, colpoint.Z, ref tempR, ref tempTheta, ref tempPhi);
                     
-                    color = GetColor(side, tempR, tempPhi, tempTheta);
-
-                    stop = true;
+                    color = Util.AddColor(color, GetColor(side, tempR, tempPhi, tempTheta));
+                    stop = false;
                     success = true;
                 }
             }
@@ -74,7 +73,7 @@ namespace BlackHoleRaytracer.Hitable
                 // Is the ray within the accretion disk?
                 if ((y[0] >= radiusInner) && (y[0] <= radiusOuter))
                 {
-                    color = GetColor(side, y[0], y[1], y[2]);
+                    color = Util.AddColor(color, GetColor(side, y[0], y[1], y[2]));
 
                     stop = false;
                     success = true;

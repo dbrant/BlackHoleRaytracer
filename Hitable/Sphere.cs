@@ -42,7 +42,7 @@ namespace BlackHoleRaytracer.Hitable
                 // hack: rejigger axes to make textures appear right side up.
                 Util.ToSpherical(impactFromCenter.X, -impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
 
-                color = GetColor(tempR, tempTheta, tempPhi);
+                color = Util.AddColor(color, GetColor(tempR, tempTheta, tempPhi));
                 stop = true;
                 return true;
             }
@@ -75,7 +75,7 @@ namespace BlackHoleRaytracer.Hitable
                 // hack: rejigger axes to make textures appear right side up.
                 Util.ToSpherical(-impactFromCenter.X, impactFromCenter.Z, impactFromCenter.Y, ref tempR, ref tempTheta, ref tempPhi);
 
-                color = GetColor(tempR, tempTheta, tempPhi);
+                color = Util.AddColor(color, GetColor(tempR, tempTheta, tempPhi));
                 
                 stop = true;
                 return true;

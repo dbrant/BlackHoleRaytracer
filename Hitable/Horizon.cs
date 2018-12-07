@@ -35,19 +35,15 @@ namespace BlackHoleRaytracer.Hitable
 
                 double tempR = 0, tempTheta = 0, tempPhi = 0;
                 Util.ToSpherical(colpoint.X, colpoint.Y, colpoint.Z, ref tempR, ref tempTheta, ref tempPhi);
-                
+
+                Color col = Color.Black;
                 if (checkered)
                 {
                     var m1 = Util.DoubleMod(tempTheta, 1.04719); // Pi / 3
                     var m2 = Util.DoubleMod(tempPhi, 1.04719); // Pi / 3
-                    bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
-                    if (foo)
+                    if ((m1 < 0.52359) ^ (m2 < 0.52359)) // Pi / 6
                     {
-                        color = Color.Black;
-                    }
-                    else
-                    {
-                        color = Color.Green;
+                        col = Color.Green;
                     }
                 }
                 else if (textureBitmap != null)
@@ -55,12 +51,9 @@ namespace BlackHoleRaytracer.Hitable
                     int xPos, yPos;
                     textureMap.Map(r, theta, -phi, out xPos, out yPos);
 
-                    color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
+                    col = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 }
-                else
-                {
-                    color = Color.Black;
-                }
+                color = Util.AddColor(color, col);
                 stop = true;
                 return true;
             }
@@ -72,18 +65,14 @@ namespace BlackHoleRaytracer.Hitable
             // Has the ray fallen past the horizon?
             if (y[0] < equation.Rhor)
             {
+                Color col = Color.Black;
                 if (checkered)
                 {
                     var m1 = Util.DoubleMod(y[2], 1.04719); // Pi / 3
                     var m2 = Util.DoubleMod(y[1], 1.04719); // Pi / 3
-                    bool foo = (m1 < 0.52359) ^ (m2 < 0.52359); // Pi / 6
-                    if (foo)
+                    if ((m1 < 0.52359) ^ (m2 < 0.52359)) // Pi / 6
                     {
-                        color = Color.Black;
-                    }
-                    else
-                    {
-                        color = Color.Green;
+                        col = Color.Green;
                     }
                 }
                 else if (textureBitmap != null)
@@ -91,12 +80,9 @@ namespace BlackHoleRaytracer.Hitable
                     int xPos, yPos;
                     textureMap.Map(y[0], y[1], -y[2], out xPos, out yPos);
 
-                    color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
+                    col = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 }
-                else
-                {
-                    color = Color.Black;
-                }
+                color = Util.AddColor(color, col);
                 stop = true;
                 return true;
             }

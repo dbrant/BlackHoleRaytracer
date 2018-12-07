@@ -114,7 +114,7 @@ namespace BlackHoleRaytracer
 
             
             bool debug = false;
-            Color color = Color.Black, tempColor = Color.Black;
+            Color color;
             int x, yOffset;
             Vector3 point, prevPoint;
             double sqrNorm, prevSqrNorm;
@@ -128,7 +128,7 @@ namespace BlackHoleRaytracer
                     yOffset = y * width;
                     for (x = 0; x < width; x++)
                     {
-                        color = Color.Black;
+                        color = Color.Transparent;
 
                         var view = new Vector3(((float)x / width - 0.5f) * tanFov,
                             ((-(float)y / height + 0.5f) * height / width) * tanFov,
@@ -158,16 +158,8 @@ namespace BlackHoleRaytracer
                             foreach (var hitable in scene.hitables)
                             {
                                 stop = false;
-                                if (hitable.Hit(point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, tempR, tempTheta, tempPhi, ref tempColor, ref stop, false))
+                                if (hitable.Hit(point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, tempR, tempTheta, tempPhi, ref color, ref stop, false))
                                 {
-                                    if (color != null)
-                                    {
-                                        color = tempColor; // Util.AddColor(tempColor, color);
-                                    }
-                                    else
-                                    {
-                                        color = tempColor;
-                                    }
                                     if (stop)
                                     {
                                         // The ray has found its stopping point (or rather its starting point).

@@ -41,7 +41,7 @@ namespace BlackHoleRaytracer.Hitable
                 int xPos, yPos;
                 textureMap.Map(r, theta, phi, out xPos, out yPos);
                 
-                color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
+                color = Util.AddColor(color, Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]));
                 stop = true;
                 return true;
             }
@@ -61,7 +61,7 @@ namespace BlackHoleRaytracer.Hitable
                 int xPos, yPos;
                 textureMap.Map(y[0], y[1], y[2] + textureOffset, out xPos, out yPos);
 
-                color = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
+                color = Util.AddColor(color, Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]));
                 stop = true;
                 return true;
             }
