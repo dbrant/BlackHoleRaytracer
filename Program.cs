@@ -63,7 +63,7 @@ namespace BlackHoleRaytracer
             });
 
             //new RayProcessor(640, 480, scene, fileName).Process();
-            new SchwarzschildRayProcessor(3000, 2000, scene, fileName).Process();
+            new SchwarzschildRayProcessor(300, 200, scene, fileName).Process();
 
             //Console.ReadKey();
         }
