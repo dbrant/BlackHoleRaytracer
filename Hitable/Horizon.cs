@@ -53,7 +53,7 @@ namespace BlackHoleRaytracer.Hitable
 
                     col = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 }
-                color = Util.AddColor(color, col);
+                color = Util.AddColor(col, color);
                 stop = true;
                 return true;
             }
@@ -82,7 +82,7 @@ namespace BlackHoleRaytracer.Hitable
 
                     col = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 }
-                color = Util.AddColor(color, col);
+                color = Util.AddColor(col, color);
                 stop = true;
                 return true;
             }
