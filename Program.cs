@@ -73,7 +73,7 @@ namespace BlackHoleRaytracer
                 double tempTheta = random.NextDouble() * Math.PI * 2;
                 double tempX = 0, tempY = 0, tempZ = 0;
                 Util.ToCartesian(tempR, tempTheta, 0, ref tempX, ref tempY, ref tempZ);
-                hitables.Add(new TexturedSphere(tempX, tempY, tempZ, 0.05 + random.NextDouble() * 0.2, starBitmap, starTexture.Width, starTexture.Height));
+                hitables.Add(new TexturedSphere(tempX, tempY, tempZ, 0.05f + (float)random.NextDouble() * 0.2f, starBitmap, starTexture.Width, starTexture.Height));
             }
 
 

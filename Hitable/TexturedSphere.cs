@@ -12,7 +12,7 @@ namespace BlackHoleRaytracer.Hitable
         private int[] textureBitmap;
         private double textureOffset = 0;
 
-        public TexturedSphere(double centerX, double centerY, double centerZ, double radius, Bitmap texture)
+        public TexturedSphere(double centerX, double centerY, double centerZ, float radius, Bitmap texture)
             : base(centerX, centerY, centerZ, radius)
         {
             textureMap = new SphericalMapping(texture.Width, texture.Height);
@@ -20,7 +20,7 @@ namespace BlackHoleRaytracer.Hitable
             textureBitmap = Util.getNativeTextureBitmap(texture);
         }
 
-        public TexturedSphere(double centerX, double centerY, double centerZ, double radius, int[] bitmap, int width, int height)
+        public TexturedSphere(double centerX, double centerY, double centerZ, float radius, int[] bitmap, int width, int height)
             : base(centerX, centerY, centerZ, radius)
         {
             textureMap = new SphericalMapping(width, height);

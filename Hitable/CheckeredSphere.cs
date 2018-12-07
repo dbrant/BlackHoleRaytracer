@@ -7,7 +7,7 @@ namespace BlackHoleRaytracer.Hitable
         private Color color1;
         private Color color2;
         
-        public CheckeredSphere(double centerX, double centerY, double centerZ, double radius, Color color1, Color color2)
+        public CheckeredSphere(double centerX, double centerY, double centerZ, float radius, Color color1, Color color2)
             : base(centerX, centerY, centerZ, radius)
         {
             this.color1 = color1;

@@ -10,11 +10,11 @@ namespace BlackHoleRaytracer.Hitable
         protected double centerX;
         protected double centerY;
         protected double centerZ;
-        protected double radius;
-        protected double radiusSqr;
+        protected float radius;
+        protected float radiusSqr;
         protected Vector3 center;
 
-        public ReflectiveSphere(double centerX, double centerY, double centerZ, double radius)
+        public ReflectiveSphere(double centerX, double centerY, double centerZ, float radius)
         {
             this.centerX = centerX;
             this.centerY = centerY;
@@ -26,7 +26,7 @@ namespace BlackHoleRaytracer.Hitable
 
         public bool Hit(ref Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
-            double distanceSqr = Util.SqrNorm(point - center);
+            float distanceSqr = Util.SqrNorm(point - center);
             if (distanceSqr < radiusSqr)
             {
                 point = IntersectionSearch(prevPoint, velocity, equation);
@@ -125,7 +125,7 @@ namespace BlackHoleRaytracer.Hitable
                 tempVelocity = velocity;
                 equation.Function(ref newPoint, ref tempVelocity, stepMid);
 
-                double distanceSqr = Util.SqrNorm(newPoint - center);
+                float distanceSqr = Util.SqrNorm(newPoint - center);
                 if (Math.Abs(stepHigh - stepLow) < 0.00001)
                 {
                     break;
