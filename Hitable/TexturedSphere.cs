@@ -20,6 +20,14 @@ namespace BlackHoleRaytracer.Hitable
             textureBitmap = Util.getNativeTextureBitmap(texture);
         }
 
+        public TexturedSphere(double centerX, double centerY, double centerZ, double radius, int[] bitmap, int width, int height)
+            : base(centerX, centerY, centerZ, radius)
+        {
+            textureMap = new SphericalMapping(width, height);
+            textureWidth = width;
+            textureBitmap = bitmap;
+        }
+
         public TexturedSphere SetTextureOffset(double offset)
         {
             textureOffset = offset;

@@ -44,10 +44,12 @@ namespace BlackHoleRaytracer
 
             var equation = new KerrBlackHoleEquation(r, theta, phi, angularMomentum);
 
-            var scene = new Scene(r, theta, phi, equation, new List<IHitable>
+
+
+            var hitables = new List<IHitable>
             {
                 //new CheckeredDisk(2.6, 14.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
-                new TexturedDisk(2.6, 14.0, new Bitmap("adisk.jpg")),
+                //new TexturedDisk(2.6, 14.0, new Bitmap("adisk.jpg")),
                 //new CheckeredDisk(equation.Rmstable, 20.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
                 //new TexturedDisk(equation.Rmstable, 20.0, new Bitmap("adisk.jpg")),
                 new Horizon(null, false),
@@ -60,7 +62,25 @@ namespace BlackHoleRaytracer
                 //new TexturedSphere(16, 0, 4, 1, new Bitmap("gstar.jpg")),
                 //new TexturedSphere(-10, -10, -10, 1, new Bitmap("gstar.jpg")),
                 //new CheckeredSphere(-10, -10, -10, 1, Color.RoyalBlue, Color.DarkBlue)
-            });
+            };
+
+            var starTexture = new Bitmap("gstar.jpg");
+            var starBitmap = Util.getNativeTextureBitmap(starTexture);
+            var random = new Random();
+            for (int i = 0; i < 250; i++)
+            {
+                double tempR = 4.0 + random.NextDouble() * 10.0;
+                double tempTheta = random.NextDouble() * Math.PI * 2;
+                double tempX = 0, tempY = 0, tempZ = 0;
+                Util.ToCartesian(tempR, tempTheta, 0, ref tempX, ref tempY, ref tempZ);
+                hitables.Add(new TexturedSphere(tempX, tempY, tempZ, 0.05 + random.NextDouble() * 0.2, starBitmap, starTexture.Width, starTexture.Height));
+            }
+
+
+
+
+
+            var scene = new Scene(r, theta, phi, equation, hitables);
 
             //new RayProcessor(640, 480, scene, fileName).Process();
             new SchwarzschildRayProcessor(300, 200, scene, fileName).Process();

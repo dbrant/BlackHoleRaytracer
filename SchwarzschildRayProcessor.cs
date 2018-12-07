@@ -100,7 +100,7 @@ namespace BlackHoleRaytracer
             
             var lookAt = new Vector3(0, 0, 0);
             var up = new Vector3(0, 1, 0);
-            var cameraPos = new Vector3(0, 1, -20);
+            var cameraPos = new Vector3(0, 5, -20);
 
 
             var front = Vector3.Normalize(lookAt - cameraPos);
