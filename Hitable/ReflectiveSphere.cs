@@ -26,7 +26,9 @@ namespace BlackHoleRaytracer.Hitable
 
         public bool Hit(ref Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
         {
-            float distanceSqr = Util.SqrNorm(point - center);
+            float distanceSqr = (point.X - center.X) * (point.X - center.X)
+                + (point.Y - center.Y) * (point.Y - center.Y)
+                + (point.Z - center.Z) * (point.Z - center.Z);
             if (distanceSqr < radiusSqr)
             {
                 point = IntersectionSearch(prevPoint, velocity, equation);
