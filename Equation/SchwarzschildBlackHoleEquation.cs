@@ -13,7 +13,13 @@ namespace BlackHoleRaytracer.Equation
     public class SchwarzschildBlackHoleEquation
     {
         private float h2;
-        public float stepSize { get; }
+        public float StepSize { get; }
+
+        /// <summary>
+        /// Multiplier for the potential, ranging from 0 for no curvature, to -1.5 for full curvature.
+        /// </summary>
+        public float PotentialCoefficient { get; set; }
+
         private double[] Y = new double[6];
         private double[] F = new double[6];
         private double[] K1 = new double[6];
@@ -23,12 +29,13 @@ namespace BlackHoleRaytracer.Equation
 
         public SchwarzschildBlackHoleEquation(float stepSize)
         {
-            this.stepSize = stepSize;
+            this.StepSize = stepSize;
+            PotentialCoefficient = -1.5f;
         }
 
         public void Function(ref Vector3 point, ref Vector3 velocity)
         {
-            Function(ref point, ref velocity, stepSize);
+            Function(ref point, ref velocity, StepSize);
         }
 
         public void Function(ref Vector3 point, ref Vector3 velocity, float step)
@@ -36,7 +43,7 @@ namespace BlackHoleRaytracer.Equation
             point += velocity * step;
 
             // this is the magical - 3/2 r^(-5) potential...
-            var accel = -1.5f * h2 * point / (float)Math.Pow(Util.SqrNorm(point), 2.5);
+            var accel = PotentialCoefficient * h2 * point / (float)Math.Pow(Util.SqrNorm(point), 2.5);
             velocity += accel * step;
 
             /*

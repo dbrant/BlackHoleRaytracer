@@ -92,7 +92,7 @@ namespace BlackHoleRaytracer.Hitable
 
         protected Vector3 IntersectionSearch(Vector3 prevPoint, Vector3 velocity, SchwarzschildBlackHoleEquation equation)
         {
-            float stepLow = 0, stepHigh = equation.stepSize;
+            float stepLow = 0, stepHigh = equation.StepSize;
             Vector3 newPoint = prevPoint;
             Vector3 tempVelocity;
             while (true)

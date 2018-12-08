@@ -34,9 +34,6 @@ namespace BlackHoleRaytracer.Hitable
             float distanceSqr = (point.X - center.X) * (point.X - center.X)
                 + (point.Y - center.Y) * (point.Y - center.Y)
                 + (point.Z - center.Z) * (point.Z - center.Z);
-
-
-                //Util.SqrNorm(point - center);
             if (distanceSqr < radiusSqr)
             {
                 var colpoint = IntersectionSearch(prevPoint, velocity, equation);
@@ -131,7 +128,7 @@ namespace BlackHoleRaytracer.Hitable
 
         protected Vector3 IntersectionSearch(Vector3 prevPoint, Vector3 velocity, SchwarzschildBlackHoleEquation equation)
         {
-            float stepLow = 0, stepHigh = equation.stepSize;
+            float stepLow = 0, stepHigh = equation.StepSize;
             Vector3 newPoint = prevPoint;
             Vector3 tempVelocity;
             while (true)
