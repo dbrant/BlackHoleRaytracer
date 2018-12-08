@@ -42,7 +42,7 @@ namespace BlackHoleRaytracer.Hitable
                 // and now transform to spherical coordinates relative to center of sphere.
                 double tempR = 0, tempTheta = 0, tempPhi = 0;
                 // hack: rejigger axes to make textures appear right side up.
-                Util.ToSpherical(impactFromCenter.X, -impactFromCenter.Y, impactFromCenter.Z, ref tempR, ref tempTheta, ref tempPhi);
+                Util.ToSpherical(impactFromCenter.X, impactFromCenter.Z, -impactFromCenter.Y, ref tempR, ref tempTheta, ref tempPhi);
 
                 color = Util.AddColor(GetColor(tempR, tempTheta, tempPhi), color);
                 stop = true;

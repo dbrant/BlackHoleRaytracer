@@ -55,7 +55,7 @@ namespace BlackHoleRaytracer
                 new Horizon(null, false),
                 new Sky(new Bitmap("skymap_8k.jpg"), 30).SetTextureOffset(Math.PI / 2),
                 //new CheckeredSphere(2, 2, -14, 1, Color.RoyalBlue, Color.DarkBlue),
-                new TexturedSphere(2, 2, -14, 1, new Bitmap("earthmap1k.jpg")),
+                new TexturedSphere(2, 2, -14, 1, new Bitmap("earthmap1k.jpg")).SetTextureOffset(Math.PI),
                 new ReflectiveSphere(-1, 2, -14, 1),
                 //new ReflectiveSphere(12, 0, 3, 1),
                 //new TexturedSphere(24, 0, 2, 1, new Bitmap("earthmap1k.jpg")),
@@ -67,7 +67,7 @@ namespace BlackHoleRaytracer
             var starTexture = new Bitmap("gstar.jpg");
             var starBitmap = Util.getNativeTextureBitmap(starTexture);
             var random = new Random();
-            for (int i = 0; i < 250; i++)
+            for (int i = 0; i < 20; i++)
             {
                 double tempR = 4.0 + random.NextDouble() * 10.0;
                 double tempTheta = random.NextDouble() * Math.PI * 2;
@@ -83,7 +83,7 @@ namespace BlackHoleRaytracer
             var scene = new Scene(r, theta, phi, equation, hitables);
 
             //new RayProcessor(640, 480, scene, fileName).Process();
-            new SchwarzschildRayProcessor(1920, 1080, scene, fileName).Process();
+            new SchwarzschildRayProcessor(320, 240, scene, fileName).Process();
 
             //Console.ReadKey();
         }
