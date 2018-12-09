@@ -33,11 +33,11 @@ namespace BlackHoleRaytracer.Equation
         /// </summary>
         public double Rmstable { get; private set; }
         
-        public KerrBlackHoleEquation(double rDistance, double thetaDegrees, double phiDegrees, double angularMomentum)
+        public KerrBlackHoleEquation(double rDistance, double theta, double phi, double angularMomentum)
         {
             R0 = rDistance;
-            theta0 = (Math.PI / 180.0) * thetaDegrees;
-            phi0 = (Math.PI / 180.0) * phiDegrees;
+            theta0 = theta;
+            phi0 = phi;
             this.angularMomentum = angularMomentum;
             Init();
         }

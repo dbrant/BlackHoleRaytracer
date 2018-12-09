@@ -1,57 +1,57 @@
 ﻿using BlackHoleRaytracer.Equation;
 using BlackHoleRaytracer.Hitable;
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace BlackHoleRaytracer
 {
     public class Scene
     {
-        /// <summary>
-        /// Camera position - Distance from black hole
-        /// </summary>
+        public Vector3 CameraPosition { get; }
+
+        public Vector3 CameraLookAt { get; }
+
+        public Vector3 UpVector { get; }
+
+        public float Fov { get; }
+
+        
         public double CameraDistance { get; }
+        
+        public double CameraAngleHorz { get; }
+        
+        public double CameraAngleVert { get; }
 
-        /// <summary>
-        /// Camera position - Inclination (vertical angle) in degrees
-        /// </summary>
-        public double CameraInclination { get; }
-
-        /// <summary>
-        /// Camera position - Angle (horizontal) in degrees
-        /// </summary>
-        public double CameraAngle { get; }
-
-        /// <summary>
-        /// Camera tilt - in degrees
-        /// </summary>
+        
         public double CameraTilt { get; }
-
-        /// <summary>
-        /// Camera yaw - if we want to look sideways.
-        /// Note: this is expressed in % of image width.
-        /// </summary>
+        
         public double CameraYaw { get; }
 
         public List<IHitable> hitables { get; }
 
-        public KerrBlackHoleEquation equation { get; }
 
-        public Scene(double r, double theta, double phi, KerrBlackHoleEquation equation, List<IHitable> hitables)
+        public SchwarzschildBlackHoleEquation SchwarzschildEquation { get; }
+
+        public KerrBlackHoleEquation KerrEquation { get; }
+
+
+        public Scene(Vector3 CameraPosition, Vector3 CameraLookAt, Vector3 UpVector, float Fov, List<IHitable> hitables, float CurvatureCoeff, float AngularMomentum)
         {
-            CameraDistance = r;
-            CameraAngle = phi;
-            CameraInclination = theta;
-            CameraTilt = 0;
-            CameraYaw = 0;
-            this.equation = equation;
+            this.CameraPosition = CameraPosition;
+            this.CameraLookAt = CameraLookAt;
+            this.UpVector = UpVector;
             this.hitables = hitables;
-        }
+            this.Fov = Fov;
 
-        public Scene(double r, double theta, double phi, double tilt, double yaw, KerrBlackHoleEquation equation, List<IHitable> hitables)
-            : this(r, phi, theta, equation, hitables)
-        {
-            CameraTilt = tilt;
-            CameraYaw = yaw;
+            double tempR = 0, tempTheta = 0, tempPhi = 0;
+            Util.ToSpherical(CameraPosition.X, CameraPosition.Y, CameraPosition.Z, ref tempR, ref tempTheta, ref tempPhi);
+            CameraDistance = tempR;
+            CameraAngleVert = tempTheta;
+            CameraAngleHorz = tempPhi - 0.1;
+
+            SchwarzschildEquation = new SchwarzschildBlackHoleEquation(CurvatureCoeff);
+            KerrEquation = new KerrBlackHoleEquation(CameraDistance, CameraAngleHorz, CameraAngleVert, AngularMomentum);
         }
     }
 }

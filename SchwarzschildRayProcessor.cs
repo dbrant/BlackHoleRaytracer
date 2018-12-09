@@ -19,6 +19,8 @@ namespace BlackHoleRaytracer
         private int[] outputBitmap;
         private string outputFileName;
 
+        private const int NumIterations = 2000;
+
 
         public SchwarzschildRayProcessor(int width, int height, Scene scene, string outputFileName)
         {
@@ -30,7 +32,6 @@ namespace BlackHoleRaytracer
 
         public void Process()
         {
-
             // Create main bitmap for writing pixels
             int bufferLength = width * height;
             outputBitmap = new int[bufferLength];
@@ -42,10 +43,7 @@ namespace BlackHoleRaytracer
 
             var lineLists = new List<List<int>>();
             var paramList = new List<ThreadParams>();
-
-
-            float stepSize = 0.16f;
-
+            
 
             for (int i = 0; i < numThreads; i++)
             {
@@ -55,7 +53,7 @@ namespace BlackHoleRaytracer
                 {
                     JobId = i,
                     LinesList = lineList,
-                    Equation = new SchwarzschildBlackHoleEquation(stepSize),
+                    Equation = new SchwarzschildBlackHoleEquation(scene.SchwarzschildEquation),
                     Thread = new Thread(new ParameterizedThreadStart(RayTraceThread)),
                 });
 
@@ -92,19 +90,11 @@ namespace BlackHoleRaytracer
         {
             var param = (ThreadParams)threadParams;
             Console.WriteLine("Starting thread {0}...", param.JobId);
-            
 
-            float tanFov = 1.5f;
-            int numIterations = 2500;
+            float tanFov = (float)Math.Tan((Math.PI / 180.0) * scene.Fov);
             
-            
-            var lookAt = new Vector3(0, 0, 0);
-            var up = new Vector3(0, 1, 0);
-            var cameraPos = new Vector3(0, 5, -20);
-
-
-            var front = Vector3.Normalize(lookAt - cameraPos);
-            var left = Vector3.Normalize(Vector3.Cross(up, front));
+            var front = Vector3.Normalize(scene.CameraLookAt - scene.CameraPosition);
+            var left = Vector3.Normalize(Vector3.Cross(scene.UpVector, front));
             var nUp = Vector3.Cross(front, left);
             
             var viewMatrix = new Matrix4x4(left.X, left.Y, left.Z, 0,
@@ -139,12 +129,12 @@ namespace BlackHoleRaytracer
 
                         var velocity = new Vector3(normView.X, normView.Y, normView.Z);
 
-                        point = cameraPos;
+                        point = scene.CameraPosition;
                         sqrNorm = Util.SqrNorm(point);
                         
                         param.Equation.SetInitialConditions(ref point, ref velocity);
 
-                        for (int iter = 0; iter < numIterations; iter++)
+                        for (int iter = 0; iter < NumIterations; iter++)
                         {
                             prevPoint = point;
                             prevSqrNorm = sqrNorm;

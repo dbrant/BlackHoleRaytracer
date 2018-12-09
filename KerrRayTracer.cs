@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace BlackHoleRaytracer
 {
-    public class RayTracer
+    public class KerrRayTracer
     {
         private KerrBlackHoleEquation equation;
         private int sizex;
@@ -21,7 +21,7 @@ namespace BlackHoleRaytracer
         public List<Tuple<double,double,double>> RayPoints { get; }
 
 
-        public RayTracer(KerrBlackHoleEquation equation, int sizex, int sizey, List<IHitable> hitables,
+        public KerrRayTracer(KerrBlackHoleEquation equation, int sizex, int sizey, List<IHitable> hitables,
             double cameraTilt, double cameraYaw, bool trace = false)
         {
             this.equation = equation;

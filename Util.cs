@@ -22,6 +22,13 @@ namespace BlackHoleRaytracer
             theta = Math.Acos(z / r);
         }
 
+        public static void ToSpherical(Vector3 v, ref double r, ref double theta, ref double phi)
+        {
+            r = Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
+            phi = Math.Atan2(v.Y, v.X);
+            theta = Math.Acos(v.Z / r);
+        }
+
         public static double DoubleMod(double n, double m)
         {
             double x = Math.Floor(n / m);
