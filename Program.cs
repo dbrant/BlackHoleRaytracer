@@ -1,8 +1,8 @@
-﻿using BlackHoleRaytracer.Equation;
-using BlackHoleRaytracer.Hitable;
+﻿using BlackHoleRaytracer.Hitable;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Numerics;
 
 namespace BlackHoleRaytracer
@@ -73,24 +73,43 @@ namespace BlackHoleRaytracer
                 //new CheckeredSphere(-10, -10, -10, 1, Color.RoyalBlue, Color.DarkBlue)
             };
 
-            var starTexture = new Bitmap("gstar.jpg");
+            var starTexture = new Bitmap("sun2k.jpg");
             var starBitmap = Util.getNativeTextureBitmap(starTexture);
             var random = new Random();
-            for (int i = 0; i < 20; i++)
+            double tempR = 0, tempTheta = 0, tempPhi = 0;
+            double tempX = 0, tempY = 0, tempZ = 0;
+            for (int i = 0; i < 16; i++)
             {
-                double tempR = 4.0 + random.NextDouble() * 10.0;
-                double tempTheta = random.NextDouble() * Math.PI * 2;
-                double tempX = 0, tempY = 0, tempZ = 0;
+                tempR = 4.0 + random.NextDouble() * 10.0;
+                tempTheta = random.NextDouble() * Math.PI * 2;
                 Util.ToCartesian(tempR, tempTheta, 0, ref tempX, ref tempY, ref tempZ);
-                hitables.Add(new TexturedSphere(tempX, tempY, tempZ, 0.05f + (float)random.NextDouble() * 0.2f, starBitmap, starTexture.Width, starTexture.Height)
+                hitables.Add(new TexturedSphere(tempX, tempY, tempZ, 0.2f + (float)random.NextDouble() * 0.3f, starBitmap, starTexture.Width, starTexture.Height)
                     .SetTextureOffset(random.NextDouble() * Math.PI * 2));
             }
+
+
             
+            int numFrames = 720;
+            double angleIncrement = (Math.PI * 2) / numFrames;
+            var rotationMatrix = Matrix4x4.CreateRotationY((float)angleIncrement);
 
-            var scene = new Scene(cameraPos, lookAt, up, fov, hitables, curvatureCoeff, angularMomentum);
+            Directory.CreateDirectory("anim");
 
-            //new KerrRayProcessor(400, 200, scene, fileName).Process();
-            new SchwarzschildRayProcessor(600, 400, scene, fileName).Process();
+            for (int i = 0; i < numFrames; i++)
+            {
+                
+                cameraPos = Util.MatrixMul(rotationMatrix, cameraPos);
+                
+                fileName = Path.Combine("anim", "frame" + i + ".png");
+                
+                var scene = new Scene(cameraPos, lookAt, up, fov, hitables, curvatureCoeff, angularMomentum);
+
+                //new KerrRayProcessor(400, 200, scene, fileName).Process();
+                new SchwarzschildRayProcessor(1280, 720, scene, fileName).Process();
+            }
+
+
+
         }
     }
 }
