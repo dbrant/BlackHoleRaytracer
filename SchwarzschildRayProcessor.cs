@@ -19,7 +19,7 @@ namespace BlackHoleRaytracer
         private int[] outputBitmap;
         private string outputFileName;
 
-        private const int NumIterations = 2000;
+        private const int NumIterations = 10000;
 
 
         public SchwarzschildRayProcessor(int width, int height, Scene scene, string outputFileName)
@@ -123,15 +123,15 @@ namespace BlackHoleRaytracer
                         var view = new Vector3(((float)x / width - 0.5f) * tanFov,
                             ((-(float)y / height + 0.5f) * height / width) * tanFov,
                             1f);
-                        view = Util.MatrixMul(viewMatrix, view);
+                        view = Vector3.Transform(view, viewMatrix);
                         
                         var normView = Vector3.Normalize(view);
 
                         var velocity = new Vector3(normView.X, normView.Y, normView.Z);
 
                         point = scene.CameraPosition;
-                        sqrNorm = Util.SqrNorm(point);
-                        
+                        sqrNorm = point.LengthSquared();
+
                         param.Equation.SetInitialConditions(ref point, ref velocity);
 
                         for (int iter = 0; iter < NumIterations; iter++)
@@ -140,8 +140,8 @@ namespace BlackHoleRaytracer
                             prevSqrNorm = sqrNorm;
                             
                             param.Equation.Function(ref point, ref velocity);
-                            sqrNorm = Util.SqrNorm(point);
-                            
+                            sqrNorm = point.LengthSquared();
+
                             Util.ToSpherical(point.X, point.Y, point.Z, ref tempR, ref tempTheta, ref tempPhi);
                             
                             // Check if the ray hits anything

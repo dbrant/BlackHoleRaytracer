@@ -127,7 +127,7 @@ namespace BlackHoleRaytracer.Hitable
                 tempVelocity = velocity;
                 equation.Function(ref newPoint, ref tempVelocity, stepMid);
 
-                float distanceSqr = Util.SqrNorm(newPoint - center);
+                float distanceSqr = (newPoint - center).LengthSquared();
                 if (Math.Abs(stepHigh - stepLow) < 0.00001)
                 {
                     break;

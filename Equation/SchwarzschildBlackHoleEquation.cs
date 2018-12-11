@@ -51,7 +51,7 @@ namespace BlackHoleRaytracer.Equation
             point += velocity * step;
 
             // this is the magical - 3/2 r^(-5) potential...
-            var accel = PotentialCoefficient * h2 * point / (float)Math.Pow(Util.SqrNorm(point), 2.5);
+            var accel = PotentialCoefficient * h2 * point / (float)Math.Pow(point.LengthSquared(), 2.5);
             velocity += accel * step;
 
             /*
@@ -92,7 +92,7 @@ namespace BlackHoleRaytracer.Equation
 
         public unsafe void SetInitialConditions(ref Vector3 point, ref Vector3 velocity)
         {
-            h2 = Util.SqrNorm(Vector3.Cross(point, velocity));
+            h2 = Vector3.Cross(point, velocity).LengthSquared();
         }
 
         private void RK4f(double[] y, double[] f, double h2)

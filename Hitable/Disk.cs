@@ -36,7 +36,7 @@ namespace BlackHoleRaytracer.Hitable
             if (point.Y * side >= 0)
             {
                 var colpoint = IntersectionSearch(side, prevPoint, velocity, equation);
-                var colpointsqr = Util.SqrNorm(colpoint);
+                var colpointsqr = colpoint.LengthSquared();
 
                 if ((colpointsqr >= radiusInnerSqr) && (colpointsqr <= radiusOuterSqr))
                 {
