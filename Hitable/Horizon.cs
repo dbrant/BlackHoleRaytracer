@@ -34,7 +34,7 @@ namespace BlackHoleRaytracer.Hitable
                 var colpoint = IntersectionSearch(prevPoint, velocity, equation);
 
                 double tempR = 0, tempTheta = 0, tempPhi = 0;
-                Util.ToSpherical(colpoint.X, colpoint.Y, colpoint.Z, ref tempR, ref tempTheta, ref tempPhi);
+                Util.ToSpherical(colpoint.X, colpoint.Z, colpoint.Y, ref tempR, ref tempTheta, ref tempPhi);
 
                 Color col = Color.Black;
                 if (checkered)
