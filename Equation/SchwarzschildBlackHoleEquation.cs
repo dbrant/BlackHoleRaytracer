@@ -43,7 +43,7 @@ namespace BlackHoleRaytracer.Equation
 
         public void Function(ref Vector3 point, ref Vector3 velocity)
         {
-            Function(ref point, ref velocity, StepSize);
+            Function(ref point, ref velocity, (point.Length() / 30f) * StepSize);
         }
 
         public void Function(ref Vector3 point, ref Vector3 velocity, float step)
