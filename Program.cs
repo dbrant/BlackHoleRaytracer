@@ -13,10 +13,10 @@ namespace BlackHoleRaytracer
         {
 
             // Set up some default parameters, which can be overridden by command line args.
-            var cameraPos = new Vector3(0, 5, -20);
+            var cameraPos = new Vector3(0, 3, -20);
             var lookAt = new Vector3(0, 0, 0);
-            var up = new Vector3(0, 1, 0);
-            float fov = 56f;
+            var up = new Vector3(-0.3f, 1, 0);
+            float fov = 55f;
             float curvatureCoeff = -1.5f;
             float angularMomentum = 0;
             string fileName = "image.png";
@@ -57,19 +57,22 @@ namespace BlackHoleRaytracer
 
             var hitables = new List<IHitable>
             {
-                new CheckeredDisk(2.6, 14.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.DarkGreen),
-                //new TexturedDisk(2.6, 12.0, new Bitmap("adisk9.png")),
+                //new CheckeredDisk(2.6, 14.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.DarkGreen),
+                new TexturedDisk(2.6, 12.0, new Bitmap("disk_textured.png")),
                 //new CheckeredDisk(equation.Rmstable, 20.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
-                //new TexturedDisk(2, 20.0, new Bitmap("adisk.jpg")),
-                new Horizon(null, true),
-                new Sky(new Bitmap("skymap_8k.jpg"), 30).SetTextureOffset(Math.PI / 2),
+                //new TexturedDisk(2, 20.0, new Bitmap("disk.jpg")),
+                new Horizon(null, false),
+                new Sky(new Bitmap("sky8k.jpg"), 30).SetTextureOffset(Math.PI / 2),
+
                 //new CheckeredSphere(2, 2, -14, 1, Color.RoyalBlue, Color.DarkBlue),
-                //new TexturedSphere(2, 2, -10, 1, new Bitmap("earthmap1k.jpg")).SetTextureOffset(Math.PI),
+
+                new TexturedSphere(2, 2, -10, 1, new Bitmap("earth1k.jpg")).SetTextureOffset(Math.PI),
+                new TexturedSphere(-2, -2, -8, 1, new Bitmap("mars1k.jpg")),
                 new ReflectiveSphere(-1, 2, -10, 1),
                 new ReflectiveSphere(3, -3, -7, 1),
                 new ReflectiveSphere(3, 5, 5, 1),
                 new ReflectiveSphere(-3.7, 2, -7, 1),
-                new ReflectiveSphere(12, 0, 3, 1),
+
                 //new TexturedSphere(24, 0, 2, 1, new Bitmap("earthmap1k.jpg")),
                 //new TexturedSphere(16, 0, 4, 1, new Bitmap("gstar.jpg")),
                 //new TexturedSphere(-10, -10, -10, 1, new Bitmap("gstar.jpg")),
@@ -87,7 +90,7 @@ namespace BlackHoleRaytracer
                 tempR = 6.5 + random.NextDouble() * 6.0;
                 tempTheta = random.NextDouble() * Math.PI * 2;
                 Util.ToCartesian(tempR, tempTheta, 0, ref tempX, ref tempY, ref tempZ);
-                hitables.Add(new TexturedSphere(tempX, tempY, tempZ, 0.2f + (float)random.NextDouble() * 0.3f, starBitmap, starTexture.Width, starTexture.Height)
+                hitables.Add(new TexturedSphere(tempX, tempY, tempZ, 0.05f + (float)random.NextDouble() * 0.2f, starBitmap, starTexture.Width, starTexture.Height)
                     .SetTextureOffset(random.NextDouble() * Math.PI * 2));
             }
 
