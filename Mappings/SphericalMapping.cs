@@ -27,7 +27,7 @@ namespace BlackHoleRaytracer.Mappings
 
         public void MapCartesian(double x, double y, double z, out int u, out int v)
         {
-            u = (int)((0.5 + Math.Atan2(z, x) / (2 * Math.PI)) * SizeX) % SizeX;
+            u = (int)((0.5 + Util.Atan2(z, x) / (2 * Math.PI)) * SizeX) % SizeX;
             v = (int)((0.5 - (Math.Asin(y) / Math.PI)) * SizeY) % SizeY;
             if (u < 0) { u = SizeX + u; }
             if (v < 0) { v = SizeY + v; }

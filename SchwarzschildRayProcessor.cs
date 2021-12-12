@@ -21,13 +21,20 @@ namespace BlackHoleRaytracer
 
         private const int NumIterations = 10000;
 
+        private bool debug;
+
 
         public SchwarzschildRayProcessor(int width, int height, Scene scene, string outputFileName)
+            : this(width, height, scene, outputFileName, true)
+        { }
+
+        public SchwarzschildRayProcessor(int width, int height, Scene scene, string outputFileName, bool debug)
         {
             this.width = width;
             this.height = height;
             this.scene = scene;
             this.outputFileName = outputFileName;
+            this.debug = debug;
         }
 
         public void Process()
@@ -35,11 +42,11 @@ namespace BlackHoleRaytracer
             // Create main bitmap for writing pixels
             int bufferLength = width * height;
             outputBitmap = new int[bufferLength];
-            
-            int numThreads = Environment.ProcessorCount;
+
+            int numThreads = 4; // Environment.ProcessorCount - 1;
             DateTime startTime = DateTime.Now;
 
-            Console.WriteLine("Launching {0} threads...", numThreads);
+            Log("Launching {0} threads...", numThreads);
 
             var lineLists = new List<List<int>>();
             var paramList = new List<ThreadParams>();
@@ -82,14 +89,14 @@ namespace BlackHoleRaytracer
             if (gcHandle.IsAllocated) { gcHandle.Free(); }
 
 
-            Console.WriteLine("Finished in {0} seconds.", (DateTime.Now - startTime).TotalSeconds);
+            Log("Finished in {0} seconds.", (DateTime.Now - startTime).TotalSeconds);
         }
 
 
         public void RayTraceThread(object threadParams)
         {
             var param = (ThreadParams)threadParams;
-            Console.WriteLine("Starting thread {0}...", param.JobId);
+            Log("Starting thread {0}...", param.JobId);
 
             float tanFov = (float)Math.Tan((Math.PI / 180.0) * scene.Fov);
             
@@ -111,7 +118,7 @@ namespace BlackHoleRaytracer
             double tempR = 0, tempTheta = 0, tempPhi = 0;
             bool stop = false;
 
-            try
+            //try
             {
                 foreach (int y in param.LinesList)
                 {
@@ -167,14 +174,30 @@ namespace BlackHoleRaytracer
                         outputBitmap[yOffset + x] = color.ToArgb();
 
                     }
-                    Console.WriteLine("Thread {0}: Line {1} rendered.", param.JobId, y);
+                    Log("Thread {0}: Line {1} rendered.", param.JobId, y);
                 }
             }
-            catch (Exception e)
+            //catch (Exception e)
+            //{
+            //    Log("Thread {0} error: {1}", param.JobId, e.Message);
+            //}
+            Log("Thread {0} finished.", param.JobId);
+        }
+
+        private void Log(string message, object arg0)
+        {
+            if (debug)
             {
-                Console.WriteLine("Thread {0} error: {1}", param.JobId, e.Message);
+                Console.WriteLine(message, arg0);
             }
-            Console.WriteLine("Thread {0} finished.", param.JobId);
+        }
+
+        private void Log(string message, object arg0, object arg1)
+        {
+            if (debug)
+            {
+                Console.WriteLine(message, arg0, arg1);
+            }
         }
     }
 

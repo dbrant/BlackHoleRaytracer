@@ -46,12 +46,28 @@ namespace BlackHoleRaytracer.Equation
             Function(ref point, ref velocity, (point.Length() / 30f) * StepSize);
         }
 
+
+
+
+
+        static double minP = 100000000.0;
+        static double maxP = -100000000.0;
+
+
+
         public void Function(ref Vector3 point, ref Vector3 velocity, float step)
         {
             point += velocity * step;
 
+
+            /*
+            var p = point.LengthSquared();
+            if (p > maxP) maxP = p;
+            else if (p < minP) minP = p;
+            */
+
             // this is the magical - 3/2 r^(-5) potential...
-            var accel = PotentialCoefficient * h2 * point / (float)Math.Pow(point.LengthSquared(), 2.5);
+            var accel = PotentialCoefficient * h2 * point / (float)Util.Pow25(point.LengthSquared());
             velocity += accel * step;
 
             /*

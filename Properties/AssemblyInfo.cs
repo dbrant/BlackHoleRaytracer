@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BlackHoleRaytracer")]
-[assembly: AssemblyCopyright("Copyright © 2018 Dmitry Brant")]
+[assembly: AssemblyCopyright("Copyright © 2018-2020 Dmitry Brant")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
