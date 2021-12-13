@@ -70,7 +70,7 @@ namespace BlackHoleRaytracer
 
                 //new CheckeredSphere(2, 2, -14, 1, Color.RoyalBlue, Color.DarkBlue),
 
-                //new TexturedSphere(2, 2, -10, 1, new Bitmap("earth1k.jpg")).SetTextureOffset(Math.PI),
+                new TexturedSphere(2, 2, -10, 1, new Bitmap("earth1k.jpg")).SetTextureOffset(Math.PI),
                 //new TexturedSphere(-2, -2, -8, 1, new Bitmap("mars1k.jpg")),
                 //new ReflectiveSphere(-1, 2, -10, 1),
                 //new ReflectiveSphere(3, -3, -7, 1),
@@ -89,7 +89,7 @@ namespace BlackHoleRaytracer
             double tempR = 0, tempTheta = 0, tempPhi = 0;
             double tempX = 0, tempY = 0, tempZ = 0;
 
-            int numRandomSpheres = 0;
+            int numRandomSpheres = 2;
             for (int i = 0; i < numRandomSpheres; i++)
             {
                 tempR = 5 + random.NextDouble() * 6.0;
@@ -100,7 +100,7 @@ namespace BlackHoleRaytracer
                     .SetTextureOffset(random.NextDouble() * Math.PI * 2));
             }
 
-            int numReflectiveSpheres = 0;
+            int numReflectiveSpheres = 2;
             for (int i = 0; i < numReflectiveSpheres; i++)
             {
                 tempR = 4 + random.NextDouble() * 6.0;
