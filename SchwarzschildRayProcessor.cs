@@ -115,7 +115,6 @@ namespace BlackHoleRaytracer
             int x, yOffset;
             Vector3 point, prevPoint;
             double sqrNorm, prevSqrNorm;
-            double tempR = 0, tempTheta = 0, tempPhi = 0;
             bool stop = false;
 
             //try
@@ -149,13 +148,11 @@ namespace BlackHoleRaytracer
                             param.Equation.Function(ref point, ref velocity);
                             sqrNorm = point.LengthSquared();
 
-                            Util.ToSpherical(point.X, point.Y, point.Z, ref tempR, ref tempTheta, ref tempPhi);
-                            
                             // Check if the ray hits anything
                             foreach (var hitable in scene.hitables)
                             {
                                 stop = false;
-                                if (hitable.Hit(ref point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, tempR, tempTheta, tempPhi, ref color, ref stop, debug))
+                                if (hitable.Hit(ref point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, ref color, ref stop, debug))
                                 {
                                     if (stop)
                                     {

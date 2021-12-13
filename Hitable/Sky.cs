@@ -33,13 +33,15 @@ namespace BlackHoleRaytracer.Hitable
             return this;
         }
 
-        public bool Hit(ref Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(ref Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
         {
             // Has the ray escaped to infinity?
             if (sqrNorm > radiusSqr)
             {
                 int xPos, yPos;
-                textureMap.Map(r, theta, phi, out xPos, out yPos);
+                double tempR = 0.0, tempTheta = 0.0, tempPhi = 0.0;
+                Util.ToSpherical(point.X, point.Y, point.Z, ref tempR, ref tempTheta, ref tempPhi);
+                textureMap.Map(tempR, tempTheta, tempPhi, out xPos, out yPos);
                 
                 color = Util.AddColor(Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]), color);
                 stop = true;

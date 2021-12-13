@@ -26,7 +26,7 @@ namespace BlackHoleRaytracer.Hitable
             }
         }
 
-        public bool Hit(ref Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, double r, double theta, double phi, ref Color color, ref bool stop, bool debug)
+        public bool Hit(ref Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
         {
             // Has the ray fallen past the horizon?
             if (prevSqrNorm > 1 && sqrNorm < 1)
@@ -49,7 +49,7 @@ namespace BlackHoleRaytracer.Hitable
                 else if (textureBitmap != null)
                 {
                     int xPos, yPos;
-                    textureMap.Map(r, theta, -phi, out xPos, out yPos);
+                    textureMap.Map(tempR, tempTheta, -tempPhi, out xPos, out yPos);
 
                     col = Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
                 }
