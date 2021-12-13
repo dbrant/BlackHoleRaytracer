@@ -142,9 +142,8 @@ namespace BlackHoleRaytracer
                         {
                             prevPoint = point;
                             prevSqrNorm = sqrNorm;
-                            
-                            param.Equation.Function(ref point, ref velocity);
-                            sqrNorm = point.LengthSquared();
+
+                            sqrNorm = param.Equation.Function(ref point, ref velocity);
 
                             // Check if the ray hits anything
                             foreach (var hitable in scene.hitables)

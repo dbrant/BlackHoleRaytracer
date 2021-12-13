@@ -68,7 +68,7 @@ namespace BlackHoleRaytracer
 
         public static double Pow25(double x)
         {
-            int i = (int)(x * pow25Entries / 1000.0);
+            uint i = (uint)(x * pow25Entries / 1000.0);
             return i < pow25Entries ? pow25Cache[i] : Math.Pow(x, 2.5);
         }
 

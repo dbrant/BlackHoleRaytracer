@@ -13,12 +13,12 @@ namespace BlackHoleRaytracer
         {
 
             // Set up some default parameters, which can be overridden by command line args.
-            var cameraPos = new Vector3(0, 3, -13);
+            var cameraPos = new Vector3(0, 13, -33);
             var lookAt = new Vector3(0, 0, 0);
             var up = new Vector3(0f, 1, 0);
             float fov = 55f;
             float curvatureCoeff = -1.5f;
-            float angularMomentum = 0;
+            float angularMomentum = 0.99f;
             string fileName = "image.png";
 
 
@@ -61,11 +61,11 @@ namespace BlackHoleRaytracer
 
             var hitables = new List<IHitable>
             {
-                //new CheckeredDisk(2.6, 14.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.DarkGreen),
+                new CheckeredDisk(3.0, 14.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.DarkGreen),
                 //new TexturedDisk(2.6, 10.0, new Bitmap("adisk5.jpg")),
                 //new CheckeredDisk(equation.Rmstable, 20.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
                 //new TexturedDisk(2, 20.0, new Bitmap("disk.jpg")),
-                new Horizon(null, false),
+                new Horizon(null, true),
                 new Sky(new Bitmap("sky8k.jpg"), 30).SetTextureOffset(Math.PI / 2),
 
                 //new CheckeredSphere(2, 2, -14, 1, Color.RoyalBlue, Color.DarkBlue),
@@ -89,7 +89,7 @@ namespace BlackHoleRaytracer
             double tempR = 0, tempTheta = 0, tempPhi = 0;
             double tempX = 0, tempY = 0, tempZ = 0;
 
-            int numRandomSpheres = 2;
+            int numRandomSpheres = 0;
             for (int i = 0; i < numRandomSpheres; i++)
             {
                 tempR = 5 + random.NextDouble() * 6.0;
@@ -100,7 +100,7 @@ namespace BlackHoleRaytracer
                     .SetTextureOffset(random.NextDouble() * Math.PI * 2));
             }
 
-            int numReflectiveSpheres = 2;
+            int numReflectiveSpheres = 0;
             for (int i = 0; i < numReflectiveSpheres; i++)
             {
                 tempR = 4 + random.NextDouble() * 6.0;
@@ -151,8 +151,8 @@ namespace BlackHoleRaytracer
 
                 var scene = new Scene(tempCamPos, lookAt, up, fov, hitables, (float)(curvatureCoeff), angularMomentum);
 
-                //new KerrRayProcessor(400, 200, scene, fileName).Process();
-                new SchwarzschildRayProcessor(600, 300, scene, fileName, true).Process();
+                new KerrRayProcessor(1000, 600, scene, fileName).Process();
+                //new SchwarzschildRayProcessor(600, 300, scene, fileName, true).Process();
                 //new SchwarzschildRayProcessor(128, 64, scene, fileName, false).Process();
 
 

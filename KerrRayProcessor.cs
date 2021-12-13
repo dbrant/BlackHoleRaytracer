@@ -32,8 +32,8 @@ namespace BlackHoleRaytracer
             // Create main bitmap for writing pixels
             int bufferLength = width * height;
             outputBitmap = new int[bufferLength];
-            
-            int numThreads = Environment.ProcessorCount;
+
+            int numThreads = 4; // Environment.ProcessorCount;
             DateTime startTime = DateTime.Now;
 
             Console.WriteLine("Launching {0} threads...", numThreads);

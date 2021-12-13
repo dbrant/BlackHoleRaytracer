@@ -34,12 +34,12 @@ namespace BlackHoleRaytracer.Equation
             PotentialCoefficient = other.PotentialCoefficient;
         }
 
-        public void Function(ref Vector3 point, ref Vector3 velocity)
+        public float Function(ref Vector3 point, ref Vector3 velocity)
         {
-            Function(ref point, ref velocity, (point.Length() / 30f) * StepSize);
+            return Function(ref point, ref velocity, (point.Length() / 30f) * StepSize);
         }
 
-        public void Function(ref Vector3 point, ref Vector3 velocity, float step)
+        public float Function(ref Vector3 point, ref Vector3 velocity, float step)
         {
             //point += velocity * step;
             point.X += velocity.X * step;
@@ -49,12 +49,13 @@ namespace BlackHoleRaytracer.Equation
             // this is the magical - 3/2 r^(-5) potential...
             //var accel = PotentialCoefficient * h2 * point / (float)Util.Pow25(point.LengthSquared());
             //velocity += accel * step;
-            float ps = (float)Util.Pow25(point.LengthSquared());
-            float f1 = PotentialCoefficient * h2;
-            velocity.X += f1 * step * point.X / ps;
-            velocity.Y += f1 * step * point.Y / ps;
-            velocity.Z += f1 * step * point.Z / ps;
+            float lsq = point.LengthSquared();
+            float f1 = PotentialCoefficient * h2 * step / (float)Util.Pow25(lsq);
+            velocity.X += f1 * point.X;
+            velocity.Y += f1 * point.Y;
+            velocity.Z += f1 * point.Z;
 
+            return lsq;
         }
 
         public unsafe void SetInitialConditions(ref Vector3 point, ref Vector3 velocity)

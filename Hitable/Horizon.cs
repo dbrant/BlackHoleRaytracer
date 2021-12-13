@@ -65,6 +65,11 @@ namespace BlackHoleRaytracer.Hitable
             // Has the ray fallen past the horizon?
             if (y[0] < equation.Rhor)
             {
+                // Restore Y to its previous values, and perform the binary intersection search.
+                Util.memcpy((IntPtr)y, (IntPtr)prevY, equation.N * sizeof(double));
+
+                IntersectionSearch(y, dydx, hdid, equation);
+
                 Color col = Color.Black;
                 if (checkered)
                 {
@@ -100,9 +105,8 @@ namespace BlackHoleRaytracer.Hitable
                 float stepMid = (stepLow + stepHigh) / 2;
                 newPoint = prevPoint;
                 tempVelocity = velocity;
-                equation.Function(ref newPoint, ref tempVelocity, stepMid);
+                double distance = equation.Function(ref newPoint, ref tempVelocity, stepMid);
 
-                double distance = newPoint.LengthSquared();
                 if (Math.Abs(stepHigh - stepLow) < 0.00001)
                 {
                     break;
@@ -117,6 +121,41 @@ namespace BlackHoleRaytracer.Hitable
                 }
             }
             return newPoint;
+        }
+
+        private unsafe void IntersectionSearch(double* y, double* dydx, double hupper, KerrBlackHoleEquation equation)
+        {
+            double hlower = 0.0;
+            equation.Function(y, dydx);
+
+            while (true)
+            {
+                double* yout = stackalloc double[equation.N];
+                double* yerr = stackalloc double[equation.N];
+
+                double hdiff = hupper - hlower;
+
+                if (Math.Abs(hdiff) < 1e-7)
+                {
+                    RungeKutta.IntegrateStep(equation, y, dydx, hupper, yout, yerr);
+
+                    Util.memcpy((IntPtr)y, (IntPtr)yout, equation.N * sizeof(double));
+                    return;
+                }
+
+                double hmid = (hupper + hlower) / 2;
+
+                RungeKutta.IntegrateStep(equation, y, dydx, hmid, yout, yerr);
+
+                if (yout[0] < equation.Rhor)
+                {
+                    hupper = hmid;
+                }
+                else
+                {
+                    hlower = hmid;
+                }
+            }
         }
     }
 }
