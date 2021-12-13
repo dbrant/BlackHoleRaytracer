@@ -152,7 +152,7 @@ namespace BlackHoleRaytracer
                             foreach (var hitable in scene.hitables)
                             {
                                 stop = false;
-                                if (hitable.Hit(ref point, sqrNorm, prevPoint, prevSqrNorm, ref velocity, param.Equation, ref color, ref stop, debug))
+                                if (hitable.Hit(ref point, sqrNorm, ref prevPoint, prevSqrNorm, ref velocity, param.Equation, ref color, ref stop, debug))
                                 {
                                     if (stop)
                                     {

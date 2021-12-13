@@ -26,7 +26,7 @@ namespace BlackHoleRaytracer.Hitable
             }
         }
 
-        public bool Hit(ref Vector3 point, double sqrNorm, Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
+        public bool Hit(ref Vector3 point, double sqrNorm, ref Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
         {
             // Has the ray fallen past the horizon?
             if (prevSqrNorm > 1 && sqrNorm < 1)
