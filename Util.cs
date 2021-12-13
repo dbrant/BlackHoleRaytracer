@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace BlackHoleRaytracer
 {
     public static class Util
     {
-
-        static double minx = 0;
-        static double miny = 0;
-        static double minz = 0;
-        static double maxx = 0;
-        static double maxy = 0;
-        static double maxz = 0;
-
 
         static double PI_2 = 1.57079632679;
 
@@ -28,9 +18,6 @@ namespace BlackHoleRaytracer
 
         static int pow25Entries = 100000;
         static double[] pow25Cache;
-
-        static double epsilon = 0.00001;
-        static double nepsilon = -0.00001;
 
 
         public static void Precalculate()

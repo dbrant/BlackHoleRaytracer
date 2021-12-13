@@ -117,7 +117,7 @@ namespace BlackHoleRaytracer
             double sqrNorm, prevSqrNorm;
             bool stop = false;
 
-            //try
+            try
             {
                 foreach (int y in param.LinesList)
                 {
@@ -131,9 +131,7 @@ namespace BlackHoleRaytracer
                             1f);
                         view = Vector3.Transform(view, viewMatrix);
                         
-                        var normView = Vector3.Normalize(view);
-
-                        var velocity = new Vector3(normView.X, normView.Y, normView.Z);
+                        var velocity = Vector3.Normalize(view);
 
                         point = scene.CameraPosition;
                         sqrNorm = point.LengthSquared();
@@ -174,10 +172,10 @@ namespace BlackHoleRaytracer
                     Log("Thread {0}: Line {1} rendered.", param.JobId, y);
                 }
             }
-            //catch (Exception e)
-            //{
-            //    Log("Thread {0} error: {1}", param.JobId, e.Message);
-            //}
+            catch (Exception e)
+            {
+                Log("Thread {0} error: {1}", param.JobId, e.Message);
+            }
             Log("Thread {0} finished.", param.JobId);
         }
 
