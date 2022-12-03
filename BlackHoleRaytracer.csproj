@@ -1,71 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{80AB6D4A-977C-4F8B-B037-A8EF760C1B32}</ProjectGuid>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>BlackHoleRaytracer</RootNamespace>
-    <AssemblyName>BlackHoleRaytracer</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Equation\IODESystem.cs" />
-    <Compile Include="Equation\SchwarzschildBlackHoleEquation.cs" />
-    <Compile Include="Hitable\CheckeredDisk.cs" />
-    <Compile Include="Hitable\CheckeredSphere.cs" />
-    <Compile Include="Hitable\IHitable.cs" />
-    <Compile Include="Hitable\ReflectiveSphere.cs" />
-    <Compile Include="Hitable\TexturedDisk.cs" />
-    <Compile Include="Hitable\TexturedSphere.cs" />
-    <Compile Include="KerrRayProcessor.cs" />
-    <Compile Include="KerrRayTracer.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="Equation\KerrBlackHoleEquation.cs" />
-    <Compile Include="Hitable\Horizon.cs" />
-    <Compile Include="Hitable\Sky.cs" />
-    <Compile Include="Hitable\Sphere.cs" />
-    <Compile Include="Mappings\DiscMapping.cs" />
-    <Compile Include="Mappings\SphericalMapping.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scene.cs" />
-    <Compile Include="RungeKutta.cs" />
-    <Compile Include="Hitable\Disk.cs" />
-    <Compile Include="SchwarzschildRayProcessor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
   <ItemGroup>
     <Content Include="disk_clean.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -89,12 +29,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  </ItemGroup>
 </Project>
