@@ -5,6 +5,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>BlackHoleRaytracer</RootNamespace>
+    <Copyright>Copyright © 2018- Dmitry Brant</Copyright>
+    <PackageProjectUrl>https://dmitrybrant.com</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="disk_clean.jpg">
@@ -30,6 +32,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
 </Project>
