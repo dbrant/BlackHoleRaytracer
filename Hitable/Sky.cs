@@ -38,9 +38,11 @@ namespace BlackHoleRaytracer.Hitable
             // Has the ray escaped to infinity?
             if (sqrNorm > radiusSqr)
             {
+                var colpoint = point; // IntersectionSearch(prevPoint, velocity, equation);
+
                 int xPos, yPos;
                 double tempR = 0.0, tempTheta = 0.0, tempPhi = 0.0;
-                Util.ToSpherical(point.X, point.Y, point.Z, ref tempR, ref tempTheta, ref tempPhi);
+                Util.ToSpherical(colpoint.X, colpoint.Y, colpoint.Z, ref tempR, ref tempTheta, ref tempPhi);
                 textureMap.Map(tempR, tempTheta, tempPhi, out xPos, out yPos);
                 
                 color = Util.AddColor(Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]), color);
