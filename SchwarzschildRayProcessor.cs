@@ -168,7 +168,7 @@ namespace BlackHoleRaytracer
                         outputBitmap[yOffset + x] = color.ToArgb();
 
                     }
-                    Log("Thread {0}: Line {1} rendered.", param.JobId, y);
+                    //Log("Thread {0}: Line {1} rendered.", param.JobId, y);
                 }
             }
             catch (Exception e)
