@@ -89,6 +89,7 @@ namespace BlackHoleRaytracer
             double tempR = 0, tempTheta = 0, tempPhi = 0;
             double tempX = 0, tempY = 0, tempZ = 0;
 
+            /*
             int numRandomSpheres = 20;
             for (int i = 0; i < numRandomSpheres; i++)
             {
@@ -109,6 +110,7 @@ namespace BlackHoleRaytracer
                 tempY += (random.NextDouble() - 0.5) * 4;
                 hitables.Add(new ReflectiveSphere(tempX, tempY, tempZ, 0.2f + (float)random.NextDouble() * 0.8f));
             }
+            */
 
 
             //var scene = new Scene(cameraPos, lookAt, up, fov, hitables, curvatureCoeff, angularMomentum);

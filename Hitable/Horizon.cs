@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Numerics;
 using BlackHoleRaytracer.Equation;
@@ -128,11 +128,11 @@ namespace BlackHoleRaytracer.Hitable
             double hlower = 0.0;
             equation.Function(y, dydx);
 
+            double* yout = stackalloc double[equation.N];
+            double* yerr = stackalloc double[equation.N];
+
             while (true)
             {
-                double* yout = stackalloc double[equation.N];
-                double* yerr = stackalloc double[equation.N];
-
                 double hdiff = hupper - hlower;
 
                 if (Math.Abs(hdiff) < 1e-7)
