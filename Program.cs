@@ -155,7 +155,7 @@ namespace BlackHoleRaytracer
 
                 //new KerrRayProcessor(1000, 600, scene, fileName).Process();
                 //new SchwarzschildRayProcessor(1920, 1080, scene, fileName, true).Process();
-                new SchwarzschildRayProcessor(3840, 2160, scene, fileName, false).Process();
+                new SchwarzschildRayProcessor(3840, 2160, scene, fileName, true).Process();
                 //new SchwarzschildRayProcessor(320, 200, scene, fileName, false).Process();
                 //new SchwarzschildRayProcessor(128, 64, scene, fileName, false).Process();
 

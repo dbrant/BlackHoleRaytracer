@@ -1,11 +1,11 @@
 using BlackHoleRaytracer.Equation;
+using BlackHoleRaytracer.Hitable;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace BlackHoleRaytracer
 {
@@ -43,43 +43,89 @@ namespace BlackHoleRaytracer
             int bufferLength = width * height;
             outputBitmap = new int[bufferLength];
 
-            int numThreads = Environment.ProcessorCount - 3;
+            int numThreads = Math.Max(1, Environment.ProcessorCount - 3);
             DateTime startTime = DateTime.Now;
 
             Log("Launching {0} threads...", numThreads);
 
-            var lineLists = new List<List<int>>();
-            var paramList = new List<ThreadParams>();
-            
+            // Pre-compute loop-invariant camera and projection values
+            float tanFov = (float)Math.Tan((Math.PI / 180.0) * scene.Fov);
+            float invWidth = 1f / width;
+            float invHeight = 1f / height;
+            float aspectRatio = (float)height / width;
 
-            for (int i = 0; i < numThreads; i++)
+            var front = Vector3.Normalize(scene.CameraLookAt - scene.CameraPosition);
+            var left = Vector3.Normalize(Vector3.Cross(scene.UpVector, front));
+            var nUp = Vector3.Cross(front, left);
+
+            var viewMatrix = new Matrix4x4(left.X, left.Y, left.Z, 0,
+                nUp.X, nUp.Y, nUp.Z, 0,
+                front.X, front.Y, front.Z, 0,
+                0, 0, 0, 0);
+
+            // Cache hitables as an array for index-based iteration (avoids enumerator allocations)
+            IHitable[] hitables = [.. scene.hitables];
+            int hitableCount = hitables.Length;
+
+            Vector3 cameraPosition = scene.CameraPosition;
+            double cameraPosSqrNorm = cameraPosition.LengthSquared();
+
+            Parallel.For(0, height, new ParallelOptions { MaxDegreeOfParallelism = numThreads }, () =>
             {
-                var lineList = new List<int>();
-                lineLists.Add(lineList);
-                paramList.Add(new ThreadParams()
+                // Each thread gets its own equation instance (not thread-safe)
+                return new SchwarzschildBlackHoleEquation(scene.SchwarzschildEquation);
+            },
+            (y, state, equation) =>
+            {
+                int yOffset = y * width;
+                float yViewComponent = (-(float)y * invHeight + 0.5f) * aspectRatio * tanFov;
+
+                for (int x = 0; x < width; x++)
                 {
-                    JobId = i,
-                    LinesList = lineList,
-                    Equation = new SchwarzschildBlackHoleEquation(scene.SchwarzschildEquation),
-                    Thread = new Thread(new ParameterizedThreadStart(RayTraceThread)),
-                });
+                    Color color = Color.Transparent;
 
-            }
+                    var view = new Vector3((x * invWidth - 0.5f) * tanFov, yViewComponent, 1f);
+                    view = Vector3.Transform(view, viewMatrix);
 
+                    var velocity = Vector3.Normalize(view);
 
-            for (int j = 0; j < height; j++)
-            {
-                lineLists[j % numThreads].Add(j);
-            }
+                    Vector3 point = cameraPosition;
+                    double sqrNorm = cameraPosSqrNorm;
 
-            foreach (var param in paramList)
-            {
-                param.Thread.Start(param);
-            }
-            foreach (var param in paramList)
-            {
-                param.Thread.Join();
-            }
+                    equation.SetInitialConditions(ref point, ref velocity);
+
+                    bool stop = false;
+                    for (int iter = 0; iter < NumIterations; iter++)
+                    {
+                        Vector3 prevPoint = point;
+                        double prevSqrNorm = sqrNorm;
+
+                        sqrNorm = equation.Function(ref point, ref velocity);
+
+                        // Check if the ray hits anything
+                        for (int h = 0; h < hitableCount; h++)
+                        {
+                            if (hitables[h].Hit(ref point, sqrNorm, ref prevPoint, prevSqrNorm, ref velocity, equation, ref color, ref stop, false))
+                            {
+                                if (stop)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        if (stop)
+                        {
+                            break;
+                        }
+                    }
+
+                    outputBitmap[yOffset + x] = color.ToArgb();
+                }
+                //Log("Line {0} rendered.", y);
+
+                return equation;
+            },
+            _ => { });
 
 
             GCHandle gcHandle = GCHandle.Alloc(outputBitmap, GCHandleType.Pinned);
@@ -90,92 +136,6 @@ namespace BlackHoleRaytracer
 
 
             Log("Finished in {0} seconds.", (DateTime.Now - startTime).TotalSeconds);
-        }
-
-
-        public void RayTraceThread(object threadParams)
-        {
-            var param = (ThreadParams)threadParams;
-            Log("Starting thread {0}...", param.JobId);
-
-            float tanFov = (float)Math.Tan((Math.PI / 180.0) * scene.Fov);
-            
-            var front = Vector3.Normalize(scene.CameraLookAt - scene.CameraPosition);
-            var left = Vector3.Normalize(Vector3.Cross(scene.UpVector, front));
-            var nUp = Vector3.Cross(front, left);
-            
-            var viewMatrix = new Matrix4x4(left.X, left.Y, left.Z, 0,
-                nUp.X, nUp.Y, nUp.Z, 0,
-                front.X, front.Y, front.Z, 0,
-                0, 0, 0, 0);
-
-            
-            bool debug = false;
-            Color color;
-            int x, yOffset;
-            Vector3 point, prevPoint;
-            double sqrNorm, prevSqrNorm;
-            bool stop = false;
-
-            try
-            {
-                foreach (int y in param.LinesList)
-                {
-                    yOffset = y * width;
-                    for (x = 0; x < width; x++)
-                    {
-                        color = Color.Transparent;
-
-                        var view = new Vector3(((float)x / width - 0.5f) * tanFov,
-                            ((-(float)y / height + 0.5f) * height / width) * tanFov,
-                            1f);
-                        view = Vector3.Transform(view, viewMatrix);
-                        
-                        var velocity = Vector3.Normalize(view);
-
-                        point = scene.CameraPosition;
-                        sqrNorm = point.LengthSquared();
-
-                        param.Equation.SetInitialConditions(ref point, ref velocity);
-
-                        for (int iter = 0; iter < NumIterations; iter++)
-                        {
-                            prevPoint = point;
-                            prevSqrNorm = sqrNorm;
-
-                            sqrNorm = param.Equation.Function(ref point, ref velocity);
-
-                            // Check if the ray hits anything
-                            foreach (var hitable in scene.hitables)
-                            {
-                                stop = false;
-                                if (hitable.Hit(ref point, sqrNorm, ref prevPoint, prevSqrNorm, ref velocity, param.Equation, ref color, ref stop, debug))
-                                {
-                                    if (stop)
-                                    {
-                                        // The ray has found its stopping point (or rather its starting point).
-                                        break;
-                                    }
-                                }
-                            }
-                            if (stop)
-                            {
-                                break;
-                            }
-                            
-                        }
-                        
-                        outputBitmap[yOffset + x] = color.ToArgb();
-
-                    }
-                    Log("Thread {0}: Line {1} rendered.", param.JobId, y);
-                }
-            }
-            catch (Exception e)
-            {
-                Log("Thread {0} error: {1}", param.JobId, e.Message);
-            }
-            Log("Thread {0} finished.", param.JobId);
         }
 
         private void Log(string message, object arg0)
@@ -193,13 +153,5 @@ namespace BlackHoleRaytracer
                 Console.WriteLine(message, arg0, arg1);
             }
         }
-    }
-
-    class ThreadParams
-    {
-        public int JobId { get; set; }
-        public List<int> LinesList { get; set; }
-        public SchwarzschildBlackHoleEquation Equation { get; set; }
-        public Thread Thread { get; set; }
     }
 }
