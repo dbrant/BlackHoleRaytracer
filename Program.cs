@@ -1,4 +1,4 @@
-﻿using BlackHoleRaytracer.Hitable;
+using BlackHoleRaytracer.Hitable;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -72,15 +72,15 @@ namespace BlackHoleRaytracer
 
                 new TexturedSphere(2, 2, -10, 1, new Bitmap("earth1k.jpg")).SetTextureOffset(Math.PI),
                 new TexturedSphere(-2, -2, -8, 1, new Bitmap("mars1k.jpg")),
-                //new ReflectiveSphere(-1, 2, -10, 1),
-                //new ReflectiveSphere(3, -3, -7, 1),
-                //new ReflectiveSphere(3, -5, 5, 1),
-                //new ReflectiveSphere(-3.7, 2, -7, 1),
+                new ReflectiveSphere(-1, 2, -10, 1),
+                new ReflectiveSphere(3, -3, -7, 1),
+                new ReflectiveSphere(3, -5, 5, 1),
+                new ReflectiveSphere(-3.7, 2, -7, 1),
 
                 //new TexturedSphere(24, 0, 2, 1, new Bitmap("earthmap1k.jpg")),
                 //new TexturedSphere(16, 0, 4, 1, new Bitmap("gstar.jpg")),
                 //new TexturedSphere(-10, -10, -10, 1, new Bitmap("gstar.jpg")),
-                //new CheckeredSphere(-10, -10, -10, 1, Color.RoyalBlue, Color.DarkBlue)
+                new CheckeredSphere(-10, -10, -10, 1, Color.RoyalBlue, Color.DarkBlue)
             };
 
             var starTexture = new Bitmap("sun2k.jpg");
@@ -118,7 +118,7 @@ namespace BlackHoleRaytracer
 
 
 
-            int numFrames = 1;
+            int numFrames = 20;
             double angleIncrement = (Math.PI * 2) / 1000; // numFrames;
             var rotationMatrix = Matrix4x4.CreateRotationY((float)angleIncrement);
             tempR = 20; tempTheta = 0; tempPhi = 0;
@@ -133,7 +133,7 @@ namespace BlackHoleRaytracer
 
 
                 tempTheta += angleIncrement;
-               // tempPhi = Math.Sin(tempTheta) * (Math.PI / 6);
+                //tempPhi = Math.Sin(tempTheta) * (Math.PI / 6);
 
                 var rotation = Matrix4x4.CreateRotationY((float)tempTheta);
                 var tempCamPos = cameraPos;
@@ -141,6 +141,8 @@ namespace BlackHoleRaytracer
                 rotation = Matrix4x4.CreateRotationX((float)tempPhi);
                 tempCamPos = Vector3.Transform(tempCamPos, rotation);
 
+
+                tempCamPos.Z = cameraPos.Z + (float)Math.Cos(i / 600f) * 4f;
 
 
                 //double curveFactor = 4;
@@ -152,14 +154,14 @@ namespace BlackHoleRaytracer
                 var scene = new Scene(tempCamPos, lookAt, up, fov, hitables, (float)(curvatureCoeff), angularMomentum);
 
                 //new KerrRayProcessor(1000, 600, scene, fileName).Process();
-                new SchwarzschildRayProcessor(1920, 1080, scene, fileName, true).Process();
+                //new SchwarzschildRayProcessor(1920, 1080, scene, fileName, true).Process();
+                new SchwarzschildRayProcessor(3840, 2160, scene, fileName, false).Process();
+                //new SchwarzschildRayProcessor(320, 200, scene, fileName, false).Process();
                 //new SchwarzschildRayProcessor(128, 64, scene, fileName, false).Process();
 
 
                 //curvatureMultiplier += angleIncrement;
             }
-
-            Console.ReadKey();
 
             /*
             int numFrames = 4000;

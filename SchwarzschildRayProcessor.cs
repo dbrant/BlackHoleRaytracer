@@ -1,4 +1,4 @@
-﻿using BlackHoleRaytracer.Equation;
+using BlackHoleRaytracer.Equation;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -43,7 +43,7 @@ namespace BlackHoleRaytracer
             int bufferLength = width * height;
             outputBitmap = new int[bufferLength];
 
-            int numThreads = Environment.ProcessorCount - 1;
+            int numThreads = Environment.ProcessorCount - 3;
             DateTime startTime = DateTime.Now;
 
             Log("Launching {0} threads...", numThreads);
