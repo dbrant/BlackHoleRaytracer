@@ -1,4 +1,4 @@
-﻿using BlackHoleRaytracer.Equation;
+using BlackHoleRaytracer.Equation;
 using BlackHoleRaytracer.Hitable;
 using System;
 using System.Collections.Generic;
@@ -8,16 +8,16 @@ namespace BlackHoleRaytracer
 {
     public class KerrRayTracer
     {
-        private KerrBlackHoleEquation equation;
-        private int sizex;
-        private int sizey;
+        private readonly KerrBlackHoleEquation equation;
+        private readonly int sizex;
+        private readonly int sizey;
         
-        private double cameraTilt;
-        private double cameraYaw;
+        private readonly double cameraTilt;
+        private readonly double cameraYaw;
         
-        private List<IHitable> hitables;
+        private readonly List<IHitable> hitables;
 
-        private bool trace;
+        private readonly bool trace;
         public List<Tuple<double,double,double>> RayPoints { get; }
 
 
@@ -34,7 +34,7 @@ namespace BlackHoleRaytracer
             this.trace = trace;
             if (trace)
             {
-                RayPoints = new List<Tuple<double, double, double>>();
+                RayPoints = [];
             }
         }
 

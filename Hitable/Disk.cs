@@ -100,13 +100,13 @@ namespace BlackHoleRaytracer.Hitable
                 return;
             }
 
+            double* yout = stackalloc double[equation.N];
+            double* yerr = stackalloc double[equation.N];
+
             equation.Function(y, dydx);
 
             while ((y[0] > equation.Rhor) && (y[0] < equation.R0) && (side != 0))
             {
-                double* yout = stackalloc double[equation.N];
-                double* yerr = stackalloc double[equation.N];
-
                 double hdiff = hupper - hlower;
 
                 if (Math.Abs(hdiff) < 1e-7)

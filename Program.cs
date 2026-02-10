@@ -154,9 +154,9 @@ namespace BlackHoleRaytracer
 
                 var scene = new Scene(tempCamPos, lookAt, up, fov, hitables, (float)(curvatureCoeff), angularMomentum);
 
-                new KerrRayProcessor(1920, 1080, scene, fileName).Process();
+                //new KerrRayProcessor(1920, 1080, scene, fileName).Process();
                 //new SchwarzschildRayProcessor(1920, 1080, scene, fileName, true).Process();
-                //new SchwarzschildRayProcessor(3840, 2160, scene, fileName, true).Process();
+                new SchwarzschildRayProcessor(3840, 2160, scene, fileName, true).Process();
                 //new SchwarzschildRayProcessor(320, 200, scene, fileName, false).Process();
                 //new SchwarzschildRayProcessor(128, 64, scene, fileName, false).Process();
 

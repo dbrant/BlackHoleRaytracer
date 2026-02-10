@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Numerics;
 using BlackHoleRaytracer.Mappings;
 
 namespace BlackHoleRaytracer.Hitable
@@ -36,8 +35,7 @@ namespace BlackHoleRaytracer.Hitable
 
         protected override Color GetColor(double r, double theta, double phi)
         {
-            int xPos, yPos;
-            textureMap.Map(r, theta, phi + textureOffset, out xPos, out yPos);
+            textureMap.Map(r, theta, phi + textureOffset, out int xPos, out int yPos);
             return Color.FromArgb(textureBitmap[yPos * textureWidth + xPos]);
         }
     }
