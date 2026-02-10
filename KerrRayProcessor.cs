@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -8,32 +8,23 @@ using System.Runtime.InteropServices;
 
 namespace BlackHoleRaytracer
 {
-    class KerrRayProcessor
+    class KerrRayProcessor(int width, int height, Scene scene, string outputFileName)
     {
-        private int width;
-        private int height;
+        private readonly int width = width;
+        private readonly int height = height;
 
-        private Scene scene;
+        private readonly Scene scene = scene;
 
         private int[] outputBitmap;
-        private string outputFileName;
-        
+        private readonly string outputFileName = outputFileName;
 
-        public KerrRayProcessor(int width, int height, Scene scene, string outputFileName)
-        {
-            this.width = width;
-            this.height = height;
-            this.scene = scene;
-            this.outputFileName = outputFileName;
-        }
-        
         public void Process()
         {
             // Create main bitmap for writing pixels
             int bufferLength = width * height;
             outputBitmap = new int[bufferLength];
 
-            int numThreads = 4; // Environment.ProcessorCount;
+            int numThreads = Math.Max(1, Environment.ProcessorCount - 3);
             DateTime startTime = DateTime.Now;
 
             Console.WriteLine("Launching {0} threads...", numThreads);
@@ -101,7 +92,7 @@ namespace BlackHoleRaytracer
                         outputBitmap[yOffset + x] = pixel.ToArgb();
 
                     }
-                    Console.WriteLine("Thread {0}: Line {1} rendered.", param.JobId, y);
+                    //Console.WriteLine("Thread {0}: Line {1} rendered.", param.JobId, y);
                 }
             }
             catch (Exception e)

@@ -1,24 +1,16 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Numerics;
 using BlackHoleRaytracer.Equation;
 
 namespace BlackHoleRaytracer.Hitable
 {
-    public class Disk : IHitable
+    public class Disk(double radiusInner, double radiusOuter) : IHitable
     {
-        private double radiusInner;
-        private double radiusOuter;
-        private double radiusInnerSqr;
-        private double radiusOuterSqr;
-        
-        public Disk(double radiusInner, double radiusOuter)
-        {
-            this.radiusInner = radiusInner;
-            this.radiusOuter = radiusOuter;
-            radiusInnerSqr = radiusInner * radiusInner;
-            radiusOuterSqr = radiusOuter * radiusOuter;
-        }
+        private readonly double radiusInner = radiusInner;
+        private readonly double radiusOuter = radiusOuter;
+        private readonly double radiusInnerSqr = radiusInner * radiusInner;
+        private readonly double radiusOuterSqr = radiusOuter * radiusOuter;
 
         protected virtual Color GetColor(int side, double r, double theta, double phi)
         {

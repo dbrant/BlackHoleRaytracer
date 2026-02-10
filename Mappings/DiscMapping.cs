@@ -1,24 +1,16 @@
-﻿using System;
+using System;
 
 namespace BlackHoleRaytracer.Mappings
 {
     /// <summary>
     /// Mapping of spherical coordinates of a disc onto a flat texture.
     /// </summary>
-    class DiscMapping
+    class DiscMapping(double rMin, double rMax, int sizex, int sizey)
     {
-        private double rMin;
-        private double rMax;
-        private int sizeX;
-        private int sizeY;
-
-        public DiscMapping(double rMin, double rMax, int sizex, int sizey)
-        {
-            this.rMax = rMax;
-            this.rMin = rMin;
-            this.sizeX = sizex;
-            this.sizeY = sizey;
-        }
+        private readonly double rMin = rMin;
+        private readonly double rMax = rMax;
+        private readonly int sizeX = sizex;
+        private readonly int sizeY = sizey;
 
         public void Map(double r, double theta, double phi, out int x, out int y)
         {

@@ -8,12 +8,12 @@ namespace BlackHoleRaytracer.Hitable
 {
     public class Sky : IHitable
     {
-        private SphericalMapping textureMap;
-        private int textureWidth;
-        private int[] textureBitmap;
+        private readonly SphericalMapping textureMap;
+        private readonly int textureWidth;
+        private readonly int[] textureBitmap;
         private double textureOffset = 0;
-        private double radius;
-        private double radiusSqr;
+        private readonly double radius;
+        private readonly double radiusSqr;
 
         public Sky(Bitmap texture, double radius)
         {

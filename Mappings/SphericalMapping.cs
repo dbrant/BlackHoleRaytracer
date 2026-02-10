@@ -1,20 +1,14 @@
-﻿using System;
+using System;
 
 namespace BlackHoleRaytracer.Mappings
 {
     /// <summary>
     /// Maps flat texture onto a spherical surface expressed in spherical coordinates.
     /// </summary>
-    class SphericalMapping
+    class SphericalMapping(int sizex, int sizey)
     {
-        private int SizeX;
-        private int SizeY;
-
-        public SphericalMapping(int sizex, int sizey)
-        {
-            this.SizeX = sizex;
-            this.SizeY = sizey;
-        }
+        private readonly int SizeX = sizex;
+        private readonly int SizeY = sizey;
 
         public void Map(double r, double theta, double phi, out int x, out int y)
         {

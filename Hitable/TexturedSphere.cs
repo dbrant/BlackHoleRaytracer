@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Numerics;
 using BlackHoleRaytracer.Mappings;
@@ -7,9 +7,9 @@ namespace BlackHoleRaytracer.Hitable
 {
     public class TexturedSphere : Sphere
     {
-        private SphericalMapping textureMap;
-        private int textureWidth;
-        private int[] textureBitmap;
+        private readonly SphericalMapping textureMap;
+        private readonly int textureWidth;
+        private readonly int[] textureBitmap;
         private double textureOffset = 0;
 
         public TexturedSphere(double centerX, double centerY, double centerZ, float radius, Bitmap texture)

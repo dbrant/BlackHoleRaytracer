@@ -9,33 +9,20 @@ using System.Threading.Tasks;
 
 namespace BlackHoleRaytracer
 {
-    public class SchwarzschildRayProcessor
+    public class SchwarzschildRayProcessor(int width, int height, Scene scene, string outputFileName, bool debug = true)
     {
-        private int width;
-        private int height;
+        private readonly int width = width;
+        private readonly int height = height;
 
-        private Scene scene;
+        private readonly Scene scene = scene;
 
         private int[] outputBitmap;
-        private string outputFileName;
+        private readonly string outputFileName = outputFileName;
 
         private const int NumIterations = 10000;
 
-        private bool debug;
+        private readonly bool debug = debug;
 
-
-        public SchwarzschildRayProcessor(int width, int height, Scene scene, string outputFileName)
-            : this(width, height, scene, outputFileName, true)
-        { }
-
-        public SchwarzschildRayProcessor(int width, int height, Scene scene, string outputFileName, bool debug)
-        {
-            this.width = width;
-            this.height = height;
-            this.scene = scene;
-            this.outputFileName = outputFileName;
-            this.debug = debug;
-        }
 
         public void Process()
         {
@@ -131,7 +118,8 @@ namespace BlackHoleRaytracer
             GCHandle gcHandle = GCHandle.Alloc(outputBitmap, GCHandleType.Pinned);
             Bitmap resultBmp = new Bitmap(width, height, width * 4, PixelFormat.Format32bppArgb, gcHandle.AddrOfPinnedObject());
             resultBmp.Save(outputFileName, ImageFormat.Png);
-            if (resultBmp != null) { resultBmp.Dispose(); resultBmp = null; }
+            resultBmp.Dispose();
+            resultBmp = null;
             if (gcHandle.IsAllocated) { gcHandle.Free(); }
 
 

@@ -1,18 +1,11 @@
-﻿using System.Drawing;
+using System.Drawing;
 
 namespace BlackHoleRaytracer.Hitable
 {
-    public class CheckeredSphere : Sphere
+    public class CheckeredSphere(double centerX, double centerY, double centerZ, float radius, Color color1, Color color2) : Sphere(centerX, centerY, centerZ, radius)
     {
-        private Color color1;
-        private Color color2;
-        
-        public CheckeredSphere(double centerX, double centerY, double centerZ, float radius, Color color1, Color color2)
-            : base(centerX, centerY, centerZ, radius)
-        {
-            this.color1 = color1;
-            this.color2 = color2;
-        }
+        private readonly Color color1 = color1;
+        private readonly Color color2 = color2;
 
         protected override Color GetColor(double r, double theta, double phi)
         {

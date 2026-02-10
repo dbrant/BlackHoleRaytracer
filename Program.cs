@@ -13,7 +13,7 @@ namespace BlackHoleRaytracer
         {
 
             // Set up some default parameters, which can be overridden by command line args.
-            var cameraPos = new Vector3(0, 5, -18);
+            var cameraPos = new Vector3(0, 5, -35);
             var lookAt = new Vector3(0, 0, 0);
             var up = new Vector3(0f, 1, 0);
             float fov = 55f;
@@ -63,7 +63,7 @@ namespace BlackHoleRaytracer
             {
                 //new CheckeredDisk(3.0, 10.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.DarkGreen),
                 //new TexturedDisk(2.6, 10.0, new Bitmap("adisk5.jpg")),
-                //new CheckeredDisk(equation.Rmstable, 20.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
+                new CheckeredDisk(10.0, 20.0, Color.BlueViolet, Color.MediumBlue, Color.ForestGreen, Color.LightSeaGreen),
                 //new TexturedDisk(2, 20.0, new Bitmap("disk.jpg")),
                 new Horizon(null, true),
                 new Sky(new Bitmap("sky8k.jpg"), 60).SetTextureOffset(Math.PI / 2),
@@ -154,9 +154,9 @@ namespace BlackHoleRaytracer
 
                 var scene = new Scene(tempCamPos, lookAt, up, fov, hitables, (float)(curvatureCoeff), angularMomentum);
 
-                //new KerrRayProcessor(1000, 600, scene, fileName).Process();
+                new KerrRayProcessor(1920, 1080, scene, fileName).Process();
                 //new SchwarzschildRayProcessor(1920, 1080, scene, fileName, true).Process();
-                new SchwarzschildRayProcessor(3840, 2160, scene, fileName, true).Process();
+                //new SchwarzschildRayProcessor(3840, 2160, scene, fileName, true).Process();
                 //new SchwarzschildRayProcessor(320, 200, scene, fileName, false).Process();
                 //new SchwarzschildRayProcessor(128, 64, scene, fileName, false).Process();
 

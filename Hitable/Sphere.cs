@@ -5,24 +5,14 @@ using BlackHoleRaytracer.Equation;
 
 namespace BlackHoleRaytracer.Hitable
 {
-    public class Sphere : IHitable
+    public class Sphere(double centerX, double centerY, double centerZ, float radius) : IHitable
     {
-        protected double centerX;
-        protected double centerY;
-        protected double centerZ;
-        protected float radius;
-        protected float radiusSqr;
-        protected Vector3 center;
-        
-        public Sphere(double centerX, double centerY, double centerZ, float radius)
-        {
-            this.centerX = centerX;
-            this.centerY = centerY;
-            this.centerZ = centerZ;
-            this.radius = radius;
-            radiusSqr = radius * radius;
-            center = new Vector3((float)centerX, (float)centerY, (float)centerZ);
-        }
+        protected double centerX = centerX;
+        protected double centerY = centerY;
+        protected double centerZ = centerZ;
+        protected float radius = radius;
+        protected float radiusSqr = radius * radius;
+        protected Vector3 center = new((float)centerX, (float)centerY, (float)centerZ);
 
         protected virtual Color GetColor(double r, double theta, double phi)
         {

@@ -1,23 +1,14 @@
-﻿using System;
+using System;
 using System.Drawing;
 
 namespace BlackHoleRaytracer.Hitable
 {
-    public class CheckeredDisk : Disk
+    public class CheckeredDisk(double radiusInner, double radiusOuter, Color topColor1, Color topColor2, Color bottomColor1, Color bottomColor2) : Disk(radiusInner, radiusOuter)
     {
-        private Color topColor1;
-        private Color topColor2;
-        private Color bottomColor1;
-        private Color bottomColor2;
-
-        public CheckeredDisk(double radiusInner, double radiusOuter, Color topColor1, Color topColor2, Color bottomColor1, Color bottomColor2)
-            : base(radiusInner, radiusOuter)
-        {
-            this.topColor1 = topColor1;
-            this.topColor2 = topColor2;
-            this.bottomColor1 = bottomColor1;
-            this.bottomColor2 = bottomColor2;
-        }
+        private readonly Color topColor1 = topColor1;
+        private readonly Color topColor2 = topColor2;
+        private readonly Color bottomColor1 = bottomColor1;
+        private readonly Color bottomColor2 = bottomColor2;
 
         protected override Color GetColor(int side, double r, double theta, double phi)
         {

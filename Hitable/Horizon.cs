@@ -8,12 +8,12 @@ namespace BlackHoleRaytracer.Hitable
 {
     public class Horizon : IHitable
     {
-        private bool checkered;
+        private readonly bool checkered;
 
-        private SphericalMapping textureMap;
-        private int textureWidth;
-        private int[] textureBitmap;
-        private double radius = 1.0;
+        private readonly SphericalMapping textureMap;
+        private readonly int textureWidth;
+        private readonly int[] textureBitmap;
+        private readonly double radius = 1.0;
 
         public Horizon(Bitmap texture, bool checkered)
         {
