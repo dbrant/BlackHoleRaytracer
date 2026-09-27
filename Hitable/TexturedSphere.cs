@@ -1,4 +1,5 @@
 using System;
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 using BlackHoleRaytracer.Mappings;
 
@@ -31,6 +32,12 @@ namespace BlackHoleRaytracer.Hitable
         {
             textureOffset = offset;
             return this;
+        }
+
+        public override GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.Sphere(center, radius, Color.White, Color.White,
+                builder.AddTexture(textureBitmap, textureWidth), textureOffset);
         }
 
         protected override Color GetColor(double r, double theta, double phi)

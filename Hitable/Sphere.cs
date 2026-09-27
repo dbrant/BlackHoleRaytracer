@@ -1,4 +1,5 @@
 using System;
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 using System.Numerics;
 using BlackHoleRaytracer.Equation;
@@ -17,6 +18,11 @@ namespace BlackHoleRaytracer.Hitable
         protected virtual Color GetColor(double r, double theta, double phi)
         {
             return Color.White;
+        }
+
+        public virtual GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.Sphere(center, radius, Color.White, Color.White);
         }
 
         public bool Hit(ref Vector3 point, double sqrNorm, ref Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)

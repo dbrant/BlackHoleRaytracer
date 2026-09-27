@@ -1,4 +1,5 @@
 using System;
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 using BlackHoleRaytracer.Mappings;
 
@@ -9,6 +10,12 @@ namespace BlackHoleRaytracer.Hitable
         private readonly DiscMapping textureMap = new(radiusInner, radiusOuter, texture.Width, texture.Height);
         private readonly int textureWidth = texture.Width;
         private readonly int[] textureBitmap = Util.getNativeTextureBitmap(texture);
+
+        public override GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.Disk(radiusInner, radiusOuter, Color.White, Color.White, Color.White, Color.White,
+                builder.AddTexture(textureBitmap, textureWidth));
+        }
 
         protected override Color GetColor(int side, double r, double theta, double phi)
         {

@@ -1,3 +1,4 @@
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 
 namespace BlackHoleRaytracer.Hitable
@@ -6,6 +7,11 @@ namespace BlackHoleRaytracer.Hitable
     {
         private readonly Color color1 = color1;
         private readonly Color color2 = color2;
+
+        public override GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.Sphere(center, radius, color1, color2);
+        }
 
         protected override Color GetColor(double r, double theta, double phi)
         {

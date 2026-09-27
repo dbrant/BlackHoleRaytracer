@@ -1,4 +1,5 @@
 using System;
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 using System.Numerics;
 using BlackHoleRaytracer.Equation;
@@ -7,14 +8,19 @@ namespace BlackHoleRaytracer.Hitable
 {
     public class Disk(double radiusInner, double radiusOuter) : IHitable
     {
-        private readonly double radiusInner = radiusInner;
-        private readonly double radiusOuter = radiusOuter;
+        protected readonly double radiusInner = radiusInner;
+        protected readonly double radiusOuter = radiusOuter;
         private readonly double radiusInnerSqr = radiusInner * radiusInner;
         private readonly double radiusOuterSqr = radiusOuter * radiusOuter;
 
         protected virtual Color GetColor(int side, double r, double theta, double phi)
         {
             return Color.White;
+        }
+
+        public virtual GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.Disk(radiusInner, radiusOuter, Color.White, Color.White, Color.White, Color.White);
         }
 
         public bool Hit(ref Vector3 point, double sqrNorm, ref Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)

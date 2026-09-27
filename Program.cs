@@ -1,3 +1,4 @@
+using BlackHoleRaytracer.Gpu;
 using BlackHoleRaytracer.Hitable;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace BlackHoleRaytracer
             float curvatureCoeff = -1.5f;
             float angularMomentum = 0f;
             string fileName = "image.png";
+            bool useGpu = false;
 
 
             for (int i = 0; i < args.Length; i++)
@@ -51,6 +53,10 @@ namespace BlackHoleRaytracer
                 else if (args[i].Equals("-o") && i < args.Length - 1)
                 {
                     fileName = args[i + 1];
+                }
+                else if (args[i].Equals("-gpu"))
+                {
+                    useGpu = true;
                 }
             }
 
@@ -126,6 +132,9 @@ namespace BlackHoleRaytracer
 
             Directory.CreateDirectory("anim");
 
+            // The GPU processor is reused across frames, to avoid recompiling the kernel and re-uploading textures.
+            using var gpuProcessor = useGpu ? new GpuSchwarzschildRayProcessor() : null;
+
             for (int i = 0; i < numFrames; i++)
             {
                 fileName = Path.Combine("anim", "frame" + i + ".png");
@@ -156,7 +165,14 @@ namespace BlackHoleRaytracer
 
                 //new KerrRayProcessor(1920, 1080, scene, fileName).Process();
                 //new SchwarzschildRayProcessor(1920, 1080, scene, fileName, true).Process();
-                new SchwarzschildRayProcessor(3840, 2160, scene, fileName, true).Process();
+                if (gpuProcessor != null)
+                {
+                    gpuProcessor.Process(3840, 2160, scene, fileName);
+                }
+                else
+                {
+                    new SchwarzschildRayProcessor(3840, 2160, scene, fileName, true).Process();
+                }
                 //new SchwarzschildRayProcessor(320, 200, scene, fileName, false).Process();
                 //new SchwarzschildRayProcessor(128, 64, scene, fileName, false).Process();
 

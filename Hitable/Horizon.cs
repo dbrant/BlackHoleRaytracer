@@ -1,4 +1,5 @@
 using System;
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 using System.Numerics;
 using BlackHoleRaytracer.Equation;
@@ -24,6 +25,11 @@ namespace BlackHoleRaytracer.Hitable
                 textureWidth = texture.Width;
                 textureBitmap = Util.getNativeTextureBitmap(texture);
             }
+        }
+
+        public GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.Horizon(checkered, builder.AddTexture(textureBitmap, textureWidth));
         }
 
         public bool Hit(ref Vector3 point, double sqrNorm, ref Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)

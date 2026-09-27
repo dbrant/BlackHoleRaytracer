@@ -1,4 +1,5 @@
 using System;
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 
 namespace BlackHoleRaytracer.Hitable
@@ -9,6 +10,11 @@ namespace BlackHoleRaytracer.Hitable
         private readonly Color topColor2 = topColor2;
         private readonly Color bottomColor1 = bottomColor1;
         private readonly Color bottomColor2 = bottomColor2;
+
+        public override GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.Disk(radiusInner, radiusOuter, topColor1, topColor2, bottomColor1, bottomColor2);
+        }
 
         protected override Color GetColor(int side, double r, double theta, double phi)
         {

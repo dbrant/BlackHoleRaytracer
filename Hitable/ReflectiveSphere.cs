@@ -1,4 +1,5 @@
 using System;
+using BlackHoleRaytracer.Gpu;
 using System.Drawing;
 using System.Numerics;
 using BlackHoleRaytracer.Equation;
@@ -13,6 +14,11 @@ namespace BlackHoleRaytracer.Hitable
         protected float radius = radius;
         protected float radiusSqr = radius * radius;
         protected Vector3 center = new((float)centerX, (float)centerY, (float)centerZ);
+
+        public GpuHitable ToGpu(GpuSceneBuilder builder)
+        {
+            return GpuHitable.ReflectiveSphere(center, radius);
+        }
 
         public bool Hit(ref Vector3 point, double sqrNorm, ref Vector3 prevPoint, double prevSqrNorm, ref Vector3 velocity, SchwarzschildBlackHoleEquation equation, ref Color color, ref bool stop, bool debug)
         {
