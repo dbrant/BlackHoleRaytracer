@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Black Hole Raytracer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <main class="app">
+        <section class="viewport">
+            <canvas id="view" width="512" height="512" aria-label="Raytraced view of a black hole"></canvas>
+            <p id="status" class="status">Loading textures…</p>
+            <p id="stats" class="stats"></p>
+        </section>
+
+        <form id="controls" class="controls" onsubmit="return false">
+            <header>
+                <h1>Schwarzschild black hole</h1>
+                <p class="hint">Drag to orbit · scroll or pinch to zoom</p>
+            </header>
+
+            <fieldset>
+                <legend>Physics</legend>
+                <label for="curvature">Curvature <output for="curvature"></output></label>
+                <input type="range" id="curvature" min="0" max="1.5" step="0.01" value="1.5">
+                <label for="max-iterations">Max steps per ray <output for="max-iterations"></output></label>
+                <input type="range" id="max-iterations" min="250" max="10000" step="250" value="3000">
+            </fieldset>
+
+            <fieldset>
+                <legend>View</legend>
+                <label for="resolution">Resolution</label>
+                <select id="resolution">
+                    <option value="256">256 × 256</option>
+                    <option value="384">384 × 384</option>
+                    <option value="512" selected>512 × 512</option>
+                    <option value="768">768 × 768</option>
+                    <option value="1024">1024 × 1024</option>
+                </select>
+                <label for="fov">Field of view <output for="fov"></output></label>
+                <input type="range" id="fov" min="20" max="75" step="1" value="55">
+            </fieldset>
+
+            <fieldset>
+                <legend>Objects</legend>
+                <label class="check"><input type="checkbox" id="checkered-disk" checked> Checkered disk</label>
+                <label class="check"><input type="checkbox" id="accretion-disk"> Accretion disk</label>
+                <label class="check"><input type="checkbox" id="planets" checked> Earth and Mars</label>
+                <label class="check"><input type="checkbox" id="mirrors" checked> Mirror spheres</label>
+                <label class="check"><input type="checkbox" id="checkered-sphere" checked> Checkered sphere</label>
+                <label class="check"><input type="checkbox" id="checkered-horizon" checked> Checkered horizon</label>
+            </fieldset>
+
+            <fieldset>
+                <legend>Motion</legend>
+                <label class="check"><input type="checkbox" id="auto-rotate"> Auto-rotate</label>
+                <label class="check"><input type="checkbox" id="low-res-while-moving" checked> Lower resolution while moving</label>
+                <button type="button" id="reset-view">Reset view</button>
+            </fieldset>
+        </form>
+    </main>
+</body>
+</html>
