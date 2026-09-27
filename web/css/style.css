@@ -82,7 +82,8 @@ body {
 .stats {
     margin: 0;
     padding: 0 4px;
-    min-height: 1.4em; /* Reserve the line before the first frame, so the layout doesn't shift. */
+    min-height: 2.8em; /* Reserve both lines before the first frame, so the layout doesn't shift. */
+    white-space: pre-line;
     color: var(--muted);
     font: 12px ui-monospace, Consolas, monospace;
     font-variant-numeric: tabular-nums;
@@ -106,6 +107,17 @@ body {
 .hint {
     margin: 4px 0 0;
     color: var(--muted);
+}
+
+kbd {
+    padding: 0 4px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font: 12px ui-monospace, Consolas, monospace;
+}
+
+.viewport canvas:focus {
+    outline: none;
 }
 
 fieldset {

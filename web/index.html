@@ -10,7 +10,9 @@
 <body>
     <main class="app">
         <section class="viewport">
-            <canvas id="view" width="512" height="512" aria-label="Raytraced view of a black hole"></canvas>
+            <!-- Focusable, so that clicking the view takes focus away from the controls (whose
+                 arrow keys would otherwise adjust them instead of steering). -->
+            <canvas id="view" width="512" height="512" tabindex="0" aria-label="Raytraced view of a black hole"></canvas>
             <p id="status" class="status">Loading textures…</p>
         </section>
 
@@ -18,6 +20,7 @@
             <header>
                 <h1>Schwarzschild black hole</h1>
                 <p class="hint">Drag to orbit · scroll or pinch to zoom</p>
+                <p class="hint"><kbd>W</kbd>/<kbd>S</kbd> accelerate · arrows steer · <kbd>Space</kbd> stops</p>
             </header>
 
             <fieldset>

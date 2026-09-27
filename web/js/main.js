@@ -1,6 +1,7 @@
-import { OrbitCamera } from './camera.js';
+import { Camera } from './camera.js';
+import { FlightControls } from './flight.js';
 import { Renderer } from './renderer.js';
-import { buildScene, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE } from './scene.js';
+import { buildScene, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, HORIZON_RADIUS } from './scene.js';
 
 // How long after the last camera movement to render at full resolution again.
 const SETTLE_DELAY_MS = 150;
@@ -16,10 +17,12 @@ const statsElement = document.getElementById('stats');
 const controls = document.getElementById('controls');
 
 // Same starting position as the C# Program.cs.
-const camera = OrbitCamera.fromPosition([0, 5, -35], {
+const camera = new Camera({
+    position: [0, 5, -35],
     minDistance: CAMERA_MIN_DISTANCE,
     maxDistance: CAMERA_MAX_DISTANCE,
 });
+const flight = new FlightControls(camera);
 
 const settings = {};
 
@@ -83,6 +86,7 @@ async function start() {
 
     renderer.setScene(buildScene(settings));
     camera.attach(canvas, cameraMoved);
+    flight.attach();
 
     controls.addEventListener('input', () => {
         readSettings();
@@ -99,7 +103,10 @@ async function start() {
         lastFrameTime = now;
 
         if (settings.autoRotate) {
-            camera.rotate(AUTO_ROTATE_SPEED * dt, 0);
+            camera.orbit(-AUTO_ROTATE_SPEED * dt, 0);
+            cameraMoved();
+        }
+        if (flight.update(dt)) {
             cameraMoved();
         }
 
@@ -135,7 +142,10 @@ function updateStats(renderer, renderTimes, now) {
     if (renderTimes.length > 1) {
         parts.push(`${renderTimes.length} fps`);
     }
-    statsElement.textContent = parts.join(' · ');
+    const inside = camera.distance < HORIZON_RADIUS ? ' (inside horizon)' : '';
+    const observer = `distance ${camera.distance.toFixed(2)}${inside} · speed ${camera.speed.toFixed(1)}`;
+    statsElement.textContent = `${parts.join(' · ')}
+${observer}`;
 }
 
 start();

@@ -1,40 +1,43 @@
-import { cross, normalize, sub } from './vec3.js';
+import { add, cross, length, normalize, rotate, scale, sub } from './vec3.js';
 
 const DEG = Math.PI / 180;
-const MAX_ELEVATION = 85 * DEG;
+const MAX_PITCH = 85 * DEG;
+const WORLD_UP = [0, 1, 0];
+
+const clamp = (x, min, max) => Math.min(max, Math.max(min, x));
 
 /**
- * A camera that orbits the black hole (at the origin), controlled by dragging and scrolling.
+ * The observer: a position, a view direction (yaw and pitch, so the horizon stays level),
+ * and a speed of travel along the view direction.
  */
-export class OrbitCamera {
-    constructor({ distance, azimuth, elevation, minDistance, maxDistance }) {
-        this.initial = { distance, azimuth, elevation };
+export class Camera {
+    constructor({ position, minDistance, maxDistance }) {
+        this.initialPosition = position;
+        // The camera must stay clear of the singularity, and inside the sky sphere.
         this.minDistance = minDistance;
         this.maxDistance = maxDistance;
         this.reset();
     }
 
+    /** Returns to the initial position, looking at the black hole, and stops. */
     reset() {
-        Object.assign(this, this.initial);
+        this.position = [...this.initialPosition];
+        const front = normalize(sub([0, 0, 0], this.position));
+        this.yaw = Math.atan2(front[0], front[2]);
+        this.pitch = clamp(Math.asin(front[1]), -MAX_PITCH, MAX_PITCH);
+        this.speed = 0;
     }
 
-    /** Creates a camera at the given position, looking at the origin. */
-    static fromPosition([x, y, z], limits) {
-        const distance = Math.hypot(x, y, z);
-        return new OrbitCamera({
-            distance,
-            azimuth: Math.atan2(x, -z),
-            elevation: Math.asin(y / distance),
-            ...limits,
-        });
+    /** Distance from the black hole. */
+    get distance() {
+        return length(this.position);
     }
 
-    get position() {
-        const horizontal = this.distance * Math.cos(this.elevation);
+    get front() {
         return [
-            horizontal * Math.sin(this.azimuth),
-            this.distance * Math.sin(this.elevation),
-            -horizontal * Math.cos(this.azimuth),
+            Math.cos(this.pitch) * Math.sin(this.yaw),
+            Math.sin(this.pitch),
+            Math.cos(this.pitch) * Math.cos(this.yaw),
         ];
     }
 
@@ -43,25 +46,62 @@ export class OrbitCamera {
      * (which call the right-hand vector "left").
      */
     get basis() {
-        const position = this.position;
-        const front = normalize(sub([0, 0, 0], position));
-        const left = normalize(cross([0, 1, 0], front));
+        const front = this.front;
+        const left = normalize(cross(WORLD_UP, front));
         const up = cross(front, left);
-        return { position, front, left, up };
+        return { position: this.position, front, left, up };
     }
 
-    rotate(deltaAzimuth, deltaElevation) {
-        this.azimuth += deltaAzimuth;
-        this.elevation = Math.min(MAX_ELEVATION, Math.max(-MAX_ELEVATION, this.elevation + deltaElevation));
-    }
-
-    zoom(factor) {
-        this.distance = Math.min(this.maxDistance, Math.max(this.minDistance, this.distance * factor));
+    /** Turns the view, and with it the direction of travel. Positive values turn right and up. */
+    turn(deltaYaw, deltaPitch) {
+        this.yaw += deltaYaw;
+        this.pitch = clamp(this.pitch + deltaPitch, -MAX_PITCH, MAX_PITCH);
     }
 
     /**
-     * Wires up mouse, touch, and wheel input on the given element.
-     * onChange is called whenever the camera moves.
+     * Swings the camera around the black hole: horizontally around the vertical axis, and
+     * vertically around the camera's horizontal axis. The view turns along with it, so a
+     * camera looking at the black hole keeps looking at it.
+     */
+    orbit(horizontalAngle, verticalAngle) {
+        this.position = rotate(this.position, WORLD_UP, horizontalAngle);
+        this.yaw += horizontalAngle;
+
+        // Rotating around the camera's horizontal axis changes the pitch by exactly
+        // -verticalAngle; limit the angle to keep the pitch in range.
+        const angle = clamp(verticalAngle, this.pitch - MAX_PITCH, this.pitch + MAX_PITCH);
+        const { left } = this.basis;
+        this.position = rotate(this.position, left, angle);
+        this.pitch -= angle;
+    }
+
+    /** Moves toward (factor < 1) or away from (factor > 1) the black hole. */
+    zoom(factor) {
+        const distance = this.distance;
+        const newDistance = clamp(distance * factor, this.minDistance, this.maxDistance);
+        this.position = scale(this.position, newDistance / distance);
+    }
+
+    /**
+     * Travels at the current speed for dt seconds. Returns true if the camera moved.
+     * Running into the singularity or the sky sphere stops the camera there.
+     */
+    fly(dt) {
+        if (this.speed === 0) {
+            return false;
+        }
+        this.position = add(this.position, scale(this.front, this.speed * dt));
+        const distance = this.distance;
+        if (distance < this.minDistance || distance > this.maxDistance) {
+            this.position = scale(this.position, clamp(distance, this.minDistance, this.maxDistance) / distance);
+            this.speed = 0;
+        }
+        return true;
+    }
+
+    /**
+     * Wires up mouse, touch, and wheel input on the given element: drag (or one-finger drag)
+     * to orbit, and scroll (or pinch) to zoom. onChange is called whenever the camera moves.
      */
     attach(element, onChange) {
         const pointers = new Map();
@@ -92,7 +132,7 @@ export class OrbitCamera {
             if (pointers.size === 1) {
                 // Grab-and-drag: the scene turns with the pointer (like three.js OrbitControls).
                 const speed = 0.3 * DEG;
-                this.rotate(-dx * speed, dy * speed);
+                this.orbit(dx * speed, dy * speed);
                 onChange();
             } else if (pointers.size === 2) {
                 const span = pinchSpan();

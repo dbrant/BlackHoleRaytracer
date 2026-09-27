@@ -105,6 +105,8 @@ export function buildScene(options) {
     return hitables;
 }
 
-// The camera must stay inside the sky sphere, and outside the horizon.
-export const CAMERA_MIN_DISTANCE = 1.5;
+// The camera must stay inside the sky sphere. It may cross the horizon (radius 1), but must
+// keep clear of the singularity at the center, where the ray equations break down.
+export const HORIZON_RADIUS = 1;
+export const CAMERA_MIN_DISTANCE = 0.05;
 export const CAMERA_MAX_DISTANCE = SKY_RADIUS - 5;
