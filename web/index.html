@@ -12,7 +12,6 @@
         <section class="viewport">
             <canvas id="view" width="512" height="512" aria-label="Raytraced view of a black hole"></canvas>
             <p id="status" class="status">Loading textures…</p>
-            <p id="stats" class="stats"></p>
         </section>
 
         <form id="controls" class="controls" onsubmit="return false">
@@ -59,6 +58,8 @@
                 <label class="check"><input type="checkbox" id="low-res-while-moving" checked> Lower resolution while moving</label>
                 <button type="button" id="reset-view">Reset view</button>
             </fieldset>
+
+            <p id="stats" class="stats"></p>
         </form>
     </main>
 </body>

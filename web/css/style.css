@@ -56,14 +56,10 @@ body {
     cursor: grabbing;
 }
 
-.status,
-.stats {
+.status {
     position: absolute;
     margin: 0;
     pointer-events: none;
-}
-
-.status {
     inset: 0;
     display: grid;
     place-items: center;
@@ -84,11 +80,9 @@ body {
 }
 
 .stats {
-    left: 8px;
-    bottom: 8px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: rgb(0 0 0 / 0.6);
+    margin: 0;
+    padding: 0 4px;
+    min-height: 1.4em; /* Reserve the line before the first frame, so the layout doesn't shift. */
     color: var(--muted);
     font: 12px ui-monospace, Consolas, monospace;
     font-variant-numeric: tabular-nums;
