@@ -6,6 +6,10 @@ import { buildScene, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE } from './scene.js
 const SETTLE_DELAY_MS = 150;
 const AUTO_ROTATE_SPEED = 0.15; // radians per second
 
+// The viewport grows to show higher resolutions at one CSS pixel per rendered pixel, but
+// never shrinks below this; lower resolutions are scaled up to fill it.
+const MIN_VIEWPORT_SIZE = 512;
+
 const canvas = document.getElementById('view');
 const statusElement = document.getElementById('status');
 const statsElement = document.getElementById('stats');
@@ -35,6 +39,9 @@ function readSettings() {
         autoRotate: value('auto-rotate').checked,
         lowResWhileMoving: value('low-res-while-moving').checked,
     });
+    document.documentElement.style.setProperty('--viewport-size',
+        `${Math.max(MIN_VIEWPORT_SIZE, settings.resolution)}px`);
+
     // Show the current value next to each slider.
     for (const input of controls.querySelectorAll('input[type=range]')) {
         const output = controls.querySelector(`output[for="${input.id}"]`);
