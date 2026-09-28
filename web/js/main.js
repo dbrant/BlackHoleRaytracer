@@ -2,6 +2,7 @@ import { Camera } from './camera.js';
 import { FlightControls } from './flight.js';
 import { Renderer } from './renderer.js';
 import { buildScene, createLayout, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, HORIZON_RADIUS } from './scene.js';
+import { normalize, scale } from './vec3.js';
 
 // How long after the last camera movement to render at full resolution again.
 const SETTLE_DELAY_MS = 150;
@@ -16,9 +17,11 @@ const statusElement = document.getElementById('status');
 const statsElement = document.getElementById('stats');
 const controls = document.getElementById('controls');
 
-// Same starting position as the C# Program.cs.
+// Start slightly above the disk plane, and at a moderate distance from the black hole,
+// so that the accretion disk fills most of the view.
+const START_DISTANCE = 15;
 const camera = new Camera({
-    position: [0, 5, -35],
+    position: scale(normalize([0, 5, -35]), START_DISTANCE),
     minDistance: CAMERA_MIN_DISTANCE,
     maxDistance: CAMERA_MAX_DISTANCE,
 });
