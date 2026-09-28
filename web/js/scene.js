@@ -70,15 +70,16 @@ const EARTH = { center: [10, 2, -1], radius: 1 };
 const MARS = { center: [-10, -2, 1], radius: 1 };
 
 // Randomly placed objects: how many, how big, and the shell (around the black hole) that
-// their centers are placed in.
+// their centers are placed in. A shell's optional maxHeight also keeps the centers within
+// that distance of the disk plane (y = 0).
 const MIRROR_COUNT = 5;
 const CHECKERED_SPHERE_COUNT = 5;
 const SPHERE_RADIUS = 1;
 const SPHERE_SHELL = { inner: 5, outer: 12 };
-const STAR_COUNT = 10;
+const STAR_COUNT = 20;
 const STAR_MIN_RADIUS = 0.05;
 const STAR_MAX_RADIUS = 0.45;
-const STAR_SHELL = { inner: 4, outer: 20 };
+const STAR_SHELL = { inner: 4, outer: 20, maxHeight: 5 };
 
 // Minimum gap between randomly placed objects, so they don't overlap.
 const PLACEMENT_GAP = 0.5;
@@ -106,6 +107,9 @@ export function createLayout(random = Math.random) {
     const place = (shell, radius) => {
         for (let attempt = 0; attempt < MAX_PLACEMENT_ATTEMPTS; attempt++) {
             const center = randomPointInShell(shell, random);
+            if (shell.maxHeight !== undefined && Math.abs(center[1]) > shell.maxHeight) {
+                continue;
+            }
             const clear = placed.every((other) =>
                 Math.hypot(center[0] - other.center[0], center[1] - other.center[1], center[2] - other.center[2])
                     >= radius + other.radius + PLACEMENT_GAP);
