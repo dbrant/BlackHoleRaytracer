@@ -89,6 +89,13 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+.credit {
+    margin: 0;
+    padding: 0 4px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
 /* Controls */
 
 .controls {

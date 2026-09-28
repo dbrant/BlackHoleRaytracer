@@ -89,8 +89,8 @@ export function buildScene(options) {
     hitables.push(hitable({ kind: Kind.SKY, radiusSqr: SKY_RADIUS * SKY_RADIUS, texture: TextureSlot.SKY }));
 
     if (options.planets) {
-        hitables.push(sphere([2, 2, -10], 1, { texture: TextureSlot.EARTH, textureOffset: Math.PI }));
-        hitables.push(sphere([-2, -2, -8], 1, { texture: TextureSlot.MARS }));
+        hitables.push(sphere([10, 2, -1], 1, { texture: TextureSlot.EARTH, textureOffset: Math.PI }));
+        hitables.push(sphere([-10, -2, 1], 1, { texture: TextureSlot.MARS }));
     }
     if (options.mirrors) {
         hitables.push(reflectiveSphere([-1, 2, -10], 1));
