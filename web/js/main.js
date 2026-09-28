@@ -1,7 +1,7 @@
 import { Camera } from './camera.js';
 import { FlightControls } from './flight.js';
 import { Renderer } from './renderer.js';
-import { buildScene, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, HORIZON_RADIUS } from './scene.js';
+import { buildScene, createLayout, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, HORIZON_RADIUS } from './scene.js';
 
 // How long after the last camera movement to render at full resolution again.
 const SETTLE_DELAY_MS = 150;
@@ -37,7 +37,8 @@ function readSettings() {
         accretionDisk: value('accretion-disk').checked,
         planets: value('planets').checked,
         mirrors: value('mirrors').checked,
-        checkeredSphere: value('checkered-sphere').checked,
+        checkeredSpheres: value('checkered-spheres').checked,
+        stars: value('stars').checked,
         checkeredHorizon: value('checkered-horizon').checked,
         autoRotate: value('auto-rotate').checked,
         lowResWhileMoving: value('low-res-while-moving').checked,
@@ -84,13 +85,22 @@ async function start() {
         needsRender = true;
     };
 
-    renderer.setScene(buildScene(settings));
+    // Positions of the randomly placed objects. These only change when asked, not whenever
+    // the scene is rebuilt, so objects don't jump around (or trigger shader recompiles).
+    let layout = createLayout();
+
+    renderer.setScene(buildScene(settings, layout));
     camera.attach(canvas, cameraMoved);
     flight.attach();
 
     controls.addEventListener('input', () => {
         readSettings();
-        renderer.setScene(buildScene(settings));
+        renderer.setScene(buildScene(settings, layout));
+        needsRender = true;
+    });
+    document.getElementById('randomize').addEventListener('click', () => {
+        layout = createLayout();
+        renderer.setScene(buildScene(settings, layout));
         needsRender = true;
     });
     document.getElementById('reset-view').addEventListener('click', () => {

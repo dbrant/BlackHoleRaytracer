@@ -5,7 +5,12 @@ const SAMPLER_UNIFORMS = {
     [TextureSlot.EARTH]: 'uEarthTexture',
     [TextureSlot.MARS]: 'uMarsTexture',
     [TextureSlot.DISK]: 'uDiskTexture',
+    [TextureSlot.STAR]: 'uStarTexture',
 };
+
+// How many compiled scene variants to keep. Each object toggle combination (and each
+// randomized layout) is a separate program.
+const MAX_CACHED_PROGRAMS = 16;
 
 const UNIFORMS = [
     'uResolution', 'uCameraPosition', 'uCameraLeft', 'uCameraUp', 'uCameraFront',
@@ -53,13 +58,63 @@ function hitableCall(h) {
     }
 }
 
+const isSphere = (h) => h.kind === Kind.SPHERE || h.kind === Kind.REFLECTIVE_SPHERE;
+
+/**
+ * Generates the sphere tests in testHitables(). The spheres in the scene never overlap, so
+ * the ray can be inside at most one of them at a time. Rather than calling hitSphere() for
+ * every sphere (which the shader compiler inlines, intersection search and all, at every
+ * call site), find the sphere with cheap tests, then run the hit code once.
+ */
+function generateSphereTests(spheres) {
+    // Beyond the outermost sphere, none of them can be hit.
+    const extent = Math.max(...spheres.map((h) => Math.hypot(...h.center) + Math.sqrt(h.radiusSqr)));
+    const lines = [
+        `    if (sqrNorm < ${float(extent * extent)}) {`,
+        '        int hitKind = 0; // 0: none, 1: sphere, 2: reflective sphere',
+        '        vec3 center, color1, color2;',
+        '        float radiusSqr, textureOffset;',
+        '        int texture;',
+        '        vec3 d;',
+    ];
+    for (const h of spheres) {
+        const center = vec3(h.center);
+        const kind = h.kind === Kind.SPHERE ? 1 : 2;
+        lines.push(
+            `        d = point - ${center};`,
+            `        if (dot(d, d) < ${float(h.radiusSqr)}) {`,
+            `            hitKind = ${kind}; center = ${center}; radiusSqr = ${float(h.radiusSqr)};`,
+            `            color1 = ${vec3(h.color1)}; color2 = ${vec3(h.color2)};`,
+            `            texture = ${h.texture}; textureOffset = ${float(h.textureOffset)};`,
+            '        }',
+        );
+    }
+    lines.push(
+        '        if (hitKind == 1) {',
+        '            hitSphere(center, radiusSqr, color1, color2, texture, textureOffset);',
+        '        } else if (hitKind == 2) {',
+        '            hitReflectiveSphere(center, radiusSqr);',
+        '        }',
+        '    }',
+    );
+    return lines;
+}
+
 /**
  * Generates testHitables() for raytrace.frag: tests each hitable in order, stopping as
- * soon as one of them ends the ray (as in the C# tracer).
+ * soon as one of them ends the ray (as in the C# tracer). Spheres are tested last, and
+ * must not overlap each other (see generateSphereTests).
  */
 function generateTestHitables(hitables) {
-    const calls = hitables.map((h) => `    ${hitableCall(h)};\n    if (stop) return;`);
-    return `\nvoid testHitables() {\n${calls.join('\n')}\n}\n`;
+    const lines = [];
+    for (const h of hitables.filter((h) => !isSphere(h))) {
+        lines.push(`    ${hitableCall(h)};`, '    if (stop) return;');
+    }
+    const spheres = hitables.filter(isSphere);
+    if (spheres.length > 0) {
+        lines.push(...generateSphereTests(spheres));
+    }
+    return `\nvoid testHitables() {\n${lines.join('\n')}\n}\n`;
 }
 
 function compileShader(gl, type, source, name) {
@@ -149,10 +204,20 @@ export class Renderer {
      */
     setScene(hitables) {
         const source = generateTestHitables(hitables);
-        if (!this.programs.has(source)) {
-            this.programs.set(source, this.createProgram(source));
+        let program = this.programs.get(source);
+        if (program) {
+            // Move to the end, so the least recently used program is evicted first.
+            this.programs.delete(source);
+        } else {
+            program = this.createProgram(source);
+            if (this.programs.size >= MAX_CACHED_PROGRAMS) {
+                const [oldestSource, oldest] = this.programs.entries().next().value;
+                this.gl.deleteProgram(oldest.program);
+                this.programs.delete(oldestSource);
+            }
         }
-        this.program = this.programs.get(source);
+        this.programs.set(source, program);
+        this.program = program;
     }
 
     /**

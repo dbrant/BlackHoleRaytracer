@@ -20,6 +20,7 @@ const int TEX_SKY = 1;
 const int TEX_EARTH = 2;
 const int TEX_MARS = 3;
 const int TEX_DISK = 4;
+const int TEX_STAR = 5;
 
 const float PI = 3.14159265358979;
 const float TWO_PI = 6.28318530717959;
@@ -43,6 +44,7 @@ uniform sampler2D uSkyTexture;
 uniform sampler2D uEarthTexture;
 uniform sampler2D uMarsTexture;
 uniform sampler2D uDiskTexture;
+uniform sampler2D uStarTexture;
 
 out vec4 fragColor;
 
@@ -253,6 +255,8 @@ void main() {
         hitColor = textureGrad(uEarthTexture, finalUv, dx, dy).rgb;
     } else if (finalTexture == TEX_MARS) {
         hitColor = textureGrad(uMarsTexture, finalUv, dx, dy).rgb;
+    } else if (finalTexture == TEX_STAR) {
+        hitColor = textureGrad(uStarTexture, finalUv, dx, dy).rgb;
     }
 
     // Rays that never finish (grazing the photon sphere) keep whatever color they accumulated.

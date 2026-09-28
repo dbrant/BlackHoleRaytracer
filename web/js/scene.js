@@ -1,4 +1,5 @@
-// Scene description: the same objects as the default scene in Program.cs.
+// Scene description: based on the default scene in Program.cs, with randomly placed spheres
+// and stars (as in the C# project's commented-out scenes).
 // Each hitable is a plain object whose fields mirror the Hitable struct in raytrace.frag.
 
 // Must match the constants in raytrace.frag.
@@ -16,6 +17,7 @@ export const TextureSlot = {
     EARTH: 2,
     MARS: 3,
     DISK: 4,
+    STAR: 5,
 };
 
 export const TEXTURE_URLS = {
@@ -23,6 +25,7 @@ export const TEXTURE_URLS = {
     [TextureSlot.EARTH]: 'textures/earth1k.jpg',
     [TextureSlot.MARS]: 'textures/mars1k.jpg',
     [TextureSlot.DISK]: 'textures/disk.jpg',
+    [TextureSlot.STAR]: 'textures/sun.jpg',
 };
 
 // System.Drawing named colors used by the C# scene, as RGB in [0, 1].
@@ -63,11 +66,75 @@ const sphere = (center, radius, fields = {}) =>
 const reflectiveSphere = (center, radius) =>
     hitable({ kind: Kind.REFLECTIVE_SPHERE, center, radiusSqr: radius * radius });
 
+const EARTH = { center: [10, 2, -1], radius: 1 };
+const MARS = { center: [-10, -2, 1], radius: 1 };
+
+// Randomly placed objects: how many, how big, and the shell (around the black hole) that
+// their centers are placed in.
+const MIRROR_COUNT = 5;
+const CHECKERED_SPHERE_COUNT = 5;
+const SPHERE_RADIUS = 1;
+const SPHERE_SHELL = { inner: 5, outer: 12 };
+const STAR_COUNT = 10;
+const STAR_MIN_RADIUS = 0.05;
+const STAR_MAX_RADIUS = 0.45;
+const STAR_SHELL = { inner: 4, outer: 20 };
+
+// Minimum gap between randomly placed objects, so they don't overlap.
+const PLACEMENT_GAP = 0.5;
+const MAX_PLACEMENT_ATTEMPTS = 1000;
+
+/** A uniformly random point in the spherical shell between the given radii. */
+function randomPointInShell({ inner, outer }, random) {
+    // Uniform direction...
+    const z = random() * 2 - 1;
+    const phi = random() * 2 * Math.PI;
+    const horizontal = Math.sqrt(1 - z * z);
+    // ...and a radius that's uniform by volume.
+    const r = Math.cbrt(inner ** 3 + random() * (outer ** 3 - inner ** 3));
+    return [r * horizontal * Math.cos(phi), r * z, r * horizontal * Math.sin(phi)];
+}
+
 /**
- * Builds the list of hitables. Order matters, as in the C# tracer: hitables are tested
- * in this order on every step, and a reflective sphere changes the ray for the rest.
+ * Randomly places the mirror spheres, checkered spheres, and stars, so that they don't
+ * overlap each other or the planets. Returns lists of {center, radius} (plus a texture
+ * offset for stars), used by buildScene().
  */
-export function buildScene(options) {
+export function createLayout(random = Math.random) {
+    const placed = [EARTH, MARS];
+
+    const place = (shell, radius) => {
+        for (let attempt = 0; attempt < MAX_PLACEMENT_ATTEMPTS; attempt++) {
+            const center = randomPointInShell(shell, random);
+            const clear = placed.every((other) =>
+                Math.hypot(center[0] - other.center[0], center[1] - other.center[1], center[2] - other.center[2])
+                    >= radius + other.radius + PLACEMENT_GAP);
+            if (clear) {
+                const object = { center, radius };
+                placed.push(object);
+                return object;
+            }
+        }
+        throw new Error('Could not find room to place all objects.');
+    };
+
+    const spheres = (count) => Array.from({ length: count }, () => place(SPHERE_SHELL, SPHERE_RADIUS));
+    return {
+        mirrors: spheres(MIRROR_COUNT),
+        checkeredSpheres: spheres(CHECKERED_SPHERE_COUNT),
+        stars: Array.from({ length: STAR_COUNT }, () => ({
+            ...place(STAR_SHELL, STAR_MIN_RADIUS + random() * (STAR_MAX_RADIUS - STAR_MIN_RADIUS)),
+            textureOffset: random() * 2 * Math.PI,
+        })),
+    };
+}
+
+/**
+ * Builds the list of hitables, with randomly placed objects from the given layout
+ * (see createLayout). Order matters, as in the C# tracer: hitables are tested in this
+ * order on every step, and a reflective sphere changes the ray for the rest.
+ */
+export function buildScene(options, layout) {
     const hitables = [];
 
     if (options.checkeredDisk) {
@@ -89,17 +156,23 @@ export function buildScene(options) {
     hitables.push(hitable({ kind: Kind.SKY, radiusSqr: SKY_RADIUS * SKY_RADIUS, texture: TextureSlot.SKY }));
 
     if (options.planets) {
-        hitables.push(sphere([10, 2, -1], 1, { texture: TextureSlot.EARTH, textureOffset: Math.PI }));
-        hitables.push(sphere([-10, -2, 1], 1, { texture: TextureSlot.MARS }));
+        hitables.push(sphere(EARTH.center, EARTH.radius, { texture: TextureSlot.EARTH, textureOffset: Math.PI }));
+        hitables.push(sphere(MARS.center, MARS.radius, { texture: TextureSlot.MARS }));
     }
     if (options.mirrors) {
-        hitables.push(reflectiveSphere([-1, 2, -10], 1));
-        hitables.push(reflectiveSphere([3, -3, -7], 1));
-        hitables.push(reflectiveSphere([3, -5, 5], 1));
-        hitables.push(reflectiveSphere([-3.7, 2, -7], 1));
+        for (const { center, radius } of layout.mirrors) {
+            hitables.push(reflectiveSphere(center, radius));
+        }
     }
-    if (options.checkeredSphere) {
-        hitables.push(sphere([-10, -10, -10], 1, { color1: Colors.royalBlue, color2: Colors.darkBlue }));
+    if (options.checkeredSpheres) {
+        for (const { center, radius } of layout.checkeredSpheres) {
+            hitables.push(sphere(center, radius, { color1: Colors.royalBlue, color2: Colors.darkBlue }));
+        }
+    }
+    if (options.stars) {
+        for (const { center, radius, textureOffset } of layout.stars) {
+            hitables.push(sphere(center, radius, { texture: TextureSlot.STAR, textureOffset }));
+        }
     }
 
     return hitables;
