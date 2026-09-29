@@ -1,0 +1,33 @@
+# Caching and compression rules for the Black Hole Raytracer web app (Apache).
+# Upload this file next to index.html. Each section is wrapped in <IfModule>, so if a module
+# isn't enabled on the server, that section is skipped instead of breaking the site.
+
+# Content types. Browsers only run module scripts served as JavaScript; the shader sources
+# are plain text.
+<IfModule mod_mime.c>
+    AddType text/javascript .js
+    AddType image/webp .webp
+    AddType text/plain .frag .vert
+    AddCharset utf-8 .html .css .js .frag .vert
+</IfModule>
+
+<IfModule mod_headers.c>
+    # The page and its code: browsers may keep a copy, but must check with the server for a
+    # newer one on every visit (answered with a quick "304 Not Modified" when nothing has
+    # changed). This way, after an update, a browser never mixes old and new files.
+    <FilesMatch "\.(html|js|css|frag|vert)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+
+    # Textures: kept for 30 days without checking back. Browsers won't notice if a texture
+    # changes under the same name, so when replacing one, give it a new file name (such as
+    # sky4k-v2.webp) and update TEXTURE_URLS in js/scene.js.
+    <FilesMatch "\.(webp|jpg|png)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
+
+# Compress text files. (Images are already compressed, and are left alone.)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript text/plain
+</IfModule>
