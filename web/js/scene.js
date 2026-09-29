@@ -22,11 +22,11 @@ export const TextureSlot = {
 };
 
 export const TEXTURE_URLS = {
-    [TextureSlot.SKY]: 'textures/sky4k.jpg',
-    [TextureSlot.EARTH]: 'textures/earth1k.jpg',
-    [TextureSlot.MARS]: 'textures/mars1k.jpg',
-    [TextureSlot.DISK]: 'textures/disk.jpg',
-    [TextureSlot.STAR]: 'textures/sun.jpg',
+    [TextureSlot.SKY]: 'textures/sky4k.webp',
+    [TextureSlot.EARTH]: 'textures/earth1k.webp',
+    [TextureSlot.MARS]: 'textures/mars1k.webp',
+    [TextureSlot.DISK]: 'textures/disk.webp',
+    [TextureSlot.STAR]: 'textures/sun.webp',
 };
 
 // System.Drawing named colors used by the C# scene, as RGB in [0, 1].
