@@ -8,17 +8,18 @@
     <script type="module" src="js/main.js"></script>
 </head>
 <body>
-    <main class="app">
-        <section class="viewport">
-            <!-- Focusable, so that clicking the view takes focus away from the controls (whose
-                 arrow keys would otherwise adjust them instead of steering). -->
-            <canvas id="view" width="512" height="512" tabindex="0" aria-label="Raytraced view of a black hole"></canvas>
-            <p id="status" class="status">Loading textures…</p>
-        </section>
+    <!-- Fills the window. Focusable, so that clicking the view takes focus away from the
+         controls (whose arrow keys would otherwise adjust them instead of steering). -->
+    <canvas id="view" tabindex="0" aria-label="Raytraced view of a black hole"></canvas>
+    <p id="status" class="status">Loading textures…</p>
+
+    <details id="panel" class="panel" open>
+        <summary>
+            <h1>Schwarzschild black hole</h1>
+        </summary>
 
         <form id="controls" class="controls" onsubmit="return false">
             <header>
-                <h1>Schwarzschild black hole</h1>
                 <p>Real-time GPU raytracing around a black hole, using actual field equations.</p>
                 <p class="hint">Drag to orbit · scroll or pinch to zoom</p>
             </header>
@@ -38,14 +39,13 @@
 
             <fieldset>
                 <legend>View</legend>
-                <label for="resolution">Resolution</label>
-                <select id="resolution">
-                    <option value="256">256 × 256</option>
-                    <option value="384">384 × 384</option>
-                    <option value="512">512 × 512</option>
-                    <option value="768">768 × 768</option>
-                    <option value="1024" selected>1024 × 1024</option>
-                    <option value="1280">1280 × 1280</option>
+                <label for="quality">Quality</label>
+                <select id="quality">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high" selected>High</option>
+                    <option value="very-high">Very high</option>
+                    <option value="super">Super</option>
                 </select>
                 <label for="fov">Field of view <output for="fov"></output></label>
                 <input type="range" id="fov" min="20" max="75" step="1" value="55">
@@ -64,6 +64,6 @@
 
             <p class="credit"><a href="https://dmitrybrant.com" target="_blank">Dmitry Brant</a>, 2026</p>
         </form>
-    </main>
+    </details>
 </body>
 </html>

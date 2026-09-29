@@ -25,7 +25,8 @@ function isUsedByElement(element, code) {
     if (type === 'range') {
         return code.startsWith('Arrow');
     }
-    if (type === 'checkbox' || element instanceof HTMLButtonElement) {
+    // (A <summary> toggles its <details>, like a button.)
+    if (type === 'checkbox' || element instanceof HTMLButtonElement || element.tagName === 'SUMMARY') {
         return code === 'Space';
     }
     return element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element.isContentEditable;

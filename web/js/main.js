@@ -8,9 +8,18 @@ import { normalize, scale } from './vec3.js';
 const SETTLE_DELAY_MS = 150;
 const AUTO_ROTATE_SPEED = 0.15; // radians per second
 
-// The viewport grows to show higher resolutions at one CSS pixel per rendered pixel, but
-// never shrinks below this; lower resolutions are scaled up to fill it.
-const MIN_VIEWPORT_SIZE = 512;
+// Render resolution for each quality level, relative to the size of the window (in CSS
+// pixels). The image is scaled to fill the window; above 1, it's supersampled.
+const QUALITY_SCALES = {
+    'low': 0.33,
+    'medium': 0.5,
+    'high': 0.75,
+    'very-high': 1,
+    'super': 1.5,
+};
+
+// Below this window width, the controls panel starts out collapsed.
+const COLLAPSE_PANEL_BELOW_WIDTH = 640;
 
 const canvas = document.getElementById('view');
 const statusElement = document.getElementById('status');
@@ -32,7 +41,7 @@ const settings = {};
 function readSettings() {
     const value = (id) => document.getElementById(id);
     Object.assign(settings, {
-        resolution: Number(value('resolution').value),
+        quality: value('quality').value,
         fov: Number(value('fov').value),
         curvature: -Number(value('curvature').value),
         maxIterations: Number(value('max-iterations').value),
@@ -47,9 +56,6 @@ function readSettings() {
         autoRotate: value('auto-rotate').checked,
         lowResWhileMoving: value('low-res-while-moving').checked,
     });
-    document.documentElement.style.setProperty('--viewport-size',
-        `${Math.max(MIN_VIEWPORT_SIZE, settings.resolution)}px`);
-
     // Show the current value next to each slider.
     for (const input of controls.querySelectorAll('input[type=range]')) {
         const output = controls.querySelector(`output[for="${input.id}"]`);
@@ -66,7 +72,19 @@ function showError(error) {
     statusElement.hidden = false;
 }
 
+/** The size to render at: the window size, scaled by the quality level. */
+function renderSize(lowRes) {
+    const scale = QUALITY_SCALES[settings.quality] * (lowRes ? 0.5 : 1);
+    return [
+        Math.max(1, Math.round(canvas.clientWidth * scale)),
+        Math.max(1, Math.round(canvas.clientHeight * scale)),
+    ];
+}
+
 async function start() {
+    if (window.innerWidth < COLLAPSE_PANEL_BELOW_WIDTH) {
+        document.getElementById('panel').open = false;
+    }
     readSettings();
 
     let renderer;
@@ -111,6 +129,9 @@ async function start() {
         camera.reset();
         cameraMoved();
     });
+    window.addEventListener('resize', () => {
+        needsRender = true;
+    });
 
     const frame = (now) => {
         const dt = Math.min(0.1, (now - lastFrameTime) / 1000);
@@ -129,8 +150,8 @@ async function start() {
         const moving = now - lastMoveTime < SETTLE_DELAY_MS;
         const lowRes = moving && settings.lowResWhileMoving;
         if (needsRender || (showingLowRes && !lowRes)) {
-            const size = lowRes ? Math.round(settings.resolution / 2) : settings.resolution;
-            renderer.render(size, size, camera.basis, settings);
+            const [width, height] = renderSize(lowRes);
+            renderer.render(width, height, camera.basis, settings);
             showingLowRes = lowRes;
             needsRender = false;
             renderTimes.push(now);
