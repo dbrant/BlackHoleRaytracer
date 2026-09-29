@@ -2,7 +2,11 @@
 
 // Nonlinear raytracer for a Schwarzschild black hole.
 // This is a port of GpuSchwarzschildRayProcessor.RenderKernel (and the Schwarzschild Hit()
-// logic of each hitable) from the C# project. Each fragment traces one ray.
+// logic of each hitable). Each fragment traces one ray.
+//
+// Based on earlier work:
+// https://github.com/dbrant/BlackHoleRaytracer
+// https://github.com/rantonels/starless
 //
 // The scene is not stored in uniforms: renderer.js generates the testHitables() function,
 // with one hit*() call per hitable and its parameters baked in as constants, and appends it
