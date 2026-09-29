@@ -31,12 +31,14 @@
                 <p class="hint">Drag to orbit · scroll or pinch to zoom</p>
             </header>
 
+            <button type="button" id="about-button">What's this?</button>
+
             <fieldset>
                 <legend>Objects</legend>
                 <label class="check"><input type="checkbox" id="sky" checked> Sky</label>
                 <label class="check"><input type="checkbox" id="accretion-disk" checked> Accretion disk</label>
                 <label class="check"><input type="checkbox" id="stars"> Stars</label>
-                <label class="check"><input type="checkbox" id="planets"> Earth and Mars</label>
+                <label class="check"><input type="checkbox" id="planets"> Planets</label>
                 <label class="check"><input type="checkbox" id="mirrors"> Reflective spheres</label>
                 <label class="check"><input type="checkbox" id="glass-spheres"> Glass spheres</label>
                 <label class="check"><input type="checkbox" id="checkered-disk"> Checkered disk</label>
@@ -73,5 +75,45 @@
             <p class="credit"><a href="https://dmitrybrant.com" target="_blank">Dmitry Brant</a>, 2026</p>
         </form>
     </details>
+
+    <!-- "What's this?" dialog. Opened by #about-button; closed by the Close button, Escape,
+         or a click outside it. -->
+    <dialog id="about" class="about" aria-labelledby="about-title">
+        <div class="about-content">
+            <h2 id="about-title">What's this?</h2>
+            <h3>What you're seeing, physically</h3>
+            <ul>
+                <li>This simulation shows the gravitational lensing effects caused by a black hole, done using
+                    real-time ray tracing with an actual field equation that models a Schwarzschild black hole
+                    (the simplest possible black hole: non-rotating, non-charged, spherically symmetric).</li>
+                <li>Strictly speaking, what you see is an instantaneous snapshot of how light rays are bent by
+                    the presence of the black hole. Even though you can move around and change the viewpoint,
+                    it should not be interpreted as what you would <em>actually</em> experience at this distance from a
+                    real black hole, with time flowing normally. If you were actually next to a black hole at this
+                    distance, and we start time moving forward, you would need to accelerate like crazy to hold
+                    your position relative to the black hole. This immense acceleration would create extreme
+                    relativistic effects like aberration, blueshift, time dilation, and tidal forces. This is
+                    currently outside the scope of this visualization.
+                </li>
+                <li>Nevertheless, the simulation provides an accurate depiction of how light is bent by the black hole's gravity,
+                    and can be useful for building intuition for how gravity affects light at the extremes.</li>
+            </ul>
+
+            <h3>What you can do</h3>
+            <ul>
+                <li>Point and drag to change the viewpoint around the black hole. Pinch or scroll to zoom.</li>
+                <li>Play around with turning on the other checkboxes to render various toy objects around the black hole,
+                    including stars, planets, and reflective/transparent spheres. These objects are totally unphysical,
+                    but they help demonstrate that this is a real raytracer. 
+                </li>
+                <li>Rotate the viewpoint until an object is directly behind the black hole to see an Einstein ring.</li>
+                <li>Experiment with the Curvature slider to see how the strength of the curvature affects the bending of light around the black hole.</li>
+            </ul>
+
+            <form method="dialog">
+                <button type="submit" autofocus>Close</button>
+            </form>
+        </div>
+    </dialog>
 </body>
 </html>

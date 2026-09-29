@@ -43,6 +43,10 @@ export class FlightControls {
             if (!FLIGHT_KEYS.has(e.code) || e.ctrlKey || e.altKey || e.metaKey || isUsedByElement(e.target, e.code)) {
                 return;
             }
+            // While a dialog is open, leave the keys to it (e.g. the arrow keys scroll it).
+            if (document.querySelector('dialog[open]')) {
+                return;
+            }
             // Don't let the arrow keys and Space scroll the page.
             e.preventDefault();
             if (e.code === 'Space') {

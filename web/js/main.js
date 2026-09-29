@@ -25,6 +25,7 @@ const canvas = document.getElementById('view');
 const statusElement = document.getElementById('status');
 const statsElement = document.getElementById('stats');
 const controls = document.getElementById('controls');
+const aboutDialog = document.getElementById('about');
 
 // Start slightly above the disk plane, and at a moderate distance from the black hole,
 // so that the accretion disk fills most of the view.
@@ -186,5 +187,14 @@ function updateStats(renderer, renderTimes, now) {
     statsElement.textContent = `${parts.join(' · ')}
 ${observer}`;
 }
+
+// The "What's this?" dialog works even if WebGL doesn't, so it's wired up separately from start().
+document.getElementById('about-button').addEventListener('click', () => aboutDialog.showModal());
+aboutDialog.addEventListener('click', (e) => {
+    // The content fills the dialog, so a click on the dialog itself is on the backdrop.
+    if (e.target === aboutDialog) {
+        aboutDialog.close();
+    }
+});
 
 start();
