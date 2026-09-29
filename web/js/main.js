@@ -41,6 +41,7 @@ function readSettings() {
         planets: value('planets').checked,
         mirrors: value('mirrors').checked,
         checkeredSpheres: value('checkered-spheres').checked,
+        glassSpheres: value('glass-spheres').checked,
         stars: value('stars').checked,
         checkeredHorizon: value('checkered-horizon').checked,
         autoRotate: value('auto-rotate').checked,

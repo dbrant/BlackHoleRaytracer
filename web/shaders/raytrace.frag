@@ -26,6 +26,8 @@ const float PI = 3.14159265358979;
 const float TWO_PI = 6.28318530717959;
 const float STEP_SIZE = 0.16;
 const float STEP_SIZE_OVER_30 = STEP_SIZE / 30.0;
+// Refractive index of the glass spheres.
+const float GLASS_IOR = 1.5;
 // Rays that come this close to the center have fallen into the singularity.
 const float SINGULARITY_RADIUS_SQR = 0.01 * 0.01;
 const float CHECKER_SIZE = 1.04719;      // Pi / 3
@@ -201,6 +203,45 @@ void hitReflectiveSphere(vec3 center, float radiusSqr) {
     point = c;
     velocity = reflect(velocity, normalize(point - center));
     addTint(vec3(8.0 / 255.0));
+}
+
+// Glass sphere: refracts the ray into the sphere, and out the other side. (Not in the C#
+// project.) Inside the sphere the ray is taken to travel in a straight line: over the width
+// of a small sphere, the bending by the black hole is negligible.
+void hitGlassSphere(vec3 center, float radiusSqr) {
+    vec3 d = point - center;
+    if (dot(d, d) >= radiusSqr) {
+        return;
+    }
+    vec3 entry;
+    INTERSECTION_SEARCH(entry, dot(entry - center, entry - center) < radiusSqr)
+
+    // The ray's speed (the length of velocity) isn't exactly 1, so refract the direction,
+    // and keep the speed.
+    float speed = length(velocity);
+    vec3 direction = refract(velocity / speed, normalize(entry - center), 1.0 / GLASS_IOR);
+
+    // Where the straight path through the sphere comes out again: solving
+    // |entry + t * direction - center|^2 = radius^2, with entry on the surface.
+    vec3 exit = entry - 2.0 * dot(entry - center, direction) * direction;
+
+    // By symmetry, the ray meets the far side at the same angle it was refracted to, so it
+    // always gets out (no total internal reflection). refract() returns zero if it doesn't,
+    // though, which rounding error could cause at grazing angles; carry straight on then.
+    vec3 outward = refract(direction, -normalize(exit - center), GLASS_IOR);
+    if (dot(outward, outward) > 0.0) {
+        direction = outward;
+    }
+
+    point = exit;
+    velocity = direction * speed;
+    // The bending depends on the ray's angular momentum around the black hole, which is
+    // constant along a free path, but changed by the refraction.
+    vec3 h = cross(point, velocity);
+    potH2 = uPotentialCoefficient * dot(h, h);
+
+    // A slight blue-green tint, like the edge of a pane of glass.
+    addTint(vec3(4.0, 10.0, 9.0) / 255.0);
 }
 
 // Picks the smaller of the two possible u derivatives, so that the seam where u wraps

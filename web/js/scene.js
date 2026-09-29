@@ -9,6 +9,7 @@ export const Kind = {
     DISK: 2,
     SPHERE: 3,
     REFLECTIVE_SPHERE: 4,
+    GLASS_SPHERE: 5,
 };
 
 export const TextureSlot = {
@@ -66,6 +67,9 @@ const sphere = (center, radius, fields = {}) =>
 const reflectiveSphere = (center, radius) =>
     hitable({ kind: Kind.REFLECTIVE_SPHERE, center, radiusSqr: radius * radius });
 
+const glassSphere = (center, radius) =>
+    hitable({ kind: Kind.GLASS_SPHERE, center, radiusSqr: radius * radius });
+
 const EARTH = { center: [10, 2, -1], radius: 1 };
 const MARS = { center: [-10, -2, 1], radius: 1 };
 
@@ -74,6 +78,7 @@ const MARS = { center: [-10, -2, 1], radius: 1 };
 // that distance of the disk plane (y = 0).
 const MIRROR_COUNT = 5;
 const CHECKERED_SPHERE_COUNT = 5;
+const GLASS_SPHERE_COUNT = 5;
 const SPHERE_RADIUS = 1;
 const SPHERE_SHELL = { inner: 5, outer: 12 };
 const STAR_COUNT = 20;
@@ -126,6 +131,7 @@ export function createLayout(random = Math.random) {
     return {
         mirrors: spheres(MIRROR_COUNT),
         checkeredSpheres: spheres(CHECKERED_SPHERE_COUNT),
+        glassSpheres: spheres(GLASS_SPHERE_COUNT),
         stars: Array.from({ length: STAR_COUNT }, () => ({
             ...place(STAR_SHELL, STAR_MIN_RADIUS + random() * (STAR_MAX_RADIUS - STAR_MIN_RADIUS)),
             textureOffset: random() * 2 * Math.PI,
@@ -171,6 +177,11 @@ export function buildScene(options, layout) {
     if (options.checkeredSpheres) {
         for (const { center, radius } of layout.checkeredSpheres) {
             hitables.push(sphere(center, radius, { color1: Colors.royalBlue, color2: Colors.darkBlue }));
+        }
+    }
+    if (options.glassSpheres) {
+        for (const { center, radius } of layout.glassSpheres) {
+            hitables.push(glassSphere(center, radius));
         }
     }
     if (options.stars) {

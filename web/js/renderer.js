@@ -38,7 +38,7 @@ function loadImage(url) {
 const float = (x) => (Number.isInteger(x) ? x.toFixed(1) : String(x));
 const vec3 = ([x, y, z]) => `vec3(${float(x)}, ${float(y)}, ${float(z)})`;
 
-/** Generates the GLSL call that tests the ray against one hitable. */
+/** Generates the GLSL call that tests the ray against one hitable (other than spheres). */
 function hitableCall(h) {
     switch (h.kind) {
         case Kind.SKY:
@@ -48,17 +48,19 @@ function hitableCall(h) {
         case Kind.DISK:
             return `hitDisk(${float(h.innerRadius)}, ${float(h.outerRadius)}, ` +
                 `${vec3(h.color1)}, ${vec3(h.color2)}, ${vec3(h.color3)}, ${vec3(h.color4)}, ${h.texture})`;
-        case Kind.SPHERE:
-            return `hitSphere(${vec3(h.center)}, ${float(h.radiusSqr)}, ` +
-                `${vec3(h.color1)}, ${vec3(h.color2)}, ${h.texture}, ${float(h.textureOffset)})`;
-        case Kind.REFLECTIVE_SPHERE:
-            return `hitReflectiveSphere(${vec3(h.center)}, ${float(h.radiusSqr)})`;
         default:
             throw new Error(`Unknown hitable kind ${h.kind}`);
     }
 }
 
-const isSphere = (h) => h.kind === Kind.SPHERE || h.kind === Kind.REFLECTIVE_SPHERE;
+// The value of hitKind in the generated sphere tests, for each kind of sphere.
+const SPHERE_HIT_KINDS = {
+    [Kind.SPHERE]: 1,
+    [Kind.REFLECTIVE_SPHERE]: 2,
+    [Kind.GLASS_SPHERE]: 3,
+};
+
+const isSphere = (h) => h.kind in SPHERE_HIT_KINDS;
 
 /**
  * Generates the sphere tests in testHitables(). The spheres in the scene never overlap, so
@@ -71,7 +73,7 @@ function generateSphereTests(spheres) {
     const extent = Math.max(...spheres.map((h) => Math.hypot(...h.center) + Math.sqrt(h.radiusSqr)));
     const lines = [
         `    if (sqrNorm < ${float(extent * extent)}) {`,
-        '        int hitKind = 0; // 0: none, 1: sphere, 2: reflective sphere',
+        '        int hitKind = 0; // 0: none; otherwise, see SPHERE_HIT_KINDS',
         '        vec3 center, color1, color2;',
         '        float radiusSqr, textureOffset;',
         '        int texture;',
@@ -79,7 +81,7 @@ function generateSphereTests(spheres) {
     ];
     for (const h of spheres) {
         const center = vec3(h.center);
-        const kind = h.kind === Kind.SPHERE ? 1 : 2;
+        const kind = SPHERE_HIT_KINDS[h.kind];
         lines.push(
             `        d = point - ${center};`,
             `        if (dot(d, d) < ${float(h.radiusSqr)}) {`,
@@ -94,6 +96,8 @@ function generateSphereTests(spheres) {
         '            hitSphere(center, radiusSqr, color1, color2, texture, textureOffset);',
         '        } else if (hitKind == 2) {',
         '            hitReflectiveSphere(center, radiusSqr);',
+        '        } else if (hitKind == 3) {',
+        '            hitGlassSphere(center, radiusSqr);',
         '        }',
         '    }',
     );
