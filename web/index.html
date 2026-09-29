@@ -27,7 +27,7 @@
 
         <form id="controls" class="controls" onsubmit="return false">
             <header>
-                <p>Real-time GPU raytracing around a black hole, using actual field equations.</p>
+                <p>Real-time GPU raytracing around a black hole, using actual geodesic equations as predicted by general relativity.</p>
                 <p class="hint">Drag to orbit · scroll or pinch to zoom</p>
             </header>
 
@@ -80,25 +80,10 @@
          or a click outside it. -->
     <dialog id="about" class="about" aria-labelledby="about-title">
         <div class="about-content">
-            <h2 id="about-title">What's this?</h2>
-            <h3>What you're seeing, physically</h3>
-            <ul>
-                <li>This simulation shows the gravitational lensing effects caused by a black hole, done using
-                    real-time ray tracing with an actual field equation that models a Schwarzschild black hole
-                    (the simplest possible black hole: non-rotating, non-charged, spherically symmetric).</li>
-                <li>Strictly speaking, what you see is an instantaneous snapshot of how light rays are bent by
-                    the presence of the black hole. Even though you can move around and change the viewpoint,
-                    it should not be interpreted as what you would <em>actually</em> experience at this distance from a
-                    real black hole, with time flowing normally. If you were actually next to a black hole at this
-                    distance, and we start time moving forward, you would need to accelerate like crazy to hold
-                    your position relative to the black hole. This immense acceleration would create extreme
-                    relativistic effects like aberration, blueshift, time dilation, and tidal forces. This is
-                    currently outside the scope of this visualization.
-                </li>
-                <li>Nevertheless, the simulation provides an accurate depiction of how light is bent by the black hole's gravity,
-                    and can be useful for building intuition for how gravity affects light at the extremes.</li>
-            </ul>
-
+            <!-- Focused when the dialog opens (rather than the Close button, which would scroll the
+                 dialog down to the bottom). -->
+            <h2 id="about-title" tabindex="-1" autofocus>What's this?</h2>
+            
             <h3>What you can do</h3>
             <ul>
                 <li>Point and drag to change the viewpoint around the black hole. Pinch or scroll to zoom.</li>
@@ -107,11 +92,44 @@
                     but they help demonstrate that this is a real raytracer. 
                 </li>
                 <li>Rotate the viewpoint until an object is directly behind the black hole to see an Einstein ring.</li>
-                <li>Experiment with the Curvature slider to see how the strength of the curvature affects the bending of light around the black hole.</li>
+                <li>Experiment with the Curvature slider to see how the strength of the curvature affects the bending of light around the black hole.
+                    This is <em>not</em> changing the mass of the black hole, but rather changes the geodesic equation to have less curvature,
+                    so that, at the other extreme, you can see what happens if the black hole didn't curve spacetime at all.</li>
+                <li>Unfortunately the simulation does not allow you to travel past the event horizon. The raytracing would produce mostly
+                    nonsensical results, and not really worth attempting here.
+                </li>
             </ul>
 
+            <h3>What you're seeing, physically</h3>
+            <ul>
+                <li>This simulation shows the gravitational lensing effects caused by a black hole, done using
+                    real-time ray tracing of light rays along the geodesic paths that light would follow around a Schwarzschild
+                    black hole (the simplest possible black hole: non-rotating, non-charged, spherically symmetric),
+                    as predicted by general relativity.</li>
+                <li>Strictly speaking, what you see is an instantaneous snapshot of how light rays are bent by
+                    the presence of the black hole. Even though you can move around and change the viewpoint,
+                    it should not be interpreted as what you would <em>actually</em> experience at this distance from a
+                    real black hole, with time flowing normally.
+                    It's the view of an observer hovering motionless next to the black hole, frozen in time: nothing in the
+                    scene orbits or falls in. A real observer hovering there would need to fire their rockets constantly, which
+                    near a small black hole means an enormous acceleration, and would experience effects like time dilation, blueshifting,
+                    and tidal forces. This is currently outside the scope of this visualization.
+                </li>
+                <li>The accretion disk is also extremely simplified: a real accretion disk would be moving at relativistic speeds
+                    around the black hole, so the portion of the disk moving towards the observer would be significantly blueshifted and brighter,
+                    while the portion moving away would be redshifted and dimmer. This is why the real images from the Event Horizon Telescope
+                    appear asymmetric.
+                </li>
+                <li>The dark region is technically not the event horizon, but rather the "shadow" of the black hole. Seen from far away,
+                    it appears about 2.6 times the horizon's radius, because light passing nearby is bent around it. Its edge is determined by the
+                    photon sphere, at 1.5 horizon radii, where light can orbit the black hole in unstable circles: any light that crosses
+                    it heading inward can never get back out. Turn on "Checkered horizon" to see that the whole shadow is really a magnified,
+                    wrapped-around image of the horizon.</li>
+                <li>Nevertheless, the simulation provides an accurate depiction of how light is bent by the black hole's gravity,
+                    and can be useful for building intuition for how gravity affects light at the extremes.</li>
+            </ul>
             <form method="dialog">
-                <button type="submit" autofocus>Close</button>
+                <button type="submit">Close</button>
             </form>
         </div>
     </dialog>
