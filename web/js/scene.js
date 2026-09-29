@@ -161,7 +161,7 @@ export function buildScene(options, layout) {
         }));
     }
     if (options.accretionDisk) {
-        hitables.push(hitable({ kind: Kind.DISK, innerRadius: 2.6, outerRadius: 8, texture: TextureSlot.DISK }));
+        hitables.push(hitable({ kind: Kind.DISK, innerRadius: 3.0, outerRadius: 8, texture: TextureSlot.DISK }));
     }
 
     hitables.push(hitable({ kind: Kind.HORIZON, checkered: options.checkeredHorizon }));
@@ -199,8 +199,6 @@ export function buildScene(options, layout) {
     return hitables;
 }
 
-// The camera must stay inside the sky sphere. It may cross the horizon (radius 1), but must
-// keep clear of the singularity at the center, where the ray equations break down.
-export const HORIZON_RADIUS = 1;
-export const CAMERA_MIN_DISTANCE = 0.05;
+// The camera must stay inside the sky sphere, and outside the horizon (radius 1).
+export const CAMERA_MIN_DISTANCE = 1.5;
 export const CAMERA_MAX_DISTANCE = SKY_RADIUS - 5;

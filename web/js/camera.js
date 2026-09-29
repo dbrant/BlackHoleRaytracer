@@ -13,7 +13,7 @@ const clamp = (x, min, max) => Math.min(max, Math.max(min, x));
 export class Camera {
     constructor({ position, minDistance, maxDistance }) {
         this.initialPosition = position;
-        // The camera must stay clear of the singularity, and inside the sky sphere.
+        // The camera must stay outside the horizon, and inside the sky sphere.
         this.minDistance = minDistance;
         this.maxDistance = maxDistance;
         this.reset();
@@ -84,7 +84,7 @@ export class Camera {
 
     /**
      * Travels at the current speed for dt seconds. Returns true if the camera moved.
-     * Running into the singularity or the sky sphere stops the camera there.
+     * Running into the horizon or the sky sphere stops the camera there.
      */
     fly(dt) {
         if (this.speed === 0) {

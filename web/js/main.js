@@ -1,7 +1,7 @@
 import { Camera } from './camera.js';
 import { FlightControls } from './flight.js';
 import { Renderer } from './renderer.js';
-import { buildScene, createLayout, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, HORIZON_RADIUS } from './scene.js';
+import { buildScene, createLayout, CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE } from './scene.js';
 import { normalize, scale } from './vec3.js';
 
 // How long after the last camera movement to render at full resolution again.
@@ -182,14 +182,17 @@ function updateStats(renderer, renderTimes, now) {
     if (renderTimes.length > 1) {
         parts.push(`${renderTimes.length} fps`);
     }
-    const inside = camera.distance < HORIZON_RADIUS ? ' (inside horizon)' : '';
-    const observer = `distance ${camera.distance.toFixed(2)}${inside} · speed ${camera.speed.toFixed(1)}`;
+    const observer = `distance ${camera.distance.toFixed(2)} · speed ${camera.speed.toFixed(1)}`;
     statsElement.textContent = `${parts.join(' · ')}
 ${observer}`;
 }
 
 // The "What's this?" dialog works even if WebGL doesn't, so it's wired up separately from start().
-document.getElementById('about-button').addEventListener('click', () => aboutDialog.showModal());
+document.getElementById('about-button').addEventListener('click', () => {
+    aboutDialog.showModal();
+    // Start at the top, even if it was scrolled down when last closed.
+    aboutDialog.scrollTop = 0;
+});
 aboutDialog.addEventListener('click', (e) => {
     // The content fills the dialog, so a click on the dialog itself is on the backdrop.
     if (e.target === aboutDialog) {

@@ -212,6 +212,11 @@ a {
     font-weight: 600;
 }
 
+/* The title only takes focus so that the dialog opens scrolled to the top. */
+.about h2:focus {
+    outline: none;
+}
+
 .about h3 {
     margin: 16px 0 6px;
     color: var(--muted);

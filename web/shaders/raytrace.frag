@@ -30,8 +30,6 @@ const float STEP_SIZE = 0.16;
 const float STEP_SIZE_OVER_30 = STEP_SIZE / 30.0;
 // Refractive index of the glass spheres.
 const float GLASS_IOR = 1.5;
-// Rays that come this close to the center have fallen into the singularity.
-const float SINGULARITY_RADIUS_SQR = 0.01 * 0.01;
 const float CHECKER_SIZE = 1.04719;      // Pi / 3
 const float HALF_CHECKER_SIZE = 0.52359; // Pi / 6
 
@@ -293,14 +291,6 @@ void main() {
         prevPoint = point;
         prevSqrNorm = sqrNorm;
         sqrNorm = stepRay(point, velocity, sqrt(dot(point, point)) * STEP_SIZE_OVER_30);
-
-        // Rays from outside end at the horizon (hitHorizon) long before this; but when the
-        // observer is inside the horizon, rays can fall into the singularity, where the step
-        // size shrinks to nothing. End them there, in black.
-        if (sqrNorm < SINGULARITY_RADIUS_SQR) {
-            stop = true;
-            break;
-        }
         testHitables();
     }
 
