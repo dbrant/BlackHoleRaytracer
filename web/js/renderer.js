@@ -14,8 +14,11 @@ const MAX_CACHED_PROGRAMS = 16;
 
 const UNIFORMS = [
     'uResolution', 'uCameraPosition', 'uCameraLeft', 'uCameraUp', 'uCameraFront',
-    'uTanFov', 'uPotentialCoefficient', 'uMaxIterations', ...Object.values(SAMPLER_UNIFORMS),
+    'uTanFov', 'uPotentialCoefficient', 'uMaxIterations', 'uSkyLoaded', ...Object.values(SAMPLER_UNIFORMS),
 ];
+
+// Shown by textures that haven't loaded yet (other than the sky, which shows a grid instead).
+const PLACEHOLDER_COLOR = [40, 40, 40, 255];
 
 async function fetchText(url) {
     const response = await fetch(url);
@@ -140,22 +143,27 @@ export class Renderer {
         if (!gl) {
             throw new Error('WebGL 2 is not available in this browser.');
         }
-        const [vertexSource, fragmentSource, images] = await Promise.all([
+        // Textures aren't loaded here, but when a scene first uses them (see setScene).
+        const [vertexSource, fragmentSource] = await Promise.all([
             fetchText('shaders/fullscreen.vert'),
             fetchText('shaders/raytrace.frag'),
-            Promise.all(Object.entries(TEXTURE_URLS).map(async ([slot, url]) => [slot, await loadImage(url)])),
         ]);
-        return new Renderer(gl, vertexSource, fragmentSource, images);
+        return new Renderer(gl, vertexSource, fragmentSource);
     }
 
-    constructor(gl, vertexSource, fragmentSource, images) {
+    constructor(gl, vertexSource, fragmentSource) {
         this.gl = gl;
         this.vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexSource, 'fullscreen.vert');
         this.fragmentSource = fragmentSource;
         // Compiled programs, keyed by their generated testHitables() source.
         this.programs = new Map();
         this.program = null;
-        this.textures = images.map(([slot, image]) => ({ slot: Number(slot), texture: this.createTexture(image) }));
+        // Every texture starts out as a placeholder, and is loaded when first needed.
+        this.textures = new Map(Object.keys(TEXTURE_URLS).map((slot) => [
+            Number(slot), { texture: this.createTexture(), requested: false, loaded: false },
+        ]));
+        // Called when a texture finishes loading, so the view can be rendered again.
+        this.onTextureLoaded = () => {};
         this.vertexArray = gl.createVertexArray();
 
         // GPU timer, where supported. Frame times without it would only measure how fast
@@ -183,11 +191,13 @@ export class Renderer {
         return { program, uniforms };
     }
 
-    createTexture(image) {
+    /** Creates a texture holding a single placeholder pixel, until the image is loaded. */
+    createTexture() {
         const gl = this.gl;
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+            new Uint8Array(PLACEHOLDER_COLOR));
         gl.generateMipmap(gl.TEXTURE_2D);
         // Textures wrap around horizontally (longitude), and clamp at the poles.
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
@@ -202,11 +212,35 @@ export class Renderer {
         return texture;
     }
 
+    /** Starts loading the image for a texture slot, if it hasn't been already. */
+    requestTexture(slot) {
+        const entry = this.textures.get(slot);
+        if (!entry || entry.requested) {
+            return;
+        }
+        entry.requested = true;
+        loadImage(TEXTURE_URLS[slot]).then((image) => {
+            const gl = this.gl;
+            gl.bindTexture(gl.TEXTURE_2D, entry.texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, image);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            entry.loaded = true;
+            this.onTextureLoaded(slot);
+        }, (error) => {
+            // Keep showing the placeholder, and try again the next time the scene changes.
+            console.error(error);
+            entry.requested = false;
+        });
+    }
+
     /**
-     * Sets the hitables to render. The first time a given scene is used, this compiles a
-     * shader specialized for it, which can take a moment.
+     * Sets the hitables to render, and starts loading any textures they use. The first time
+     * a given scene is used, this compiles a shader specialized for it, which can take a moment.
      */
     setScene(hitables) {
+        for (const h of hitables) {
+            this.requestTexture(h.texture);
+        }
         const source = generateTestHitables(hitables);
         let program = this.programs.get(source);
         if (program) {
@@ -248,12 +282,15 @@ export class Renderer {
         gl.uniform1f(u.uTanFov, Math.tan(params.fov * Math.PI / 180));
         gl.uniform1f(u.uPotentialCoefficient, params.curvature);
         gl.uniform1i(u.uMaxIterations, params.maxIterations);
+        gl.uniform1i(u.uSkyLoaded, this.textures.get(TextureSlot.SKY).loaded ? 1 : 0);
 
-        this.textures.forEach(({ slot, texture }, unit) => {
+        let unit = 0;
+        for (const [slot, { texture }] of this.textures) {
             gl.activeTexture(gl.TEXTURE0 + unit);
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.uniform1i(u[SAMPLER_UNIFORMS[slot]], unit);
-        });
+            unit++;
+        }
 
         const query = this.beginTimer();
         gl.bindVertexArray(this.vertexArray);

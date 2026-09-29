@@ -19,6 +19,8 @@ export const TextureSlot = {
     MARS: 3,
     DISK: 4,
     STAR: 5,
+    // Not a texture: the procedural grid shown in place of the sky.
+    SKY_GRID: 6,
 };
 
 export const TEXTURE_URLS = {
@@ -163,7 +165,11 @@ export function buildScene(options, layout) {
     }
 
     hitables.push(hitable({ kind: Kind.HORIZON, checkered: options.checkeredHorizon }));
-    hitables.push(hitable({ kind: Kind.SKY, radiusSqr: SKY_RADIUS * SKY_RADIUS, texture: TextureSlot.SKY }));
+    hitables.push(hitable({
+        kind: Kind.SKY,
+        radiusSqr: SKY_RADIUS * SKY_RADIUS,
+        texture: options.sky ? TextureSlot.SKY : TextureSlot.SKY_GRID,
+    }));
 
     if (options.planets) {
         hitables.push(sphere(EARTH.center, EARTH.radius, { texture: TextureSlot.EARTH, textureOffset: Math.PI }));

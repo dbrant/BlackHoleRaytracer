@@ -45,6 +45,7 @@ function readSettings() {
         fov: Number(value('fov').value),
         curvature: -Number(value('curvature').value),
         maxIterations: Number(value('max-iterations').value),
+        sky: value('sky').checked,
         checkeredDisk: value('checkered-disk').checked,
         accretionDisk: value('accretion-disk').checked,
         planets: value('planets').checked,
@@ -97,6 +98,9 @@ async function start() {
     statusElement.hidden = true;
 
     let needsRender = true;
+    renderer.onTextureLoaded = () => {
+        needsRender = true;
+    };
     let lastMoveTime = -Infinity;
     let showingLowRes = false;
     let lastFrameTime = performance.now();

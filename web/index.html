@@ -11,7 +11,7 @@
     <!-- Fills the window. Focusable, so that clicking the view takes focus away from the
          controls (whose arrow keys would otherwise adjust them instead of steering). -->
     <canvas id="view" tabindex="0" aria-label="Raytraced view of a black hole"></canvas>
-    <p id="status" class="status">Loading textures…</p>
+    <p id="status" class="status">Loading…</p>
 
     <details id="panel" class="panel" open>
         <summary>
@@ -26,6 +26,7 @@
 
             <fieldset>
                 <legend>Objects</legend>
+                <label class="check"><input type="checkbox" id="sky" checked> Sky</label>
                 <label class="check"><input type="checkbox" id="accretion-disk" checked> Accretion disk</label>
                 <label class="check"><input type="checkbox" id="stars"> Stars</label>
                 <label class="check"><input type="checkbox" id="planets"> Earth and Mars</label>
