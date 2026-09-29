@@ -6,6 +6,13 @@
     <title>Black Hole Raytracer</title>
     <link rel="stylesheet" href="css/style.css">
     <script type="module" src="js/main.js"></script>
+    <!-- Modules imported by main.js (directly or indirectly). Listing them here lets the
+         browser download them alongside main.js, instead of only after it has loaded. -->
+    <link rel="modulepreload" href="js/camera.js">
+    <link rel="modulepreload" href="js/flight.js">
+    <link rel="modulepreload" href="js/renderer.js">
+    <link rel="modulepreload" href="js/scene.js">
+    <link rel="modulepreload" href="js/vec3.js">
 </head>
 <body>
     <!-- Fills the window. Focusable, so that clicking the view takes focus away from the
