@@ -1,11 +1,11 @@
 :root {
-    --bg: #0b0d12;
-    --panel: #151923;
-    --panel-overlay: rgb(11 13 18 / 0.82);
+    --bg: #1f2124;
+    --panel: #353a46;
+    --panel-overlay: #171b23;
     --border: #262c3a;
     --text: #e6e8ee;
-    --muted: #8b92a5;
-    --accent: #8a5cf6;
+    --muted: #95abe7;
+    --accent: #7490dc;
     --error: #ff6b6b;
     --gutter: 16px;
 
@@ -78,7 +78,6 @@ body {
     max-height: calc(100dvh - 2 * var(--gutter));
     overflow-y: auto;
     background: var(--panel-overlay);
-    backdrop-filter: blur(8px);
     border: 1px solid var(--border);
 }
 
