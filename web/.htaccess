@@ -7,6 +7,7 @@
 <IfModule mod_mime.c>
     AddType text/javascript .js
     AddType image/webp .webp
+    AddType font/woff2 .woff2
     AddType text/plain .frag .vert
     AddCharset utf-8 .html .css .js .frag .vert
 </IfModule>
@@ -19,10 +20,11 @@
         Header set Cache-Control "no-cache"
     </FilesMatch>
 
-    # Textures: kept for 30 days without checking back. Browsers won't notice if a texture
-    # changes under the same name, so when replacing one, give it a new file name (such as
-    # sky4k-v2.webp) and update TEXTURE_URLS in js/scene.js.
-    <FilesMatch "\.(webp|jpg|png)$">
+    # Textures and fonts: kept for 30 days without checking back. Browsers won't notice if
+    # one changes under the same name, so when replacing one, give it a new file name (such
+    # as sky4k-v2.webp) and update where it's referenced (TEXTURE_URLS in js/scene.js, or
+    # css/style.css and the preload links in index.html for fonts).
+    <FilesMatch "\.(webp|jpg|png|woff2)$">
         Header set Cache-Control "public, max-age=2592000"
     </FilesMatch>
 </IfModule>

@@ -3,8 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Black Hole Raytracer</title>
+    <title>Black hole raytracer</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- The fonts the panel shows straight away (the italic is only used in the dialog).
+         Preloading avoids a visible switch from the fallback font on first load. -->
+    <link rel="preload" href="fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin>
     <script type="module" src="js/main.js"></script>
     <!-- Modules imported by main.js (directly or indirectly). Listing them here lets the
          browser download them alongside main.js, instead of only after it has loaded. -->
