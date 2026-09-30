@@ -31,6 +31,10 @@
     --bg: #1f2124;
     --panel: #2a2e39;
     --panel-overlay: #171b23;
+    /* The panel's background: very faint diagonal lines over --panel-overlay. */
+    --panel-background:
+        repeating-linear-gradient(135deg, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 6px),
+        var(--panel-overlay);
     --border: #262c3a;
     --text: #e6e8ee;
     --muted: #95abe7;
@@ -108,7 +112,7 @@ body {
     width: min(320px, calc(100vw - 2 * var(--gutter)));
     max-height: calc(100dvh - 2 * var(--gutter));
     overflow-y: auto;
-    background: var(--panel-overlay);
+    background: var(--panel-background);
     border: 1px solid var(--border);
 }
 
@@ -129,7 +133,9 @@ body {
     list-style: none;
     cursor: pointer;
     user-select: none;
-    background: var(--panel-overlay);
+    /* Opaque, since the panel's content scrolls underneath. The pattern lines up with the
+       panel's, since the title bar sits at the panel's top-left corner. */
+    background: var(--panel-background);
 }
 
 .panel summary::-webkit-details-marker {
